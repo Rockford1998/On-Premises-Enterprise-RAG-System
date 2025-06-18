@@ -1,0 +1,10 @@
+node_modules
+dist
+
+/src/generated/prisma
+sample.pdf
+# files from uploads
+.pdf
+.docx
+.doc 
+.pptx
