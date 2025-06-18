@@ -7,6 +7,7 @@ import { Request, Response } from "express";
 import { generateFileHash } from "../util/generateFileHash";
 import { readFile } from "../util/readFile";
 import { storeEmbeddedDocument } from "../services/storeEmbeddedDocument";
+import axios from "axios";
 
 
 // train  
@@ -120,11 +121,6 @@ export const chatBot = async (req: Request, res: Response
 ) => {
   try {
     const originalPropmt = req.body.prompt;
-    // console.log("originalPropmt:", originalPropmt);
-
-    // const improvedPrompt = await promptImprovement(originalPropmt);
-    // console.log("Improved Prompt:", improvedPrompt);
-
     const queryEmbedding = await generateEmbedding(originalPropmt);
 
     // Get relevant chunks with threshold
@@ -152,6 +148,77 @@ export const chatBot = async (req: Request, res: Response
     );
   }
 };
+
+export const streamChatBot = async (req: Request, res: Response
+) => {
+  try {
+    const originalPropmt = req.body.prompt;
+    const queryEmbedding = await generateEmbedding(originalPropmt);
+    console.log("Query Embedding:", originalPropmt);
+    // Get relevant chunks with threshold
+    const relevantChunks = await VectorService.searchVectors(
+      "document_embeddings",
+      queryEmbedding,
+    );
+
+    if (relevantChunks.length === 0) {
+      console.warn("No relevant chunks found above similarity threshold");
+      return;
+    }
+    const context = relevantChunks
+      .map((c, i) => `[Context ${i + 1}]: ${c.content}`)
+      .join("\n\n");
+
+    const prompt = `Answer the following question using only the context below. If the context does not contain the answer, say "I don't know."
+
+                    Context:
+                    ${context}
+
+                    Question:
+                    ${originalPropmt}
+
+                    Answer:
+                    `;
+
+    const ollamaStream = await axios.post("http://localhost:11434/api/generate", {
+      model: 'llama3.2:latest',
+      prompt,
+      stream: true,
+    }, { responseType: 'stream' });
+
+    ollamaStream.data.on('data', (chunk: any) => {
+      const lines = chunk.toString().split('\n').filter(Boolean);
+      for (const line of lines) {
+        try {
+          const json = JSON.parse(line);
+          if (json.done) {
+            res.end();
+            return;
+          }
+          if (json.response) {
+            res.write(json.response);
+          }
+        } catch (err) {
+          console.warn("Invalid JSON chunk, skipping:", line);
+        }
+      }
+    });
+
+    
+    ollamaStream.data.on('end', () => res.end());
+    ollamaStream.data.on('error', (err: any) => {
+      console.error('Stream error:', err);
+      res.end();
+    });
+
+  } catch (error) {
+    console.error(
+      "Test failed:",
+      error instanceof Error ? error.message : String(error),
+    );
+  }
+}
+
 
 //
 export const test = async (q: number) => {
