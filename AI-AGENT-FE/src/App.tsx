@@ -1,5 +1,6 @@
 // src/App.tsx
 import React, { useState, useRef, useEffect } from 'react';
+import './App.css';
 
 type Message = {
   text: string;
@@ -13,7 +14,6 @@ function App() {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
 
-  // Scroll to bottom when messages change
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
@@ -70,62 +70,43 @@ function App() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 flex flex-col">
-      <header className="bg-blue-600 text-white p-4 shadow-md">
-        <h1 className="text-xl font-bold">Ollama Chat</h1>
+    <div className="app-container">
+      <header className="app-header">
+        <h1>Ollama Chat</h1>
       </header>
 
-      <div className="flex-grow overflow-y-auto p-4 space-y-4">
-        {messages.map((msg, index) => (
-          <div
-            key={index}
-            className={`max-w-3xl mx-auto p-4 rounded-lg ${
-              msg.sender === 'user'
-                ? 'bg-blue-500 text-white ml-auto'
-                : msg.sender === 'error'
-                ? 'bg-red-200 text-red-800'
-                : 'bg-gray-200 text-gray-800 mr-auto'
-            }`}
-          >
-            {msg.text}
-          </div>
-        ))}
-        {isLoading && (
-          <div className="max-w-3xl mx-auto p-4 rounded-lg bg-gray-200 text-gray-800 mr-auto">
-            <div className="flex space-x-2">
-              <div className="w-2 h-2 bg-gray-500 rounded-full animate-bounce"></div>
-              <div
-                className="w-2 h-2 bg-gray-500 rounded-full animate-bounce"
-                style={{ animationDelay: '0.2s' }}
-              ></div>
-              <div
-                className="w-2 h-2 bg-gray-500 rounded-full animate-bounce"
-                style={{ animationDelay: '0.4s' }}
-              ></div>
+      <div className="chat-window">
+        <div className="messages-container">
+          {messages.map((msg, index) => (
+            <div
+              key={index}
+              className={`message message-${msg.sender}`}
+            >
+              {msg.text}
             </div>
-          </div>
-        )}
-        <div ref={messagesEndRef} />
+          ))}
+          {isLoading && (
+            <div className="message message-ai">
+              <div className="typing-indicator">
+                <span></span><span></span><span></span>
+              </div>
+            </div>
+          )}
+          <div ref={messagesEndRef} />
+        </div>
       </div>
 
-      <form onSubmit={handleSubmit} className="p-4 bg-white border-t">
-        <div className="max-w-3xl mx-auto flex space-x-2">
-          <input
-            type="text"
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            placeholder="Type your question..."
-            className="flex-grow border border-gray-300 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            disabled={isLoading}
-          />
-          <button
-            type="submit"
-            disabled={isLoading || !input.trim()}
-            className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50"
-          >
-            Send
-          </button>
-        </div>
+      <form onSubmit={handleSubmit} className="input-form">
+        <input
+          type="text"
+          value={input}
+          onChange={(e) => setInput(e.target.value)}
+          placeholder="Type your question..."
+          disabled={isLoading}
+        />
+        <button type="submit" disabled={isLoading || !input.trim()}>
+          Send
+        </button>
       </form>
     </div>
   );
