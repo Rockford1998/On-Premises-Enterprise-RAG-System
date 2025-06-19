@@ -1,13 +1,14 @@
 import axios from "axios";
 
-// 
+//
 export const generateEmbedding = async (text: string): Promise<number[]> => {
   try {
+    const EmbeddingModel = process.env.EMBEDDING_MODEL || "nomic-embed-text";
     // Pre-process the text for better embeddings
     const processedText = preprocessText(text);
 
     const res = await axios.post("http://localhost:11434/api/embeddings", {
-      model: "nomic-embed-text",
+      model: EmbeddingModel,
       prompt: processedText,
       options: {
         temperature: 0.1, // More deterministic embeddings
