@@ -9,13 +9,10 @@ import { readFile } from "../util/readFile";
 import { storeEmbeddedDocument } from "../services/storeEmbeddedDocument";
 import axios from "axios";
 
-
-// train  
-export const addKnowledgeBase = async (
-  req: Request, res: Response
-) => {
+// train
+export const addKnowledgeBase = async (req: Request, res: Response) => {
   let chunkSize = 400;
-  let chunkOverlap = 20
+  let chunkOverlap = 20;
   const startTime = Date.now();
   let successCount = 0;
 
@@ -25,11 +22,13 @@ export const addKnowledgeBase = async (
       res.status(400).send("No file uploaded");
       return;
     }
-    const filePath = `uploads/${file.filename}`
+    const filePath = `uploads/${file.filename}`;
 
     const fileHash = await generateFileHash({ filePath: filePath });
     if (await VectorService.CheckIfkBPresentByFileHash({ fileHash })) {
-      console.log("Knowledge base already exists for this file, skipping processing.");
+      console.log(
+        "Knowledge base already exists for this file, skipping processing.",
+      );
 
       res.status(200).json({
         success: true,
@@ -39,7 +38,7 @@ export const addKnowledgeBase = async (
     }
 
     // Load the file text based on its type
-    const docs = await readFile({ fileName: file.filename, filePath })
+    const docs = await readFile({ fileName: file.filename, filePath });
     if (docs.length === 0) {
       throw new Error("No documents were extracted from PDF");
     }
@@ -78,13 +77,13 @@ export const addKnowledgeBase = async (
             // Progress reporting
             if (successCount % 10 === 0 || successCount === chunks.length) {
               console.log(
-                `Processed ${successCount}/${chunks.length
+                `Processed ${successCount}/${
+                  chunks.length
                 } chunks (${Math.round(
                   (successCount / chunks.length) * 100,
                 )}%)`,
               );
             }
-
           } catch (error) {
             console.error(
               `Failed to process chunk ${i + index}:`,
@@ -117,8 +116,7 @@ export const addKnowledgeBase = async (
 };
 
 // try quering the knowledge base with different questions
-export const chatBot = async (req: Request, res: Response
-) => {
+export const chatBot = async (req: Request, res: Response) => {
   try {
     const originalPropmt = req.body.prompt;
     const queryEmbedding = await generateEmbedding(originalPropmt);
@@ -149,9 +147,9 @@ export const chatBot = async (req: Request, res: Response
   }
 };
 
-export const streamChatBot = async (req: Request, res: Response
-) => {
+export const streamChatBot = async (req: Request, res: Response) => {
   try {
+    const baseModel = process.env.BASE_MODEL || "deepseek-r1:1.5b";
     const originalPropmt = req.body.prompt;
     const queryEmbedding = await generateEmbedding(originalPropmt);
     console.log("Query Embedding:", originalPropmt);
@@ -169,8 +167,7 @@ export const streamChatBot = async (req: Request, res: Response
       .map((c, i) => `[Context ${i + 1}]: ${c.content}`)
       .join("\n\n");
 
-    const prompt = `Answer the following question using only the context below. If the context does not contain the answer, say "I don't know."
-
+    const prompt = `
                     Context:
                     ${context}
 
@@ -179,15 +176,29 @@ export const streamChatBot = async (req: Request, res: Response
 
                     Answer:
                     `;
+    // const prompt = `Answer the following question using only the context below. If the context does not contain the answer, say "I don't know."
 
-    const ollamaStream = await axios.post("http://localhost:11434/api/generate", {
-      model: 'llama3.2:latest',
-      prompt,
-      stream: true,
-    }, { responseType: 'stream' });
+    //                 Context:
+    //                 ${context}
 
-    ollamaStream.data.on('data', (chunk: any) => {
-      const lines = chunk.toString().split('\n').filter(Boolean);
+    //                 Question:
+    //                 ${originalPropmt}
+
+    //                 Answer:
+    //                 `;
+
+    const ollamaStream = await axios.post(
+      "http://localhost:11434/api/generate",
+      {
+        model: baseModel,
+        prompt,
+        stream: true,
+      },
+      { responseType: "stream" },
+    );
+
+    ollamaStream.data.on("data", (chunk: any) => {
+      const lines = chunk.toString().split("\n").filter(Boolean);
       for (const line of lines) {
         try {
           const json = JSON.parse(line);
@@ -204,21 +215,18 @@ export const streamChatBot = async (req: Request, res: Response
       }
     });
 
-    
-    ollamaStream.data.on('end', () => res.end());
-    ollamaStream.data.on('error', (err: any) => {
-      console.error('Stream error:', err);
+    ollamaStream.data.on("end", () => res.end());
+    ollamaStream.data.on("error", (err: any) => {
+      console.error("Stream error:", err);
       res.end();
     });
-
   } catch (error) {
     console.error(
       "Test failed:",
       error instanceof Error ? error.message : String(error),
     );
   }
-}
-
+};
 
 //
 export const test = async (q: number) => {

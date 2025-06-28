@@ -13,6 +13,8 @@ export const generateAnswer = async (
   model: string = "llama3.2:latest",
 ): Promise<string> => {
   try {
+    const baseModel = process.env.BASE_MODEL || "deepseek-r1:1.5b";
+    console.log({ baseModel });
     const context = contextChunks
       .map((c, i) => `[Context ${i + 1}]: ${c.content}`)
       .join("\n\n");
@@ -29,7 +31,7 @@ export const generateAnswer = async (
                     `;
 
     const res = await axios.post("http://localhost:11434/api/generate", {
-      model,
+      model: baseModel,
       prompt,
       stream: false,
     });
@@ -55,7 +57,7 @@ export const generateStreamAnswer = async (
   model: string = "llama3.2:latest",
 ): Promise<string> => {
   try {
-   
+    const baseModel = process.env.BASE_MODEL || "llama3.2:latest";
     const context = contextChunks
       .map((c, i) => `[Context ${i + 1}]: ${c.content}`)
       .join("\n\n");
@@ -71,11 +73,15 @@ export const generateStreamAnswer = async (
                     Answer:
                     `;
 
-    const res = await axios.post("http://localhost:11434/api/generate", {
-      model,
-      prompt,
-      stream: true,
-    }, { responseType: 'stream' });
+    const res = await axios.post(
+      "http://localhost:11434/api/generate",
+      {
+        model: baseModel,
+        prompt,
+        stream: true,
+      },
+      { responseType: "stream" },
+    );
 
     if (!res.data?.response) {
       throw new Error("Invalid response format from Ollama");
