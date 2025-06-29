@@ -149,43 +149,51 @@ export const chatBot = async (req: Request, res: Response) => {
 export const streamChatBot = async (req: Request, res: Response) => {
   try {
     const baseModel = process.env.BASE_MODEL || "gemma3:4b";
-    
-    const originalPropmt = req.body.prompt;
-    const queryEmbedding = await generateEmbedding(originalPropmt);
-    console.log("Query Embedding:", originalPropmt);
-    // Get relevant chunks with threshold
+
+    // Set headers for streaming
+    res.setHeader('Content-Type', 'text/event-stream');
+    res.setHeader('Cache-Control', 'no-cache');
+    res.setHeader('Connection', 'keep-alive');
+
+    const originalPrompt = req.body.prompt;
+
+    // Validate input
+    if (!originalPrompt?.trim()) {
+      res.status(400).json({ error: "Prompt is required" });
+      return;
+    }
+
+    const queryEmbedding = await generateEmbedding(originalPrompt);
     const relevantChunks = await VectorService.searchVectors(
       "document_embeddings",
       queryEmbedding,
     );
 
     if (relevantChunks.length === 0) {
-      console.warn("No relevant chunks found above similarity threshold");
+      res.write("data: No relevant information found\n\n");
+      res.end();
       return;
     }
+
+    // Build prompt with Markdown instructions
     const context = relevantChunks
-      .map((c, i) => `[Context ${i + 1}]: ${c.content}`)
+      .map((c, i) => `### Context Source ${i + 1}\n${c.content}`)
       .join("\n\n");
 
-    const prompt = `
-                    Context:
-                    ${context}
+    const prompt = `Respond using Markdown formatting with:
+- **Bold** for key terms
+- \`code\` for technical concepts
+- Lists for steps
+- Tables for comparisons
 
-                    Question:
-                    ${originalPropmt}
+Context:
+${context}
 
-                    Answer:
-                    `;
-    // const prompt = `Answer the following question using only the context below. If the context does not contain the answer, say "I don't know."
+Question:
+${originalPrompt}
 
-    //                 Context:
-    //                 ${context}
-
-    //                 Question:
-    //                 ${originalPropmt}
-
-    //                 Answer:
-    //                 `;
+Answer (in Markdown):
+`;
 
     const ollamaStream = await axios.post(
       "http://localhost:11434/api/generate",
@@ -193,38 +201,63 @@ export const streamChatBot = async (req: Request, res: Response) => {
         model: baseModel,
         prompt,
         stream: true,
+        // Remove the 'format' parameter as Ollama doesn't support it directly
+        options: {
+          temperature: 0.7
+        }
       },
-      { responseType: "stream" },
+      {
+        responseType: "stream",
+      }
     );
 
-    ollamaStream.data.on("data", (chunk: any) => {
+    let isFirstChunk = true;
+
+    ollamaStream.data.on("data", (chunk: Buffer) => {
       const lines = chunk.toString().split("\n").filter(Boolean);
+
       for (const line of lines) {
         try {
-          const json = JSON.parse(line);
-          if (json.done) {
+          const parsed = JSON.parse(line);
+
+          if (parsed.done) {
+            res.write("event: end\ndata: {}\n\n");
             res.end();
             return;
           }
-          if (json.response) {
-            res.write(json.response);
+
+          if (parsed.response) {
+            // Format for SSE (Server-Sent Events)
+            res.write(`data: ${JSON.stringify({ text: parsed.response })}\n\n`);
           }
         } catch (err) {
-          console.warn("Invalid JSON chunk, skipping:", line);
+          console.warn("Non-JSON chunk:", line);
         }
       }
     });
 
-    ollamaStream.data.on("end", () => res.end());
-    ollamaStream.data.on("error", (err: any) => {
-      console.error("Stream error:", err);
+    ollamaStream.data.on("end", () => {
+      res.write("event: end\ndata: {}\n\n");
       res.end();
     });
+
+    ollamaStream.data.on("error", (err: Error) => {
+      console.error("Stream error:", err.message);
+      res.write(`event: error\ndata: ${JSON.stringify({ error: err.message })}\n\n`);
+      res.end();
+    });
+
   } catch (error) {
-    console.error(
-      "Test failed:",
-      error instanceof Error ? error.message : String(error),
-    );
+    console.error("Error in streamChatBot:", error);
+    if (!res.headersSent) {
+      res.status(500).json({
+        error: "Stream initialization failed",
+        details: error instanceof Error ? error.message : String(error)
+      });
+    } else {
+      res.write(`event: error\ndata: ${JSON.stringify({ error: "Service unavailable" })}\n\n`);
+      res.end();
+    }
   }
 };
 
