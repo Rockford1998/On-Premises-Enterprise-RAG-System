@@ -16,6 +16,7 @@
     "@sequelize/postgres": "^7.0.0-alpha.46",
     "axios": "^1.9.0",
     "cors": "^2.8.5",
+    "dotenv": "^17.0.0",
     "express": "^5.1.0",
     "implementation-of-the-rag": "file:",
     "langchain": "^0.3.27",

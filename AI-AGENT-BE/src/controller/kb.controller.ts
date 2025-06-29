@@ -77,8 +77,7 @@ export const addKnowledgeBase = async (req: Request, res: Response) => {
             // Progress reporting
             if (successCount % 10 === 0 || successCount === chunks.length) {
               console.log(
-                `Processed ${successCount}/${
-                  chunks.length
+                `Processed ${successCount}/${chunks.length
                 } chunks (${Math.round(
                   (successCount / chunks.length) * 100,
                 )}%)`,
@@ -149,7 +148,8 @@ export const chatBot = async (req: Request, res: Response) => {
 
 export const streamChatBot = async (req: Request, res: Response) => {
   try {
-    const baseModel = process.env.BASE_MODEL || "deepseek-r1:1.5b";
+    const baseModel = process.env.BASE_MODEL || "gemma3:4b";
+    
     const originalPropmt = req.body.prompt;
     const queryEmbedding = await generateEmbedding(originalPropmt);
     console.log("Query Embedding:", originalPropmt);

@@ -21,7 +21,14 @@ export const Layout = () => {
         }}
       >
         <Box height={25}>header</Box>
-        <Box flex={1} overflow="auto" bgcolor="#f0f0f0">
+        <Box
+          flex={1}
+          overflow="auto"
+          bgcolor="#f0f0f0"
+          display={"flex"}
+          alignItems={"center"}
+          justifyContent={"center"}
+        >
           <Outlet />
         </Box>
         <Box>Footer</Box>

@@ -1,16 +1,15 @@
+import { PageConstants } from "./constant/PageConstants";
 import { Layout } from "./layout";
-import { Home } from "./pages/Home"; // Corrected import
-import { Chat } from "./pages/Chat";
 import { createBrowserRouter } from "react-router";
+import { Settings } from "./pages/Settings";
+import Chat from "./pages/Chat";
 
 export const router = createBrowserRouter([
   {
     element: <Layout />,
     children: [
-      { index: true, element: <Home /> },
-      { path: "/chat", element: <Chat /> },
-      { path: "/settings", element: <Chat /> },
-      { path: "/chat", element: <Chat /> },
+      { index: true, element: <Chat /> },
+      { path: PageConstants.settings.path, element: <Settings /> },
     ],
   },
 ]);

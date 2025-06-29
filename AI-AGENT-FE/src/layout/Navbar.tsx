@@ -10,18 +10,8 @@ import {
   ListItemText,
 } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
-import HomeIcon from "@mui/icons-material/Home";
-import SettingsIcon from "@mui/icons-material/Settings";
-import RateReviewOutlinedIcon from "@mui/icons-material/RateReviewOutlined";
-import InfoIcon from "@mui/icons-material/Info";
-import { Link, NavLink } from "react-router";
-
-const navItems = [
-  { label: "Home", to: "/", icon: <HomeIcon /> },
-  { label: "Chat", to: "/chat", icon: <RateReviewOutlinedIcon /> },
-  { label: "Settings", to: "/settings", icon: <SettingsIcon /> },
-  { label: "About", to: "/about", icon: <InfoIcon /> },
-];
+import { NavLink } from "react-router";
+import { PageConstants, type PageType } from "../constant/PageConstants";
 
 export const DRAWER_WIDTH_OPEN = 150; // Width when drawer is open
 export const DRAWER_WIDTH_CLOSED = 60;
@@ -56,34 +46,46 @@ export const Navbar = ({
           display: "flex",
           alignItems: "center",
           justifyContent: open ? "flex-end" : "center",
-          p: 1,
         }}
       >
         <IconButton onClick={() => setOpen((prev) => !prev)}>
           <MenuIcon />
         </IconButton>
       </Box>
-      <List>
-        {navItems.map((item) => (
+      <List
+        sx={{
+          padding: 0,
+        }}
+      >
+        {Object.keys(PageConstants).map((key) => (
           <ListItem
             component={NavLink}
-            key={item.label}
+            key={key}
             disablePadding
-            sx={{ display: "flex" }}
-            to={item.to}
-            style={{ textDecoration: "none", color: "inherit", margin: 13 }}
+            sx={{
+              display: "flex",
+              my: 1, // vertical margin between items
+              mx: 2, // horizontal margin if needed
+              borderRadius: 2,
+            }}
+            to={PageConstants[key as PageType].to}
+            style={{
+              textDecoration: "none",
+              color: "inherit",
+            }}
           >
             <ListItemIcon
               sx={{
                 minWidth: 0,
-                mr: open ? 2 : "auto",
+                mr: 2,
                 justifyContent: "center",
               }}
             >
-              {item.icon}
+              {PageConstants[key as PageType].icon}
             </ListItemIcon>
-            {open && <ListItemText primary={item.label} />}
-            <Divider variant="inset" component="li" />
+            {open && (
+              <ListItemText primary={PageConstants[key as PageType].label} />
+            )}
           </ListItem>
         ))}
       </List>
