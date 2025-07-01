@@ -28,8 +28,6 @@ export const ChatWindow = () => {
   const [input, setInput] = useState("");
   const [messages, setMessages] = useState<Message[]>([]);
   const [isLoading, setIsLoading] = useState(false);
-  const [abortController, setAbortController] =
-    useState<AbortController | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const eventSourceRef = useRef<EventSource | null>(null);
 
@@ -62,7 +60,6 @@ export const ChatWindow = () => {
 
     // Create abort controller for the request
     const controller = new AbortController();
-    setAbortController(controller);
 
     // Create a new SSE connection
     try {
@@ -102,9 +99,9 @@ export const ChatWindow = () => {
           )
         );
       }
+      ``;
     } finally {
       setIsLoading(false);
-      setAbortController(null);
     }
   };
 
@@ -120,7 +117,7 @@ export const ChatWindow = () => {
       sx={{
         display: "flex",
         flexDirection: "column",
-        height: "90vh",
+        height: "87vh",
         width: "50%",
         bgcolor: "background.default",
       }}

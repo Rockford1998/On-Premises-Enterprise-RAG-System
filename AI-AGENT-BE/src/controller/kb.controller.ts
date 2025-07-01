@@ -194,7 +194,6 @@ ${originalPrompt}
 
 Answer (in Markdown):
 `;
-
     const ollamaStream = await axios.post(
       "http://localhost:11434/api/generate",
       {
@@ -211,8 +210,6 @@ Answer (in Markdown):
       }
     );
 
-    let isFirstChunk = true;
-
     ollamaStream.data.on("data", (chunk: Buffer) => {
       const lines = chunk.toString().split("\n").filter(Boolean);
 
@@ -220,21 +217,21 @@ Answer (in Markdown):
         try {
           const parsed = JSON.parse(line);
 
+          if (parsed.response) {
+            res.write(`data: ${JSON.stringify({ text: parsed.response })}\n\n`);
+          }
+
           if (parsed.done) {
             res.write("event: end\ndata: {}\n\n");
             res.end();
             return;
-          }
-
-          if (parsed.response) {
-            // Format for SSE (Server-Sent Events)
-            res.write(`data: ${JSON.stringify({ text: parsed.response })}\n\n`);
           }
         } catch (err) {
           console.warn("Non-JSON chunk:", line);
         }
       }
     });
+
 
     ollamaStream.data.on("end", () => {
       res.write("event: end\ndata: {}\n\n");
