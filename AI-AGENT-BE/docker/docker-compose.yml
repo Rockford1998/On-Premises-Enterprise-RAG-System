@@ -12,6 +12,21 @@ services:
       - "5432:5432"
     volumes:
       - pgvector-data:/var/lib/postgresql/data
+  mongodb:
+    image: mongodb/mongodb-community-server:6.0.22-ubuntu2204
+    container_name: mongodb
+    restart: unless-stopped
+    ports:
+      - "27017:27017"
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=root
+      - MONGO_INITDB_ROOT_PASSWORD=root
+
+    volumes:
+      - mongodb_data:/data/db
+      - mongodb_config:/data/configdb
 
 volumes:
   pgvector-data:
+  mongodb_data:
+  mongodb_config:
