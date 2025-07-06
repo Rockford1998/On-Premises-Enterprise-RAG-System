@@ -3,6 +3,7 @@ import { init } from "./db/init";
 import router from "./routes/app.routes";
 import cors from "cors";
 import dotenv from 'dotenv';
+import './db/mongo';
 
 dotenv.config();
 const app = express();

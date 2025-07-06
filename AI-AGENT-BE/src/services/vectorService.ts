@@ -1,7 +1,7 @@
 // src/services/vector.service.ts
 import { toSql } from "pgvector/pg";
 import { retry } from "../util/retry";
-import { appPool } from "./pgsql";
+import { appPool } from "../db/pgsql";
 
 const MAX_RETRIES = 3;
 const RETRY_DELAY = 1000;
@@ -195,9 +195,21 @@ class VectorService {
   public static async deleteOutdatedKnowledgeByFileName(
     { fileName }: { fileName: string },
   ) {
-    await this.executeQuery(`    DELETE FROM documents
-    WHERE metadata->>'filename' = ${fileName}`);
+    await this.executeQuery(
+      `DELETE FROM document_embeddings WHERE metadata->>'fileName' = $1`,
+      [fileName]
+    );
   }
+
+  public static async deleteOutdatedKnowledgeByFileHash(
+    { fileHash }: { fileHash: string },
+  ) {
+    await this.executeQuery(
+      `DELETE FROM document_embeddings WHERE metadata->>'fileHash' = $1`,
+      [fileHash]
+    );
+  }
+
 }
 
 export { VectorService };
