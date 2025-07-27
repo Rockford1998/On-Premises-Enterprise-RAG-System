@@ -1,0 +1,69 @@
+// make it scalable by adding user authentication and authorization
+
+/////////////////////////////////
+registration (keycloak)
+// firstName
+// lastName
+// userName
+// email
+// Password
+// secret question and answer
+
+Login
+// email
+//password
+
+Forgot pass
+// email addrees
+// answer to question
+
+///////////////////////////////// Application settings
+tab1- Access control
+
+- ACL role
+- Members
+- Actions
+
+tab2- Keywords (keywords needs to be same throughout the all the users)
+
+- key
+- values
+
+////////////////////////////////////////////// BOT MANAGEMENT
+Create new bot (the profile through which we can control the knowledge Base, tools and manage bot profile)
+
+========== initial details required from the
+
+- Bot name
+- Description
+- Bot template
+
+============= on submit bot have following fields
+{
+DocType : string --------------> need to confirm
+Namespace: string ------------------> Bot Id same as docType
+BotName :string -------------->
+botDesc: string ------------->
+baseModel -----------> ansers generationn model
+embedding model ---------------> vector generation model (need to check further open source model)
+tool model --------------> tools coller
+instruction ------------> first part of the systen prompt
+kbsearchMethod ------------> semantic or hybrid deffault = semantic
+vectorTable ------------> vector table name
+list in the hub ---------------------> true /false
+owner -> owner info
+BotUsers:{
+selectedUsers:[] By id or email
+totalUsersCount:  
+ }
+}
+
+================ TrainigDataSchema
+downloadUrlan V
+FileName
+filesize
+sourceHash ----------> to checkif content is changed or not
+sourceType -------> manually sharepoin webapi
+text
+weburl to fetch the training data
+//

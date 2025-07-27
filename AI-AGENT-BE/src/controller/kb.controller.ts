@@ -5,6 +5,8 @@ import axios from "axios";
 import { VectorService } from "../services/vectorService";
 import { KbService } from "../services/kb.service";
 
+
+//  read knowledge base with pagination 
 export const readKnowledgeBase = async (req: Request, res: Response) => {
   try {
     const page = parseInt(req.query.page as string) || 1;
@@ -41,6 +43,7 @@ export const readKnowledgeBase = async (req: Request, res: Response) => {
   }
 }
 
+//
 export const addKnowledgeBase = async (req: Request, res: Response) => {
   const startTime = Date.now();
   try {
@@ -94,6 +97,7 @@ export const chatBot = async (req: Request, res: Response) => {
   }
 };
 
+// Endpoint to handle streaming chat requests
 export const streamChatBot = async (req: Request, res: Response) => {
   try {
     const baseModel = process.env.BASE_MODEL || "gemma3:4b";

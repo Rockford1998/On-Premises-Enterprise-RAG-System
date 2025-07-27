@@ -5,12 +5,13 @@ import { upload } from "../middlewares/uploadMiddleware";
 
 const router = Router();
 
-
-
 // KB handling endpoints
 router.get("/", readKnowledgeBase)
 router.post("/upload", upload.single("file"), addKnowledgeBase);
 router.delete("/delete/:fileName", deleteKnowledgeBase)
+
+// Endpoint for the settings of the AI bot used. 
+
 
 // Endpoint to handle chat requests
 router.post("/chat", chatBot);
