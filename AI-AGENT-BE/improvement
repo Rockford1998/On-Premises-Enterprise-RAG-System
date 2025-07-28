@@ -1,7 +1,7 @@
 // make it scalable by adding user authentication and authorization
+//////////////////////////////////////////////////////////////////////////////////////////////////////// 
 
-/////////////////////////////////
-registration (keycloak)
+---------------- registration (keycloak)
 // firstName
 // lastName
 // userName
@@ -9,31 +9,27 @@ registration (keycloak)
 // Password
 // secret question and answer
 
-Login
+---------- Login
 // email
 //password
-
 Forgot pass
 // email addrees
 // answer to question
 
-///////////////////////////////// Application settings
-tab1- Access control
-
+///////////////////////////////////////////////////////////////////////////////////////////////////////// Application settings
+----------------------  tab1- Access control
 - ACL role
 - Members
 - Actions
 
-tab2- Keywords (keywords needs to be same throughout the all the users)
-
+---------------- +tab2- Keywords (keywords needs to be same throughout the all the users)
 - key
 - values
 
-////////////////////////////////////////////// BOT MANAGEMENT
+///////////////////////////////////////////////////////////////////////////////////////////////////////// BOT MANAGEMENT
 Create new bot (the profile through which we can control the knowledge Base, tools and manage bot profile)
 
 ========== initial details required from the
-
 - Bot name
 - Description
 - Bot template

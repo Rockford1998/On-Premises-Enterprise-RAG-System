@@ -1,7 +1,7 @@
 import mongoose from 'mongoose';
-
-
+// /////////////////////////////////////////////////////////////////////////// NOTE SYSTEM SETTINGS WILL BE ADDED LATER ///////////////////////////////////////////////////////////////////////////
 // users
+// This model is used to store the user profiles
 const userSchema = new mongoose.Schema({
     firstName: { type: String, required: true, trim: true, },
     lastName: { type: String, required: true, trim: true, },
@@ -13,7 +13,9 @@ const userSchema = new mongoose.Schema({
 userSchema.index({ userName: 1 });
 userSchema.index({ email: 1 });
 
+
 // Bot profile
+// This model is used to store the bot profiles
 const botProfileSchema = new mongoose.Schema({
     botName: { type: String, required: true, trim: true, },
     botDescription: { type: String, trim: true, },
@@ -25,8 +27,12 @@ const botProfileSchema = new mongoose.Schema({
         totalUsersCount: { type: Number, default: 0, },
     },
 }, { timestamps: true });
+botProfileSchema.index({ botName: 1 });
+botProfileSchema.index({ owner: 1 });
 
 
+// Knowledge Base
+// This model is used to store the knowledge base entries for each bot
 const knowledgeBaseSchema = new mongoose.Schema(
     {
         botId: { type: String, required: true, }, // Reference to the bot this knowledge base belongs to
@@ -44,4 +50,6 @@ knowledgeBaseSchema.index({ botId: 1 })
 knowledgeBaseSchema.index({ fileName: 1 });
 
 
+export const user = mongoose.model('user', userSchema);
+export const botProfile = mongoose.model('botProfile', botProfileSchema);
 export const KnowledgeBase = mongoose.model('KnowledgeBase', knowledgeBaseSchema);

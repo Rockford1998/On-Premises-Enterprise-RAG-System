@@ -1,0 +1,36 @@
+### get all
+### passing paramters for now  page and limit only
+http://localhost:3000/users
+
+### Get by email
+http://localhost:3000/users/email/s.b@gmail.com
+
+### Get by username
+http://localhost:3000/users/username/string 
+
+### 
+POST http://localhost:3000/users
+Content-Type:  application/json
+
+{
+    "firstName": "string",
+    "lastName": "string",
+    "userName": "string",
+    "email": "s.b@gmail.com",
+    "passwordHash": "string"
+}
+
+### Update by email
+PUT http://localhost:3000/users/email/s.b@gmail.com
+Content-Type:  application/json
+
+{
+    "firstName": "string",
+    "lastName": "string",
+    "userName": "string",
+    "email": "s.b@gmail.com",
+    "passwordHash": "string"
+}
+
+### Delete by email
+DELETE http://localhost:3000/users/email/s.b@gmail.com

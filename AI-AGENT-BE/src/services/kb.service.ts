@@ -1,11 +1,11 @@
 import fs from 'fs';
 import path from 'path';
 import { VectorService } from './vectorService';
-import { KnowledgeBase } from '../models/kb';
 import { generateFileHash } from '../util/generateFileHash';
 import { readFile } from '../util/readFile';
 import { RecursiveCharacterTextSplitter } from 'langchain/text_splitter';
 import { storeEmbeddedDocument } from './storeEmbeddedDocument';
+import { KnowledgeBase } from '../models/shared.model';
 
 interface DeleteKnowledgeBase {
     fileName: string;
