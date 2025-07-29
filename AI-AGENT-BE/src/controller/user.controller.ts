@@ -3,11 +3,12 @@ import { UserService } from "../services/user.service";
 
 
 export class UserController {
+    userService = new UserService();
 
     readUser = async (req: Request, res: Response) => {
         try {
             const { page = 1, limit = 10 } = req.query;
-            const users = await UserService.read({ page: Number(page), limit: Number(limit) });
+            const users = await this.userService.read({ page: Number(page), limit: Number(limit) });
             res.status(200).json(users);
         } catch (error) {
             console.error("Error reading users:", error);
@@ -18,7 +19,7 @@ export class UserController {
     findUserByEmail = async (req: Request, res: Response) => {
         try {
             const { email } = req.params;
-            const user = await UserService.findByEmail(email);
+            const user = await this.userService.findByEmail(email);
             if (!user) {
                 res.status(404).json({ error: "User not found" });
                 return;
@@ -36,7 +37,7 @@ export class UserController {
     findUserByUserName = async (req: Request, res: Response) => {
         try {
             const { userName } = req.params;
-            const user = await UserService.findByUserName(userName);
+            const user = await this.userService.findByUserName(userName);
             if (!user) {
                 res.status(404).json({ error: "User not found" });
                 return;
@@ -51,7 +52,7 @@ export class UserController {
     createUser = async (req: Request, res: Response) => {
         try {
             const userData = req.body;
-            const newUser = await UserService.create(userData);
+            const newUser = await this.userService.create(userData);
             res.status(201).json(newUser);
         } catch (error) {
             console.error("Error creating user:", error);
@@ -63,7 +64,7 @@ export class UserController {
         try {
             const { email } = req.params;
             const updateData = req.body;
-            const updatedUser = await UserService.updateByEmail(email, updateData);
+            const updatedUser = await this.userService.updateByEmail(email, updateData);
             if (!updatedUser) {
                 res.status(404).json({ error: "User not found" });
                 return;
@@ -77,7 +78,7 @@ export class UserController {
     deleteUserByEmail = async (req: Request, res: Response) => {
         try {
             const { email } = req.params;
-            const deletedUser = await UserService.deleteByEmail(email);
+            const deletedUser = await this.userService.deleteByEmail(email);
             if (!deletedUser) {
                 res.status(404).json({ error: "User not found" });
                 return;

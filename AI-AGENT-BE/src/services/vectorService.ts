@@ -55,14 +55,16 @@ class VectorService {
    */
 
   public static async createTableWithIndex(
-    tableName: string = "document_embeddings",
-    dimensions: number,
-    indexParams: {
-      type: "hnsw" | "ivfflat";
-      m?: number;
-      efConstruction?: number;
-      lists?: number;
-    },
+    { dimensions, indexParams, tableName }: {
+      tableName: string,
+      dimensions: number,
+      indexParams: {
+        type: "hnsw" | "ivfflat";
+        m?: number;
+        efConstruction?: number;
+        lists?: number;
+      }
+    }
   ) {
     await this.executeQuery(`
       CREATE TABLE IF NOT EXISTS ${tableName} (

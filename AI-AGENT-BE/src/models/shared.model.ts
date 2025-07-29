@@ -14,16 +14,21 @@ userSchema.index({ userName: 1 });
 userSchema.index({ email: 1 });
 
 
-// Bot profile
-// This model is used to store the bot profiles
 const botProfileSchema = new mongoose.Schema({
+    botId: { type: String },
     botName: { type: String, required: true, trim: true, },
-    botDescription: { type: String, trim: true, },
-    description: { type: String, trim: true, },
+    botDesc: { type: String, trim: true, },
     isActive: { type: Boolean, default: true, },
+    baseModel: { type: String }, // answer model
+    embedModel: { type: String }, // embed model
+    toolModel: { type: String }, // tool model
+    instruction: { type: String, trim: true, }, // instruction for the bot
+    kbsearchMethod: { type: String, default: "semantic", trim: true, }, // knowledge base search method semantic or hybrid deffault = semantic
+    vectorTable: { type: String }, // vector table name for the bot
+    publicAccess: { type: Boolean, default: false, }, // if true then anyone can access the bot
     owner: {},
     botUsers: {
-        users: [], // email addresses of users who can access the bot
+        users: [], // email addresses of users who can access the bot default user will be the owner
         totalUsersCount: { type: Number, default: 0, },
     },
 }, { timestamps: true });
