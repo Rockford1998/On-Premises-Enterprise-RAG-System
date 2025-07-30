@@ -68,5 +68,6 @@ export class BotService {
   //
   deleteById = async (botId: string) => {
     return await botProfile.findOneAndDelete({ botId }).exec();
+    
   };
 }

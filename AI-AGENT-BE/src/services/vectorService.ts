@@ -212,6 +212,13 @@ class VectorService {
     );
   }
 
+  public static async deleteTable(
+    tableName: string) {
+    await this.executeQuery(
+      `DROP TABLE IF EXISTS ${tableName} CASCADE`
+    );
+  }
+
 }
 
 export { VectorService };

@@ -23,6 +23,7 @@ router.get("/bots/:botId", botController.readBotById);
 router.post("/bots", botController.create);
 router.put("/bots/:botId", botController.update);
 router.delete("/bots/:botId", botController.delete);
+
 // KB handling endpoints
 router.get("/kb", readKnowledgeBase)
 router.post("/kb/upload", upload.single("file"), addKnowledgeBase);

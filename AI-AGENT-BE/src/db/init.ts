@@ -11,9 +11,7 @@ export async function init() {
     // Create a table for our vectors
     const TABLE_NAME = "document_embeddings";
     const VECTOR_DIMENSIONS = 768; // Adjust based on your model (e.g., OpenAI uses 1536)
-    await VectorService.createTableWithIndex(TABLE_NAME, VECTOR_DIMENSIONS, {
-      type: "ivfflat",
-    });
+    await VectorService.createTableWithIndex({ dimensions: VECTOR_DIMENSIONS, indexParams: { type: "hnsw" }, tableName: TABLE_NAME });
   } catch (error) {
     console.error("Application error:", error);
   }

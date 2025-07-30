@@ -1,0 +1,30 @@
+   ### get all
+### passing paramters for now  page and limit only
+http://localhost:3000/bots
+
+### Get by email
+http://localhost:3000/bots/xyz
+
+### 
+POST http://localhost:3000/bots
+Content-Type:  application/json
+
+{
+    "botName": "Mark1",
+    "botDesc": "Mark1 is a test bot",
+    "userName": "string",
+    "owner": "s.b@gmail.com."
+}
+
+### Update by email
+PUT http://localhost:3000/bots/bot_mdqa1e6y_MMF8T9
+Content-Type:  application/json
+
+{
+  "botName": "Mark1-updated"
+}
+
+
+### Delete by email
+DELETE http://localhost:3000/bots/bot_mdq9tfo3_1IL1QL
+`
