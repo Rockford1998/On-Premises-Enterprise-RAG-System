@@ -8,7 +8,7 @@ import { BotController } from "../controller/bot.controller";
 
 const router = Router();
 const userController = new UserController();
-const botController = new BotController  ();
+const botController = new BotController();
 // User management endpoints
 router.get("/users", userController.readUser);
 router.get("/users/email/:email", userController.findUserByEmail);
@@ -20,8 +20,9 @@ router.delete("/users/email/:email", userController.deleteUserByEmail);
 // Bot management endpoints
 router.get("/bots", botController.readBots);
 router.get("/bots/:botId", botController.readBotById);
-router.post("/bots", botController.createBot);
-router.put("/bots/:botId", botController.updateBotById);
+router.post("/bots", botController.create);
+router.put("/bots/:botId", botController.update);
+router.delete("/bots/:botId", botController.delete);
 // KB handling endpoints
 router.get("/kb", readKnowledgeBase)
 router.post("/kb/upload", upload.single("file"), addKnowledgeBase);
