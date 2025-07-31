@@ -160,14 +160,16 @@ class VectorService {
 
   // --- Search vectors using HNSW 
   public static async searchVectors(
-    tableName: string = "document_embeddings",
-    queryEmbedding: number[],
-    options: {
-      limit?: number;
-      efSearch?: number;
-      filter?: string;
-      filterParams?: any[];
-    } = {},
+    { options, queryEmbedding, tableName }: {
+      tableName: string
+      queryEmbedding: number[],
+      options: {
+        limit?: number;
+        efSearch?: number;
+        filter?: string;
+        filterParams?: any[];
+      }
+    }
   ) {
     if (options.efSearch) {
       await this.executeQuery(`SET LOCAL hnsw.ef_search = ${options.efSearch}`);
@@ -195,19 +197,20 @@ class VectorService {
   }
 
   public static async deleteOutdatedKnowledgeByFileName(
-    { fileName }: { fileName: string },
+    { fileName, tableName }: { fileName: string, tableName: string },
+
   ) {
     await this.executeQuery(
-      `DELETE FROM document_embeddings WHERE metadata->>'fileName' = $1`,
+      `DELETE FROM ${tableName} WHERE metadata->>'fileName' = $1`,
       [fileName]
     );
   }
 
   public static async deleteOutdatedKnowledgeByFileHash(
-    { fileHash }: { fileHash: string },
+    { fileHash, tableName }: { fileHash: string, tableName: string },
   ) {
     await this.executeQuery(
-      `DELETE FROM document_embeddings WHERE metadata->>'fileHash' = $1`,
+      `DELETE FROM ${tableName} WHERE metadata->>'fileHash' = $1`,
       [fileHash]
     );
   }

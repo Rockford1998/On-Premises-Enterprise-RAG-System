@@ -1,7 +1,7 @@
 //
 
 import { generateEmbedding } from "../llmServices/generateEmbedding";
-import { VectorService } from "./vectorService";
+import { VectorService } from "./vectors.service";
 
 interface DocumentMetadata extends Record<string, any> {
   source: string;

@@ -60,7 +60,4 @@ knowledgeBaseSchema.index({ fileName: 1 });
 
 export const user = mongoose.model("user", userSchema);
 export const botProfile = mongoose.model("botProfile", botProfileSchema);
-export const KnowledgeBase = mongoose.model(
-  "KnowledgeBase",
-  knowledgeBaseSchema,
-);
+export const KnowledgeBase = mongoose.model("KnowledgeBase", knowledgeBaseSchema,);

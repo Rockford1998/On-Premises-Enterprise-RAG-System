@@ -1,4 +1,4 @@
-import { VectorService } from "../services/vectorService";
+import { VectorService } from "../services/vectors.service";
 import { initializeDatabase } from "./pgsql";
 
 

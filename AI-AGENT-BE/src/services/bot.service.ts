@@ -9,7 +9,7 @@ export class BotService {
 
   //
   readById = async (botId: string) => {
-    return await botProfile.findById({ botId }).exec();
+    return await botProfile.findById(botId).exec();
   };
 
   //
@@ -68,6 +68,6 @@ export class BotService {
   //
   deleteById = async (botId: string) => {
     return await botProfile.findOneAndDelete({ botId }).exec();
-    
+
   };
 }

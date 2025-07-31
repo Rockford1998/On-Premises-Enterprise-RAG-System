@@ -1,0 +1,17 @@
+### get all
+### passing paramters for now  page and limit only
+http://localhost:3000/kb
+
+### Get by email
+http://localhost:3000/kb/upload/bot_mdqa1e6y_MMF8T9
+
+### ddlete by file name and botId
+POST http://localhost:3000/kb/delete 
+ Content-Type:  application/json
+
+{
+"fileName":"resume.pdf",
+ "botId":"bot_mdqa1e6y_MMF8T9"
+} 
+
+

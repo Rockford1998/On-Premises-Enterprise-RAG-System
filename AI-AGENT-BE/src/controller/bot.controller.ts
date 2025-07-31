@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import { BotService } from "../services/bot.service";
 import { UserService } from "../services/user.service";
-import { VectorService } from "../services/vectorService";
+import { VectorService } from "../services/vectors.service";
 
 export class BotController {
     botService = new BotService();
