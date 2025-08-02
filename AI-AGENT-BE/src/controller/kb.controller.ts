@@ -5,6 +5,7 @@ import axios from "axios";
 import { VectorService } from "../services/vectors.service";
 import { KnowledgeBaseService } from "../services/knowledgebase.service";
 import { BotService } from "../services/bot.service";
+import { detectToolUse, executeTool } from "../services/toolService";
 
 
 //  read knowledge base with pagination 
@@ -79,12 +80,34 @@ export class KnowledgeBaseController {
   chatBot = async (req: Request, res: Response) => {
     try {
       const { question, botId } = req.body;
+
+      // Step 1: Check if this query requires a tool
+      const toolRequest = await detectToolUse(question);
+
+      if (toolRequest) {
+        console.log("Detected tool use:", toolRequest);
+        try {
+          const toolResponse = await executeTool(toolRequest.tool, toolRequest.params);
+          res.status(200).json({
+            success: true,
+            answer: toolResponse,
+            isToolResponse: true,
+            toolUsed: toolRequest.tool
+          });
+          return
+        } catch (toolError) {
+          console.error("Tool execution failed:", toolError);
+          // Fall through to normal processing if tool fails
+        }
+      }
+
+      // Step 2: Proceed with normal vector search flow if no tool was used
       const queryEmbedding = await generateEmbedding(question);
       const bot = await this.botService.readByBotId(botId);
       if (!bot || typeof bot.vectorTable !== 'string') {
         throw new Error("Bot not found or vectorTable is invalid");
       }
-      // Get relevant chunks with threshold
+
       const relevantChunks = await VectorService.searchVectors(
         {
           tableName: bot.vectorTable,
@@ -96,27 +119,32 @@ export class KnowledgeBaseController {
       if (relevantChunks.length === 0) {
         res.status(200).json({
           success: false,
-          message:
-            "No relevant information found. Please try a different question.",
+          message: "No relevant information found. Please try a different question.",
         });
-        return;
+        return
       }
-      // Extract just the content for the answer generation
+
       const answer = await generateAnswer(question, relevantChunks);
       res.status(200).json({
         success: true,
         answer: answer,
+        isToolResponse: false,
+        toolUsed: null,
       });
+      return
 
-      console.log("Answer:", answer);
     } catch (error) {
       console.error(
-        "Test failed:",
+        "Chatbot error:",
         error instanceof Error ? error.message : String(error),
       );
+      res.status(500).json({
+        success: false,
+        message: "An error occurred while processing your request"
+      });
+      return
     }
   };
-
   // Endpoint to handle streaming chat requests
   streamChatBot = async (req: Request, res: Response) => {
     try {

@@ -1,6 +1,7 @@
 import mongoose from "mongoose";
 // /////////////////////////////////////////////////////////////////////////// NOTE SYSTEM SETTINGS WILL BE ADDED LATER ///////////////////////////////////////////////////////////////////////////
-// users
+
+
 // This model is used to store the user profiles
 const userSchema = new mongoose.Schema(
   {
@@ -40,7 +41,6 @@ const botProfileSchema = new mongoose.Schema(
 botProfileSchema.index({ botName: 1 });
 botProfileSchema.index({ owner: 1 });
 
-// Knowledge Base
 // This model is used to store the knowledge base entries for each bot
 const knowledgeBaseSchema = new mongoose.Schema(
   {

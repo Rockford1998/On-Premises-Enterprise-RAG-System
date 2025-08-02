@@ -1,11 +1,20 @@
 http://localhost:3000/bots/
 
 
-###
+### Example tool calling a weather API  (in testing phase)
 POST http://localhost:3000/chat
 Content-Type:  application/json
 
 {
    "botId":"bot_mdqa1e6y_MMF8T9", 
-   "question":"summary of shubhams resume"
+   "question":"what is weather in mumbai"
+}
+
+### 
+POST http://localhost:3000/chat
+Content-Type:  application/json
+
+{
+   "botId":"bot_mdqa1e6y_MMF8T9", 
+   "question":"details about shubhams resume"
 }
