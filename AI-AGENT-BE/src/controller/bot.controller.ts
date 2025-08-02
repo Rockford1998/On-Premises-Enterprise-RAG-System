@@ -25,7 +25,7 @@ export class BotController {
     readBotById = async (req: Request, res: Response) => {
         try {
             const { botId } = req.params;
-            const bot = await this.botService.readById(botId);
+            const bot = await this.botService.readByBotId(botId);
             if (!bot) {
                 res.status(404).json({ error: "Bot not found" });
                 return;

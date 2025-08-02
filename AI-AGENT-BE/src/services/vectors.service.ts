@@ -33,7 +33,7 @@ class VectorService {
   }
 
 
-  public static async CheckIfkBPresentByFileHash({ fileHash }: { fileHash: string }) {
+  public static async CheckIfkBPresentByFileHash({ fileHash, TABLE_NAME }: { fileHash: string, TABLE_NAME: string }) {
     const query = `
     SELECT 1
     FROM ${TABLE_NAME}
@@ -136,12 +136,15 @@ class VectorService {
 
   //
   public static async insertVector(
-    tableName: string = "document_embeddings",
-    vector: {
-      embedding: number[];
-      content?: string;
-      metadata?: Record<string, any>;
-    },
+    { tableName, vector }:
+      {
+        tableName: string,
+        vector: {
+          embedding: number[];
+          content?: string;
+          metadata?: Record<string, any>;
+        }
+      },
   ) {
 
     return this.executeQuery<{ id: number }>(

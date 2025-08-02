@@ -1,4 +1,4 @@
-import fs from 'fs';
+import fs, { cp } from 'fs';
 import path from 'path';
 import { VectorService } from './vectors.service';
 import { generateFileHash } from '../util/generateFileHash';
@@ -18,7 +18,9 @@ export class KnowledgeBaseService {
 
     //
     deleteKnowledgeBase = async ({ fileName, botId }: { fileName: string, botId: string }): Promise<void> => {
-        const bot = await this.botService.readById(botId);
+
+        const bot = await this.botService.readByBotId(botId);
+        console.log("Bot details:", bot);
         if (!bot || typeof bot.vectorTable !== 'string') {
             throw new Error("Bot not found or vectorTable is invalid");
         } else {
@@ -28,10 +30,19 @@ export class KnowledgeBaseService {
             // Delete from MongoDB
             await KnowledgeBase.deleteMany({ fileName });
             // Delete from file system
-            const filePath = path.join(__dirname, '..', 'uploads', botId, fileName);
+            const safeFileName = path.basename(fileName);
+            const safeBotId = path.basename(botId);
+            const filePath = path.join(__dirname, '..', 'uploads', safeBotId, safeFileName);
+
+            console.log("Trying to delete file:", filePath);
+
             if (fs.existsSync(filePath)) {
                 fs.unlinkSync(filePath);
+                console.log("File deleted.");
+            } else {
+                console.log("File does not exist.");
             }
+
         }
 
     }
@@ -47,8 +58,12 @@ export class KnowledgeBaseService {
 
         const filePath = `uploads/${botId}/${file.filename}`;
         const fileHash = await generateFileHash({ filePath });
-
-        const alreadyExists = await VectorService.CheckIfkBPresentByFileHash({ fileHash });
+        // bot for file 
+        const bot = await this.botService.readByBotId(botId);
+        if (!bot || typeof bot.vectorTable !== 'string') {
+            throw new Error("Bot not found or vectorTable is invalid");
+        }
+        const alreadyExists = await VectorService.CheckIfkBPresentByFileHash({ fileHash, TABLE_NAME: bot.vectorTable });
         if (alreadyExists) {
             return {
                 status: 200,
@@ -79,6 +94,7 @@ export class KnowledgeBaseService {
                 batch.map(async (chunk, index) => {
                     try {
                         await storeEmbeddedDocument({
+                            tableName: bot.vectorTable as string,
                             text: chunk,
                             metadata: {
                                 source: filePath,
@@ -100,7 +116,6 @@ export class KnowledgeBaseService {
 
         // fall back if not all chunks were processed successfully
         if (successCount < chunks.length) {
-            const bot = await this.botService.readById(botId);
             if (!bot || typeof bot.vectorTable !== 'string') {
                 throw new Error("Bot not found or vectorTable is invalid");
             } else {

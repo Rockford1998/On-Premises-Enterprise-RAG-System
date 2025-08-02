@@ -15,6 +15,7 @@ type StoreEmbeddedDocumentType = {
   text: string;
   retryCount?: number;
   metadata: DocumentMetadata;
+  tableName: string
 };
 
 // Function to store an embedded document with retry logic
@@ -22,6 +23,7 @@ export const storeEmbeddedDocument = async ({
   text,
   metadata,
   retryCount = 3,
+  tableName
 }: StoreEmbeddedDocumentType): Promise<void> => {
   for (let attempt = 1; attempt <= retryCount; attempt++) {
     try {
@@ -30,10 +32,12 @@ export const storeEmbeddedDocument = async ({
         return;
       }
       const embedding = await generateEmbedding(text);
-      await VectorService.insertVector("document_embeddings", {
-        embedding,
-        content: text,
-        metadata,
+      await VectorService.insertVector({
+        tableName, vector: {
+          embedding,
+          content: text,
+          metadata,
+        }
       });
 
       if (attempt > 1) {

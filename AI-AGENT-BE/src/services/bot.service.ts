@@ -8,9 +8,11 @@ export class BotService {
   };
 
   //
-  readById = async (botId: string) => {
-    return await botProfile.findById(botId).exec();
+  readByBotId = async (botId: string) => {
+    console.log("Reading bot by botId field:", botId);
+    return await botProfile.findOne({ botId }).exec();
   };
+
 
   //
   create = async (botData: {

@@ -10,10 +10,10 @@ POST http://localhost:3000/bots
 Content-Type:  application/json
 
 {
-    "botName": "Mark1",
-    "botDesc": "Mark1 is a test bot",
+    "botName": "Mark2",
+    "botDesc": "Mark2 is a test bot",
     "userName": "string",
-    "owner": "s.b@gmail.com."
+    "owner": "s.bb@gmail.com."
 }
 
 ### Update by email

@@ -54,8 +54,6 @@ export class KnowledgeBaseController {
     const startTime = Date.now();
     try {
       const botId = req.params.botId;
-      console.log("Received file upload request for botId:", botId);
-      console.log("Uploaded file:", req.file);
       const result = await this.knowledgeBaseService.processFile({
         botId,
         file: req.file,
@@ -76,12 +74,13 @@ export class KnowledgeBaseController {
     }
   };
 
+
   // try quering the knowledge base with different questions
   chatBot = async (req: Request, res: Response) => {
     try {
       const { question, botId } = req.body;
       const queryEmbedding = await generateEmbedding(question);
-      const bot = await this.botService.readById(botId);
+      const bot = await this.botService.readByBotId(botId);
       if (!bot || typeof bot.vectorTable !== 'string') {
         throw new Error("Bot not found or vectorTable is invalid");
       }
@@ -95,7 +94,11 @@ export class KnowledgeBaseController {
       );
 
       if (relevantChunks.length === 0) {
-        console.warn("No relevant chunks found above similarity threshold");
+        res.status(200).json({
+          success: false,
+          message:
+            "No relevant information found. Please try a different question.",
+        });
         return;
       }
       // Extract just the content for the answer generation
@@ -117,10 +120,11 @@ export class KnowledgeBaseController {
   // Endpoint to handle streaming chat requests
   streamChatBot = async (req: Request, res: Response) => {
     try {
+
       const baseModel = process.env.BASE_MODEL || "gemma3:4b";
       const { question, botId } = req.body;
 
-      const bot = await this.botService.readById(botId);
+      const bot = await this.botService.readByBotId(botId);
       if (!bot || typeof bot.vectorTable !== 'string') {
         throw new Error("Bot not found or vectorTable is invalid");
       }
@@ -240,6 +244,9 @@ export class KnowledgeBaseController {
   deleteKnowledgeBase = async (req: Request, res: Response) => {
     try {
       const { fileName, botId } = req.body;
+      console.log("Received request to delete knowledge base:", { fileName, botId });
+
+      // Validate input
       await this.knowledgeBaseService.deleteKnowledgeBase({ fileName, botId })
       res.status(200).json({
         success: true,
