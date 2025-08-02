@@ -1,0 +1,42 @@
+# create a new user profile using following post call (will be improved in future)
+POST http://localhost:3000/users
+Content-Type: application/json
+
+{
+  "firstName": "John",
+  "lastName": "Doe",
+  "userName": "johndoe",
+  "email": "john.doe@gmail.com",
+  "passwordHash": "your_password_hash"
+}
+
+
+### after this you need to create a bot profile using following endpoint (will be improved in future)
+POST http://localhost:3000/bots
+Content-Type: application/json
+
+{
+  "botName": "Mark2",
+  "botDesc": "Mark2 is a test bot",
+  "owner": "john.doe@gmail.com"
+}
+
+
+### please note down the botId you will get after creating the bot profile or you can get it by using the getbyowner endpoint
+Get http://localhost:3000/bots/owner/john.doe@gmail.com
+
+
+### further you need to upload the files to you knowledge base
+note:currently only following format supported and only the text will be readed from them : pdf, docx, doc,pptx and txt
+POST  http://localhost:3000/kb/upload/{your_bot_id}
+Content-Type: multipart/form-data
+
+
+### to chat with the llm use following endpoint
+POST http://localhost:3000/chat
+Content-Type: application/json
+
+{
+  "botId": "bot_mdqa1e6y_MMF8T9",
+  "question": "what is weather in mumbai"
+}

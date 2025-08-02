@@ -1,78 +1,60 @@
-A robust **Retrieval-Augmented Generation (RAG)** system—especially in production or developer-facing use cases—should have the following **key features**, grouped by category:
+# On-Premises Enterprise RAG System
 
----
+## Features
 
-### 🔍 1. **Document Ingestion & Preprocessing**
+- **On-premises solution** - Deployed within your own infrastructure
+- **User-specific bot profiles**:
+  - Currently no limit (will be added in future)
+  - Each user maintains their own vector table for data confidentiality
+  - Bots can be shared by adding other users
+- **Three model architecture**:
+  1. **Base model**: Generates final answers using context from vector DB
+  2. **Tool model**: Decides which model to call
+  3. **Embedding model**: Generates vectors for storage in vector DB
+- **Supported file formats**: PDF, DOCX, DOC, PPTX, and TXT
+  - Only text content is vectorized and stored in knowledgebase
 
-* **Multi-format support**: Ingest from PDFs, Word, HTML, CSV, Markdown, databases, websites, etc.
-* **Metadata extraction**: Capture and store metadata like author, title, created date, source, etc.
-* **Chunking strategy**: Use smart chunking (e.g., recursive text splitting) to preserve context.
-* **Preprocessing pipelines**: Clean text, remove boilerplate, normalize encoding, OCR if needed.
+## Technology Stack
 
----
+- **Node.js**: v21.7.3
+- **AI Models**:
+  - Ollama (mistral:latest and nomic-embed-text)
+- **Databases**:
+  - pgvector (for vector storage)
+  - MongoDB (for document storage)
 
-### 🧠 2. **Embedding & Vectorization**
+## Setup Instructions
 
-* **Flexible model selection**:
+1.  Install dependencies:
+    ```bash
+    npm install
+    ```
+2.  Start database containers:
+    ```bash
+    cd docker
+    docker-compose up -d
+    ```
+3.  Set up Ollama AI models:
 
-  * Open-source (e.g., BGE, Instructor, E5)
-  * Closed (e.g., OpenAI, Cohere, Azure, Google)
-* **Dimensional consistency**: Ensure embedding dimensions match vector DB configuration.
-* **Batch embedding**: Efficient embedding of large docs in batches.
-* **Support for hybrid search**: Store both vector and sparse (BM25/TF-IDF) representations.
+- # Start Ollama container
 
----
+  ```
+  docker run --gpus all -v ollama:/root/.ollama -p 11434:11434 ollama/ollama
+  ```
 
-### 📦 3. **Vector Store / Retriever**
+- # In container bash (or using docker exec):
 
-* **Fast retrieval**: Use indexes (HNSW, IVFFlat, etc.) for high-speed ANN search.
-* **Filtering support**: Query by metadata (e.g., "filter by document type = invoice").
-* **Scalable backend**: Support large volumes (pgvector, FAISS, Qdrant, Weaviate, etc.).
-* **Re-ranking**: Optional use of cross-encoders or LLMs to re-rank retrieved results.
+  ```
+  ollama pull nomic-embed-text
+  ollama pull mistral:7b
+  ```
 
----
+4.  Launch application:
 
-### 🤖 4. **LLM Integration (Generation Layer)**
+    ```
+    npm run dev
+    ```
 
-* **Prompt engineering**: Use structured prompts (e.g., system + user + context blocks).
-* **Context window management**: Trim or summarize if retrieved context exceeds token limit.
-* **Response formatting**: Return answers in Markdown, JSON, or any app-specific format.
-* **Model flexibility**: Support for OpenAI, Ollama, Claude, Mistral, etc.
+## Workflow of the application
 
----
-
-### 🧠 5. **Advanced RAG Features**
-
-* **Multi-hop RAG**: Chain multiple retrievals or reasoning steps.
-* **Tool use integration**: Call external tools/APIs during reasoning (via agents).
-* **Citation tracking**: Return sources used in the answer.
-* **Memory / history**: Cache user queries and previous results for follow-up support.
-
----
-
-### 🧪 6. **Evaluation & Monitoring**
-
-* **Eval framework**: LLM-based scoring, manual labeling, metrics (Precision\@k, F1, etc.).
-* **Latency & cost tracking**: Log and monitor API usage, latency, and cost per query.
-* **Hallucination detection**: Add guardrails to prevent or flag uncertain generations.
-
----
-
-### 🔐 7. **Security & Access Control**
-
-* **Auth/authz**: User-based access control for private data/documents.
-* **Data governance**: Logging, audit trail, and PII redaction options.
-* **Rate limiting**: Prevent misuse and overuse of API/model resources.
-
----
-
-### 🧩 8. **Developer & UI Features**
-
-* **REST / GraphQL API**: Serve retrieval + generation over a web API.
-* **Streaming support**: Return streamed responses from LLM for faster UX.
-* **Feedback collection**: Users can rate answers or report issues.
-* **UI integration**: Clean UI for testing queries, uploading docs, and viewing results.
-
----
-
-If you're building a **GitHub-level template** for LangChain.js + pgvector + Ollama, I can help you define an architecture checklist or even scaffold the structure based on the above. Let me know!
+- please follow the demo.http endpoints and accordingly setup the user profile -> bot profile -> knowledge base

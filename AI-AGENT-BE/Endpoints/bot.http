@@ -2,8 +2,13 @@
 ### passing paramters for now  page and limit only
 http://localhost:3000/bots
 
-### Get by email
+### Get by botId
 http://localhost:3000/bots/xyz
+
+
+### Get by owner(email address)
+http://localhost:3000/bots/owner/s.bb@gmail.com
+
 
 ### 
 POST http://localhost:3000/bots
@@ -11,9 +16,8 @@ Content-Type:  application/json
 
 {
     "botName": "Mark2",
-    "botDesc": "Mark2 is a test bot",
-    "userName": "string",
-    "owner": "s.bb@gmail.com."
+    "botDesc": "Mark3 is a test bot",
+    "owner": "s.bb@gmail.com"
 }
 
 ### Update by email

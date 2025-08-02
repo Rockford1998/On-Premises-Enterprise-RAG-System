@@ -1,6 +1,0 @@
-// This file is a placeholder for the knowledge base (kb) upload functionality.
-
-// kb is uploaded-
-// - exstract the content
-// - store the metadata of file with the content in the mongo db
-// - endpoints required -> upload, delete, pagination to read the knowledge base

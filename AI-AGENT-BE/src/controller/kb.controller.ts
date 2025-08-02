@@ -83,7 +83,6 @@ export class KnowledgeBaseController {
 
       // Step 1: Check if this query requires a tool
       const toolRequest = await detectToolUse(question);
-
       if (toolRequest) {
         console.log("Detected tool use:", toolRequest);
         try {

@@ -1,16 +1,34 @@
 import { botProfile } from "../models/shared.model";
 
 export class BotService {
-  //
-  read = async ({ page, limit }: { page: number; limit: number }) => {
-    const skip = (page - 1) * limit;
-    return await botProfile.find().skip(skip).limit(limit).exec();
+  // //
+  // read = async ({ page, limit }: { page: number; limit: number }) => {
+  //   const skip = (page - 1) * limit;
+  //   return await botProfile.find().skip(skip).limit(limit).exec();
+  // };
+
+  read = async ({ page = 1, limit = 10, users }: { page: number, limit: number, users?: string }) => {
+    const query: any = {};
+
+    if (users) {
+      query["botUsers.users"] = users; // Matches if the array contains the email
+    }
+
+    const bots = await botProfile.find(query)
+      .skip((page - 1) * limit)
+      .limit(limit);
+
+    return bots;
   };
 
   //
   readByBotId = async (botId: string) => {
-    console.log("Reading bot by botId field:", botId);
     return await botProfile.findOne({ botId }).exec();
+  };
+  //
+
+  readByBotOwner = async (owner: string) => {
+    return await botProfile.find({ "owner.email": owner }).exec();
   };
 
 

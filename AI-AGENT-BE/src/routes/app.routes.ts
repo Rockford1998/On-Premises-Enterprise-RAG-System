@@ -21,6 +21,7 @@ router.delete("/users/email/:email", userController.deleteUserByEmail);
 // Bot management endpoints
 router.get("/bots", botController.readBots);
 router.get("/bots/:botId", botController.readBotById);
+router.get("/bots/owner/:owner", botController.readBotByOwner);
 router.post("/bots", botController.create);
 router.put("/bots/:botId", botController.update);
 router.delete("/bots/:botId", botController.delete);

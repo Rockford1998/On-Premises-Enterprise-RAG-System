@@ -10,17 +10,21 @@ export class BotController {
     //
     readBots = async (req: Request, res: Response) => {
         try {
-            const { page = 1, limit = 10 } = req.query;
+            const { page = 1, limit = 10, users } = req.query;
+
             const bots = await this.botService.read({
                 page: Number(page),
                 limit: Number(limit),
+                users: typeof users === 'string' ? users : undefined,
             });
+
             res.status(200).json(bots);
         } catch (error) {
             console.error("Error reading bots:", error);
             res.status(400).json({ error: "Failed to read bots" });
         }
     };
+
     //
     readBotById = async (req: Request, res: Response) => {
         try {
@@ -36,22 +40,29 @@ export class BotController {
             res.status(400).json({ error: "Failed to read bot" });
         }
     };
+    readBotByOwner = async (req: Request, res: Response) => {
+        try {
+
+            const { owner } = req.params;
+            console.log("Reading bot by owner field:", owner);
+            const bot = await this.botService.readByBotOwner(owner);
+            if (!bot) {
+                res.status(404).json({ error: "Bot not found" });
+                return;
+            }
+            res.status(200).json(bot);
+        } catch (error) {
+            console.error("Error reading bot by ID:", error);
+            res.status(400).json({ error: "Failed to read bot" });
+        }
+    };
 
     // Create a new bot
     create = async (req: Request, res: Response) => {
         let newBot = null;
         try {
-
-            // body will contains
-            const test = {
-                botName: "Mark1",
-                botDesc: "Mark1 is a test bot",
-                userName: "string",
-                owner: "s.b@gmail.com.",
-            }
-
             const botData = req.body;
-            const owner = await this.userService.findByUserName(botData.userName);
+            const owner = await this.userService.findByEmail(botData.owner);
             if (!owner) {
                 res.status(404).json({ error: "Owner not found" });
                 return;
@@ -60,6 +71,7 @@ export class BotController {
             const timestamp = Date.now().toString(36); // base36 to shorten
             const random = Math.random().toString(36).substring(2, 8).toUpperCase(); // 6 random alphanumeric chars
             const botId = `bot_${timestamp}_${random}`;
+          
             // create a new bot profile
             const data = {
                 botId,

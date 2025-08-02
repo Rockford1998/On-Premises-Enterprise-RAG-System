@@ -6,11 +6,11 @@ http://localhost:3000/bots
 ### Get by botId
 http://localhost:3000/kb
 
-### Get by email
+### knowledge base upload
 http://localhost:3000/kb/upload/bot_mdqa1e6y_MMF8T9
 //use postman to test this endpoint
 
-### ddlete by file name and botId
+### delete by file name and botId
 POST http://localhost:3000/kb/delete 
  Content-Type:  application/json
 

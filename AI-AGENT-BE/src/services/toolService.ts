@@ -8,9 +8,7 @@ type Tool = {
     execute: (params: any) => Promise<string>;
 };
 
-// Define your available tools
 const availableTools: Record<string, Tool> = {
-    // Add more tools as needed:
     weather: {
         name: "weather",
         description: "Gets weather information for a location",
