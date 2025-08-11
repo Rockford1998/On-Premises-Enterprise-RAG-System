@@ -1,0 +1,55 @@
+
+# https://www.weatherapi.com/my/
+###
+GET http://localhost:3000/tools/bot/bot123
+Content-Type: application/json
+
+
+###
+GET http://localhost:3000/tools/64d8e2f1c2a1b2c3d4e5f6a7
+Content-Type: application/json
+
+
+###
+POST http://localhost:3000/tools
+Content-Type: application/json
+
+{
+  "botId": "bot123",
+  "name": "weather",
+  "description": "Gets weather information for a location",
+  "parameters": {
+    "type": "object",
+    "properties": {
+      "location": {
+        "type": "string",
+        "description": "The city and state/country (e.g., 'New York, US')"
+      }
+    },
+    "required": [
+      "location"
+    ]
+  },
+  "endpoint": "https://api.weatherapi.com/v1/current.json",
+  "method": "GET",
+  "isSecure": true,
+  "authType": "apiKey",
+  "authConfig": {
+    "apiKey": "YOUR_API_KEY",
+    "apiKeyHeader": "x-api-key"
+  }
+}
+
+
+###
+PUT http://localhost:3000/tools/64d8e2f1c2a1b2c3d4e5f6a7
+Content-Type: application/json
+
+{
+  "description": "Updated description for the weather tool"
+}
+
+
+###
+DELETE http://localhost:3000/tools/64d8e2f1c2a1b2c3d4e5f6a7
+Content-Type: application/json

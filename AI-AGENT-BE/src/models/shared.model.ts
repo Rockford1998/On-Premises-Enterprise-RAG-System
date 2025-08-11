@@ -58,6 +58,39 @@ const knowledgeBaseSchema = new mongoose.Schema(
 knowledgeBaseSchema.index({ botId: 1 });
 knowledgeBaseSchema.index({ fileName: 1 });
 
+export interface ITool extends Document {
+  botId: string;
+  name: string;
+  description: string;
+  parameters: Record<string, any>;
+  endpoint: string;
+  method: string;
+  isSecure: boolean; // true for secure endpoints, false for open
+  authType?: "apiKey" | "bearer" | "basic" | "none"; // type of authentication
+  authConfig?: {
+    apiKey?: string;
+    apiKeyHeader?: string;
+    bearerToken?: string;
+    username?: string;
+    password?: string;
+    [key: string]: any;
+  };
+}
+
+const toolsSchema = new mongoose.Schema({
+  botId: { type: String, required: true, index: true },
+  name: { type: String, required: true },
+  description: { type: String, required: true },
+  parameters: { type: Object, required: true },
+  endpoint: { type: String, required: true },
+  method: { type: String, required: true, enum: ["GET", "POST", "PUT", "DELETE"] },
+  isSecure: { type: Boolean, default: false },
+  authType: { type: String, enum: ["apiKey", "bearer", "basic", "none"], default: "none" },
+  authConfig: { type: Object, default: {} }
+});
+
+
 export const user = mongoose.model("user", userSchema);
 export const botProfile = mongoose.model("botProfile", botProfileSchema);
-export const KnowledgeBase = mongoose.model("KnowledgeBase", knowledgeBaseSchema,);
+export const KnowledgeBase = mongoose.model("KnowledgeBase", knowledgeBaseSchema);
+export const Tools = mongoose.model("Tools", toolsSchema);

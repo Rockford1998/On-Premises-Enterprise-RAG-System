@@ -40,6 +40,7 @@ export class BotController {
             res.status(400).json({ error: "Failed to read bot" });
         }
     };
+
     readBotByOwner = async (req: Request, res: Response) => {
         try {
 
@@ -71,7 +72,7 @@ export class BotController {
             const timestamp = Date.now().toString(36); // base36 to shorten
             const random = Math.random().toString(36).substring(2, 8).toUpperCase(); // 6 random alphanumeric chars
             const botId = `bot_${timestamp}_${random}`;
-          
+
             // create a new bot profile
             const data = {
                 botId,

@@ -1,5 +1,4 @@
 import axios from "axios";
-import { OllamaEmbeddings } from "@langchain/community/embeddings/ollama";
 //
 export const generateEmbedding = async (text: string): Promise<number[]> => {
   try {
@@ -31,6 +30,8 @@ export const generateEmbedding = async (text: string): Promise<number[]> => {
     throw error;
   }
 };
+
+
 
 // Helper functions
 function preprocessText(text: string): string {

@@ -1,12 +1,8 @@
 import { botProfile } from "../models/shared.model";
 
 export class BotService {
-  // //
-  // read = async ({ page, limit }: { page: number; limit: number }) => {
-  //   const skip = (page - 1) * limit;
-  //   return await botProfile.find().skip(skip).limit(limit).exec();
-  // };
-
+  
+  //
   read = async ({ page = 1, limit = 10, users }: { page: number, limit: number, users?: string }) => {
     const query: any = {};
 

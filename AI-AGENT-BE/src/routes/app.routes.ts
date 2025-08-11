@@ -4,12 +4,17 @@ import { KnowledgeBaseController } from "../controller/kb.controller";
 import { upload } from "../middlewares/uploadMiddleware";
 import { UserController } from "../controller/user.controller";
 import { BotController } from "../controller/bot.controller";
+import { ChatController } from "../controller/chat.controller";
+import { ToolController } from "../controller/tool.controller";
 
 
 const router = Router();
 const userController = new UserController();
 const botController = new BotController();
 const knowledgeBaseController = new KnowledgeBaseController();
+const chatController = new ChatController();
+const toolController = new ToolController();
+
 // User management endpoints
 router.get("/users", userController.readUser);
 router.get("/users/email/:email", userController.findUserByEmail);
@@ -32,8 +37,14 @@ router.post("/kb/upload/:botId", upload.single("file"), knowledgeBaseController.
 router.post("/kb/delete", knowledgeBaseController.deleteKnowledgeBase)
 
 // Endpoint to handle chat requests
-router.post("/chat", knowledgeBaseController.chatBot);
-router.post("/streamChat", knowledgeBaseController.streamChatBot);
+router.post("/chat", chatController.chatBot);
+router.post("/streamChat", chatController.streamChatBot);
 
+// Tool management endpoints
+router.get("/tools/bot/:botId", toolController.readToolsByBotId);
+router.get("/tools/:id", toolController.readToolById);
+router.post("/tools", toolController.createTool);
+router.put("/tools/:id", toolController.updateTool);
+router.delete("/tools/:id", toolController.deleteTool);
 
 export default router;
