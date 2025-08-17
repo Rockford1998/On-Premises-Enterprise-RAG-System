@@ -61,6 +61,11 @@
 
 ## Tools
 
+### API tool
+
+- api can have parameters (query params or path veriables)
+- can have a authentication like "Api key" or "Basic Auth" or "Bearer token"
+
 ```json
 {
   "name": "get_weather",
