@@ -58,3 +58,37 @@
 ## Workflow of the application
 
 - please follow the demo.http endpoints and accordingly setup the user profile -> bot profile -> knowledge base
+
+## Tools
+
+```json
+{
+  "name": "get_weather",
+  "description": "Fetches the current weather for a given city.",
+  "category": "weather",
+  "parameters": {
+    "location": {
+      "type": "string",
+      "description": "The city name to get weather for.",
+      "required": true,
+      "in": "query",
+      "mapTo": "q"
+    },
+    "userId": {
+      "type": "string",
+      "description": "User ID for fetching user-specific weather preferences.",
+      "required": true,
+      "in": "path",
+      "mapTo": "id"
+    }
+  },
+  "type": "http",
+  "endpoint": "http://api.example.com/users/{id}/weather",
+  "method": "GET",
+  "headers": {
+    "Content-Type": "application/json"
+  },
+  "auth": "weather_api_key",
+  "enabled": true
+}
+```

@@ -3,11 +3,10 @@ import { ToolService } from "../services/tool.service";
 
 export class ToolController {
     toolService = new ToolService();
-
-
     readToolsByBotId = async (req: Request, res: Response) => {
         try {
-            const { botId } = req.query;
+            const botId = req.params.botId;
+            console.log(botId)
             const tools = await this.toolService.readToolsByBotId({
                 botId: botId as string
             });

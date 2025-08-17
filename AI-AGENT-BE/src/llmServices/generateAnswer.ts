@@ -14,7 +14,6 @@ export const generateAnswer = async (
 ): Promise<string> => {
   try {
     const baseModel = process.env.BASE_MODEL || "gemma3:4b";
-    console.log({ baseModel });
     const context = contextChunks
       .map((c, i) => `[Context ${i + 1}]: ${c.content}`)
       .join("\n\n");

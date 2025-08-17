@@ -6,6 +6,7 @@ import { VectorService } from "../services/vectors.service";
 import { generateAnswer } from "../llmServices/generateAnswer";
 import axios from "axios";
 import { ToolService } from "../services/tool.service";
+import { improveTheToolAnswer } from "../llmServices/improveTheToolAnswer";
 
 export class ChatController {
     botService = new BotService();
@@ -17,14 +18,14 @@ export class ChatController {
             const { question, botId } = req.body;
 
             // Step 1: Check if this query requires a tool
-            const toolRequest = await this.toolService.detectToolUse({ botId, query: question });
+            const toolRequest = await this.toolService.detectToolUse({ botId, query: question }) as any
             if (toolRequest) {
-                console.log("Detected tool use:", toolRequest);
                 try {
-                    const toolResponse = await executeTool(toolRequest.tool, toolRequest.params);
+                    const toolResponse: any = await this.toolService.toolExecution({ toolId: toolRequest.id, args: toolRequest.params });
+                    const answer = await improveTheToolAnswer({ query: question, context: toolResponse, systemPrompt: toolRequest.systemPrompt });
                     res.status(200).json({
                         success: true,
-                        answer: toolResponse,
+                        answer,
                         isToolResponse: true,
                         toolUsed: toolRequest.tool
                     });
