@@ -1,5 +1,4 @@
 import { Request, Response } from "express";
-import { executeTool } from "../services/toolService";
 import { generateEmbedding } from "../llmServices/generateEmbedding";
 import { BotService } from "../services/bot.service";
 import { VectorService } from "../services/vectors.service";

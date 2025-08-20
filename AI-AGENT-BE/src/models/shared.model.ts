@@ -77,7 +77,7 @@ export interface ITool extends Document {
 
 const ToolSchema = new mongoose.Schema({
   botId: { type: String, required: true },
-  name: { type: String, required: true, unique: true },
+  name: { type: String, required: true, },
   description: { type: String, required: true },
   category: { type: String },
   parameters: { type: Object, required: true },
@@ -85,6 +85,19 @@ const ToolSchema = new mongoose.Schema({
   endpoint: { type: String },
   method: { type: String },
   headers: { type: Object },
+  auth: {
+    type: { type: String, enum: ["basic", "bearer", "apiKey", "none"], default: "none" },
+    username: { type: String },  // used if basic
+    password: { type: String },  // used if basic
+    apiKey: { type: String },    // used if apiKey
+    apiKeyLocation: {
+      type: String,
+      enum: ["header", "query"], // where to put apiKey
+      default: "header"
+    },
+    apiKeyName: { type: String }, // e.g., "x-api-key" or "Authorization"
+
+  },
   enabled: { type: Boolean, default: true },
   systemPrompt: { type: String }
 }, {

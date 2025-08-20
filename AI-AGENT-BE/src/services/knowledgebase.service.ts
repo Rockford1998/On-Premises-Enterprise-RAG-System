@@ -1,4 +1,4 @@
-import fs, { cp } from 'fs';
+import fs from 'fs';
 import path from 'path';
 import { VectorService } from './vectors.service';
 import { generateFileHash } from '../util/generateFileHash';

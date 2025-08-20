@@ -100,13 +100,14 @@ export class ToolService {
         if (!tool) throw new Error("Tool not found");
 
         if (tool.type === "http") {
-            let url: string = tool.endpoint ?? "";
+
+            let url = tool.endpoint ?? "";
+
             if (!url) throw new Error("Tool endpoint is missing");
 
-            // Collect path variables in order
-            const pathVars: string[] = [];
-            const queryPairs: string[] = [];
-
+            // Collect path variables and query params
+            const pathVars = [];
+            const queryPairs = [];
             for (const [key, defRaw] of Object.entries(tool.parameters)) {
                 const def = defRaw as { default?: any; required?: boolean; in?: string; mapTo?: string };
                 const value = args[key] ?? def.default;
@@ -124,24 +125,48 @@ export class ToolService {
 
             // Append path variables to the endpoint
             if (pathVars.length > 0) {
-                url = url.replace(/\/$/, ""); // Remove trailing slash if any
+                url = url.replace(/\/$/, "");
                 url += "/" + pathVars.join("/");
             }
-
             // Append query parameters to the endpoint
             if (queryPairs.length > 0) {
                 url += (url.includes("?") ? "&" : "?") + queryPairs.join("&");
             }
 
-            const res = await axios({
-                method: tool.method || "GET",
-                url,
-                headers: tool.headers
-            });
+            // Prepare headers
+            let headers: Record<string, any> = { ...(tool.headers || {}) };
 
-            return res.data;
+            // Handle auth
+            if (tool.auth && tool.auth.type && tool.auth.type !== "none") {
+                if (tool.auth.type === "basic" && tool.auth.username && tool.auth.password) {
+                    const basicToken = Buffer.from(`${tool.auth.username}:${tool.auth.password}`).toString("base64");
+                    headers["Authorization"] = `Basic ${basicToken}`;
+                } else if (tool.auth.type === "bearer" && tool.auth.apiKey) {
+                    headers["Authorization"] = `Bearer ${tool.auth.apiKey}`;
+                } else if (tool.auth.type === "apiKey" && tool.auth.apiKey && tool.auth.apiKeyName) {
+                    if (tool.auth.apiKeyLocation === "query") {
+                        // Add API key to query string
+                        url += (url.includes("?") ? "&" : "?") + `${encodeURIComponent(tool.auth.apiKeyName)}=${encodeURIComponent(tool.auth.apiKey)}`;
+                    } else {
+                        // Default to header
+                        headers[tool.auth.apiKeyName] = tool.auth.apiKey;
+                    }
+                }
+            }
+
+            try {
+                const res = await axios({
+                    method: tool.method || "GET",
+                    url,
+                    headers
+                });
+                return res.data;
+            } catch (err: any) {
+                return { error: err?.response?.data || err.message || "Tool execution failed" };
+            }
         }
 
+        // Future: handle other tool types (database, local-function)
         return { error: "Unsupported tool type" };
     };
 
