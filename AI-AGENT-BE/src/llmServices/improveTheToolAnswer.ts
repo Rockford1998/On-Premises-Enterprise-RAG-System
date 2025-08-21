@@ -17,6 +17,7 @@ export const improveTheToolAnswer = async (
 ): Promise<string> => {
     try {
         const baseModel = process.env.BASE_MODEL || "gemma3:4b";
+        const OLLAMA_BASE_URL = process.env.OLLAMA_BASE_URL || "http://localhost:11434";
         const prompt = `Answer the following question using only the context below. If the context does not contain the answer, say "I don't know."
         
                     ${systemPrompt}
@@ -30,7 +31,7 @@ export const improveTheToolAnswer = async (
                     Answer:
                     `;
 
-        const res = await axios.post("http://localhost:11434/api/generate", {
+        const res = await axios.post(`${OLLAMA_BASE_URL}/api/generate`, {
             model: baseModel,
             prompt,
             stream: false,

@@ -1,12 +1,15 @@
+import { OllamaEmbeddings } from "@langchain/ollama";
 import axios from "axios";
-//
+// import { OllamaEmbeddings } from "@langchain/community/embeddings/ollama";
+
 export const generateEmbedding = async (text: string): Promise<number[]> => {
   try {
     const EmbeddingModel = process.env.EMBEDDING_MODEL || "nomic-embed-text";
+    const OLLAMA_BASE_URL = process.env.OLLAMA_BASE_URL || "http://localhost:11434";
     // Pre-process the text for better embeddings
     const processedText = preprocessText(text);
 
-    const res = await axios.post("http://localhost:11434/api/embeddings", {
+    const res = await axios.post(`${OLLAMA_BASE_URL}/api/embeddings`, {
       model: EmbeddingModel,
       prompt: processedText,
       options: {

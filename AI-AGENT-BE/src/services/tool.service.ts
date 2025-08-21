@@ -1,8 +1,9 @@
 import axios from "axios";
 import { ITool, Tools } from "../models/shared.model";
 
-export class ToolService {
 
+export class ToolService {
+    OLLAMA_BASE_URL = process.env.OLLAMA_BASE_URL || "http://localhost:11434";
     readToolsByBotId = async ({ botId }: { botId: string }) => {
         const tools = await Tools.find({ botId });
         return tools;
@@ -66,7 +67,7 @@ export class ToolService {
                         
                         Respond ONLY with valid JSON (either null or a tool object):`;
         try {
-            const res = await axios.post("http://localhost:11434/api/generate", {
+            const res = await axios.post(`${this.OLLAMA_BASE_URL}/api/generate`, {
                 model: process.env.TOOL_MODEL || "llama3.2:latest",
                 prompt,
                 format: "json",

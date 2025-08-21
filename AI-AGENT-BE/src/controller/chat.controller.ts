@@ -84,6 +84,7 @@ export class ChatController {
     streamChatBot = async (req: Request, res: Response) => {
         try {
             const baseModel = process.env.BASE_MODEL || "gemma3:4b";
+            const OLLAMA_BASE_URL = process.env.OLLAMA_BASE_URL || "http://localhost:11434";
             const { question, botId } = req.body;
 
             const bot = await this.botService.readByBotId(botId);
@@ -139,7 +140,7 @@ export class ChatController {
                     `;
 
             const ollamaStream = await axios.post(
-                "http://localhost:11434/api/generate",
+                `${OLLAMA_BASE_URL}/api/generate`,
                 {
                     model: baseModel,
                     prompt,

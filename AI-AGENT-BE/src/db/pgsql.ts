@@ -36,8 +36,8 @@ async function createDatabase() {
 
 // Initialize pgvector extension and application pool
 async function initializeDatabase() {
-  await createDatabase();
 
+  await createDatabase();
   // Create the application pool after ensuring database exists
   appPool = new Pool({
     user: "root",
@@ -48,6 +48,7 @@ async function initializeDatabase() {
   });
 
   const client = await appPool.connect();
+
   try {
     // Initialize vector extension
     await client.query("CREATE EXTENSION IF NOT EXISTS vector");
@@ -91,4 +92,4 @@ async function closePools() {
   console.log("Database pools closed");
 }
 
-export { appPool, getClient, initializeDatabase, closePools };
+export { appPool, initializeDatabase, closePools };

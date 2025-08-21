@@ -14,6 +14,7 @@ export const generateAnswer = async (
 ): Promise<string> => {
   try {
     const baseModel = process.env.BASE_MODEL || "gemma3:4b";
+    const OLLAMA_BASE_URL = process.env.OLLAMA_BASE_URL || "http://localhost:11434";
     const context = contextChunks
       .map((c, i) => `[Context ${i + 1}]: ${c.content}`)
       .join("\n\n");
@@ -29,7 +30,7 @@ export const generateAnswer = async (
                     Answer:
                     `;
 
-    const res = await axios.post("http://localhost:11434/api/generate", {
+    const res = await axios.post(`${OLLAMA_BASE_URL}/api/generate`, {
       model: baseModel,
       prompt,
       stream: false,
@@ -57,6 +58,7 @@ export const generateStreamAnswer = async (
 ): Promise<string> => {
   try {
     const baseModel = process.env.BASE_MODEL || "llama3.2:latest";
+    const OLLAMA_BASE_URL = process.env.OLLAMA_BASE_URL || "http://localhost:11434";
     const context = contextChunks
       .map((c, i) => `[Context ${i + 1}]: ${c.content}`)
       .join("\n\n");
@@ -73,7 +75,7 @@ export const generateStreamAnswer = async (
                     `;
 
     const res = await axios.post(
-      "http://localhost:11434/api/generate",
+      `${OLLAMA_BASE_URL}/api/generate`,
       {
         model: baseModel,
         prompt,
