@@ -34,15 +34,14 @@ Content-Type: application/json
   "method": "GET",
   "headers": {},
   "auth": {
-    "type": "apiKey", 
-    "apiKey": "4e7797131c1d4bc9b69143952251608",
+    "type": "apiKey",
+    "apiKey": "",
     "apiKeyLocation": "query",
     "apiKeyName": "key"
   },
   "systemPrompt": "You are a helpful assistant that explains weather information in a clear, conversational way.\nYou will be given raw weather API JSON data.\nYour job:\n- Summarize the weather conditions in a natural sentence.\n- Include location, temperature (in °C), condition (sunny, cloudy, rainy, etc.), wind speed & direction, and humidity.\n- Mention \"feels like\" temperature if it is different from actual.\n- If available, add air quality index in simple terms (e.g., \"Good\", \"Moderate\", \"Unhealthy\").\n- Do not show raw JSON or technical details.\n- Keep the response concise and friendly.",
   "enabled": true
 }
-
 
 
 ###
