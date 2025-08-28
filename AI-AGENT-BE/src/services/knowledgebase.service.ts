@@ -16,6 +16,10 @@ export class KnowledgeBaseService {
         return await KnowledgeBase.find().skip(skip).limit(limit).exec();
     }
 
+    readById = async (id: string) => {
+        return await KnowledgeBase.findById(id).exec();
+    }
+
     //
     deleteKnowledgeBase = async ({ fileName, botId }: { fileName: string, botId: string }): Promise<void> => {
 

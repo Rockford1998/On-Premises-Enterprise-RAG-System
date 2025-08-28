@@ -3,7 +3,7 @@
 http://localhost:3000/bots
 
 ### Get by botId
-http://localhost:3000/bots/xyz
+http://localhost:3000/bots/688a5f0aba9551f726aab91e
 
 
 ### Get by owner(email address)

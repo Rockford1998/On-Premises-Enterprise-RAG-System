@@ -1,19 +1,28 @@
 import { Request, Response } from "express";
 import { UserService } from "../services/user.service";
+import { sendResponse } from "../util/sendResponse";
 
 
 export class UserController {
     userService = new UserService();
     // Method to handle user-related requests
-    
+
     readUser = async (req: Request, res: Response) => {
         try {
             const { page = 1, limit = 10 } = req.query;
             const users = await this.userService.read({ page: Number(page), limit: Number(limit) });
-            res.status(200).json(users);
-        } catch (error) {
+            sendResponse({
+                res, success: true, pagination: true, message: "Users retrieved successfully", data: {
+                    page: Number(page),
+                    limit: Number(limit),
+                    total: users.length,
+                    data: users
+                },
+                status: 200
+            });
+        } catch (error: any) {
             console.error("Error reading users:", error);
-            res.status(500).json({ error: "Failed to read users" });
+            sendResponse({ res, success: false, message: "Failed to read users", status: 500 });
         }
     }
 
@@ -22,13 +31,12 @@ export class UserController {
             const { email } = req.params;
             const user = await this.userService.findByEmail(email);
             if (!user) {
-                res.status(404).json({ error: "User not found" });
-                return;
+                sendResponse({ res, success: false, message: "User not found", status: 404 });
             }
-            res.status(200).json(user);
+            sendResponse({ res, success: true, message: "User found", data: user, status: 200 });
         } catch (error) {
             console.error("Error finding user by email:", error);
-            res.status(500).json({ error: "Failed to find user" });
+            sendResponse({ res, success: false, message: "Failed to find user", status: 500 });
         }
     }
 
@@ -37,13 +45,12 @@ export class UserController {
             const { userName } = req.params;
             const user = await this.userService.findByUserName(userName);
             if (!user) {
-                res.status(404).json({ error: "User not found" });
-                return;
+                sendResponse({ res, success: false, message: "User not found", status: 404 });
             }
-            res.status(200).json(user);
+            sendResponse({ res, success: true, message: "User found", data: user, status: 200 });
         } catch (error) {
             console.error("Error finding user by username:", error);
-            res.status(500).json({ error: "Failed to find user" });
+            sendResponse({ res, success: false, message: "Failed to find user", status: 500 });
         }
     }
 
@@ -51,10 +58,10 @@ export class UserController {
         try {
             const userData = req.body;
             const newUser = await this.userService.create(userData);
-            res.status(201).json(newUser);
+            sendResponse({ res, success: true, message: "User created successfully", data: newUser, status: 201 });
         } catch (error) {
             console.error("Error creating user:", error);
-            res.status(500).json({ error: "Failed to create user" });
+            sendResponse({ res, success: false, message: "Failed to create user", status: 500 });
         }
     }
 
@@ -64,13 +71,13 @@ export class UserController {
             const updateData = req.body;
             const updatedUser = await this.userService.updateByEmail(email, updateData);
             if (!updatedUser) {
-                res.status(404).json({ error: "User not found" });
+                sendResponse({ res, success: false, message: "User not found", status: 404 });
                 return;
             }
-            res.status(200).json(updatedUser);
+            sendResponse({ res, success: true, message: "User updated successfully", data: updatedUser, status: 200 });
         } catch (error) {
             console.error("Error updating user:", error);
-            res.status(500).json({ error: "Failed to update user" });
+            sendResponse({ res, success: false, message: "Failed to update user", status: 500 });
         }
     }
 
@@ -79,13 +86,13 @@ export class UserController {
             const { email } = req.params;
             const deletedUser = await this.userService.deleteByEmail(email);
             if (!deletedUser) {
-                res.status(404).json({ error: "User not found" });
+                sendResponse({ res, success: false, message: "User not found", status: 404 });
                 return;
             }
-            res.status(200).json({ message: "User deleted successfully" });
+            sendResponse({ res, success: true, message: "User deleted successfully", data: null, status: 200 });
         } catch (error) {
             console.error("Error deleting user:", error);
-            res.status(500).json({ error: "Failed to delete user" });
+            sendResponse({ res, success: false, message: "Failed to delete user", status: 500 });
         }
     }
 }

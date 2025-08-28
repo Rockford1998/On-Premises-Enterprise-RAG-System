@@ -33,6 +33,7 @@ router.delete("/bots/:botId", botController.delete);
 
 // KB handling endpoints
 router.get("/kb", knowledgeBaseController.readKnowledgeBase)
+router.get("/kb/:id", knowledgeBaseController.readById)
 router.post("/kb/upload/:botId", upload.single("file"), knowledgeBaseController.addKnowledgeBase);
 router.post("/kb/delete", knowledgeBaseController.deleteKnowledgeBase)
 

@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import { ToolService } from "../services/tool.service";
+import { sendResponse } from "../util/sendResponse";
 
 export class ToolController {
     toolService = new ToolService();
@@ -10,10 +11,10 @@ export class ToolController {
             const tools = await this.toolService.readToolsByBotId({
                 botId: botId as string
             });
-            res.status(200).json(tools);
+            sendResponse({ res, success: true, message: "Tools retrieved successfully", data: tools, status: 200 });
         } catch (error) {
             console.error("Error reading tools:", error);
-            res.status(400).json({ error: "Failed to read tools" });
+            sendResponse({ res, success: false, message: "Failed to read tools", status: 500 });
         }
     };
 
@@ -22,10 +23,10 @@ export class ToolController {
         try {
             const { id } = req.params;
             const tool = await this.toolService.readToolById({ id });
-            res.status(200).json(tool);
+            sendResponse({ res, success: true, message: "Tool retrieved successfully", data: tool, status: 200 });
         } catch (error) {
             console.error("Error reading tool:", error);
-            res.status(400).json({ error: "Failed to read tool" });
+            sendResponse({ res, success: false, message: "Failed to read tool", status: 500 });
         }
     };
 
@@ -34,10 +35,10 @@ export class ToolController {
         try {
             const toolData = req.body;
             const newTool = await this.toolService.create(toolData);
-            res.status(201).json(newTool);
+            sendResponse({ res, success: true, message: "Tool created successfully", data: newTool, status: 201 });
         } catch (error) {
             console.error("Error creating tool:", error);
-            res.status(400).json({ error: "Failed to create tool" });
+            sendResponse({ res, success: false, message: "Failed to create tool", status: 500 });
         }
 
     }
@@ -46,10 +47,10 @@ export class ToolController {
             const { id } = req.params;
             const toolData = req.body;
             const updatedTool = await this.toolService.update({ id, toolData });
-            res.status(200).json(updatedTool);
+            sendResponse({ res, success: true, message: "Tool updated successfully", data: updatedTool, status: 200 });
         } catch (error) {
             console.error("Error updating tool:", error);
-            res.status(400).json({ error: "Failed to update tool" });
+            sendResponse({ res, success: false, message: "Failed to update tool", status: 500 });
         }
     }
 
@@ -57,10 +58,10 @@ export class ToolController {
         try {
             const { id } = req.params;
             await this.toolService.delete({ id });
-            res.status(204).send();
+            sendResponse({ res, success: true, message: "Tool deleted successfully", status: 200 });
         } catch (error) {
             console.error("Error deleting tool:", error);
-            res.status(400).json({ error: "Failed to delete tool" });
+            sendResponse({ res, success: false, message: "Failed to delete tool", status: 500 });
         }
     }
 }

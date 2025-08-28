@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import { KnowledgeBaseService } from "../services/knowledgebase.service";
 import { BotService } from "../services/bot.service";
+import { sendResponse } from "../util/sendResponse";
 
 
 //  read knowledge base with pagination 
@@ -27,23 +28,38 @@ export class KnowledgeBaseController {
       const knowledgeBase = await this.knowledgeBaseService.readKnowledgeBase({ page, limit });
 
       if (!knowledgeBase || knowledgeBase.length === 0) {
-        res.status(404).json({
-          success: false,
-          message: "No knowledge base entries found",
-        });
-        return
+        sendResponse({ res, success: false, message: "No knowledge base entries found", status: 404 });
       }
 
-      res.status(200).json({
-        success: true,
-        data: knowledgeBase,
-        page,
-        limit,
+      sendResponse({
+        res, success: true, pagination: true, message: "Knowledge base retrieved successfully", data: {
+          page,
+          limit,
+          total: knowledgeBase.length,
+          data: knowledgeBase
+        },
+        status: 200
       });
     } catch (error) {
       console.error("Error reading knowledge base:", error);
+      sendResponse({ res, success: false, message: "Failed to read knowledge base", status: 500 });
     }
   }
+
+  readById = async (req: Request, res: Response) => {
+    try {
+      const { id } = req.params;
+      const knowledgeBaseEntry = await this.knowledgeBaseService.readById(id);
+      if (!knowledgeBaseEntry) {
+        sendResponse({ res, success: false, message: "Knowledge base entry not found", status: 404 });
+        return;
+      }
+      sendResponse({ res, success: true, message: "Knowledge base entry retrieved successfully", data: knowledgeBaseEntry, status: 200 });
+    } catch (error) {
+      console.error("Error reading knowledge base entry by ID:", error);
+      sendResponse({ res, success: false, message: "Failed to read knowledge base entry", status: 500 });
+    }
+  };
 
   //
   addKnowledgeBase = async (req: Request, res: Response) => {
@@ -55,17 +71,22 @@ export class KnowledgeBaseController {
         file: req.file,
       });
       const duration = (Date.now() - startTime) / 1000;
-      res.status(result.status).json({
-        ...result.body,
-        duration: `${duration.toFixed(2)} seconds`,
+      const responseBody = { ...result.body, duration };
+      sendResponse({
+        res,
+        success: true,
+        message: "Knowledge base added successfully",
+        data: responseBody,
+        status: 201,
       });
     } catch (error) {
       const duration = (Date.now() - startTime) / 1000;
-      console.error("Training failed after", duration, "seconds:", error);
-      res.status(500).json({
+      console.error(`Training failed after ${duration} seconds:`, error);
+      sendResponse({
+        res,
         success: false,
-        message: error instanceof Error ? error.message : "Training failed",
-        duration: `${duration.toFixed(2)} seconds`,
+        message: error instanceof Error ? error.message : `Training failed after ${duration} seconds`,
+        status: 500,
       });
     }
   };
@@ -80,17 +101,21 @@ export class KnowledgeBaseController {
 
       // Validate input
       await this.knowledgeBaseService.deleteKnowledgeBase({ fileName, botId })
-      res.status(200).json({
+      sendResponse({
+        res,
         success: true,
         message: `Knowledge base ${fileName} deleted successfully`,
+        status: 200,
       });
       return;
 
     } catch (error) {
       console.error("Error deleting knowledge base:", error);
-      res.status(500).json({
+      sendResponse({
+        res,
         success: false,
         message: error instanceof Error ? error.message : "Failed to delete knowledge base",
+        status: 500,
       });
     }
   }

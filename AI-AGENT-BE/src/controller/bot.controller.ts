@@ -2,6 +2,8 @@ import { Request, Response } from "express";
 import { BotService } from "../services/bot.service";
 import { UserService } from "../services/user.service";
 import { VectorService } from "../services/vectors.service";
+import { send } from "process";
+import { sendResponse } from "../util/sendResponse";
 
 export class BotController {
     botService = new BotService();
@@ -18,10 +20,27 @@ export class BotController {
                 users: typeof users === 'string' ? users : undefined,
             });
 
-            res.status(200).json(bots);
+            sendResponse({
+                res,
+                success: true,
+                pagination: true,
+                message: "Bots retrieved successfully",
+                data: {
+                    data: bots,
+                    page: Number(page),
+                    limit: Number(limit),
+                    total: bots.length,
+                },
+                status: 200,
+            });
         } catch (error) {
             console.error("Error reading bots:", error);
-            res.status(400).json({ error: "Failed to read bots" });
+            sendResponse({
+                res,
+                success: false,
+                message: "Failed to read bots",
+                status: 400,
+            });
         }
     };
 
@@ -31,13 +50,13 @@ export class BotController {
             const { botId } = req.params;
             const bot = await this.botService.readByBotId(botId);
             if (!bot) {
-                res.status(404).json({ error: "Bot not found" });
-                return;
+                sendResponse({ res, success: false, message: "Bot not found", status: 404 });
+                return
             }
-            res.status(200).json(bot);
+            sendResponse({ res, success: true, message: "Bot retrieved successfully", data: bot, status: 200 });
         } catch (error) {
             console.error("Error reading bot by ID:", error);
-            res.status(400).json({ error: "Failed to read bot" });
+            sendResponse({ res, success: false, message: "Failed to read bot", status: 400 });
         }
     };
 
@@ -48,13 +67,13 @@ export class BotController {
             console.log("Reading bot by owner field:", owner);
             const bot = await this.botService.readByBotOwner(owner);
             if (!bot) {
-                res.status(404).json({ error: "Bot not found" });
+                sendResponse({ res, success: false, message: "Bot not found", status: 404 });
                 return;
             }
-            res.status(200).json(bot);
+            sendResponse({ res, success: true, message: "Bot retrieved successfully", data: bot, status: 200 });
         } catch (error) {
             console.error("Error reading bot by ID:", error);
-            res.status(400).json({ error: "Failed to read bot" });
+            sendResponse({ res, success: false, message: "Failed to read bot", status: 400 });
         }
     };
 
@@ -65,7 +84,7 @@ export class BotController {
             const botData = req.body;
             const owner = await this.userService.findByEmail(botData.owner);
             if (!owner) {
-                res.status(404).json({ error: "Owner not found" });
+                sendResponse({ res, success: false, message: "Owner not found", status: 404 });
                 return;
             }
 
@@ -106,12 +125,12 @@ export class BotController {
                     efConstruction: 200,
                 },
             });
-            res.status(201).json(newBot);
+            sendResponse({ res, success: true, message: "Bot created successfully", data: newBot, status: 201 });
         } catch (error) {
             if (newBot && newBot.botId)
                 await this.botService.deleteById(newBot.botId);
             console.error("Error creating bot:", error);
-            res.status(400).json({ error: "Failed to create bot" });
+            sendResponse({ res, success: false, message: "Failed to create bot", status: 400 });
         }
     };
 
@@ -121,10 +140,10 @@ export class BotController {
             const botID = req.params.botId;
             const botData = req.body;
             const updatedBotInfo = await this.botService.updateById(botID, botData);
-            res.status(201).json(updatedBotInfo);
+            sendResponse({ res, success: true, message: "Bot updated successfully", data: updatedBotInfo, status: 200 });
         } catch (error: any) {
             console.log(error);
-            res.status(400).json({ error: "Failed to update bot" });
+            sendResponse({ res, success: false, message: "Failed to update bot", status: 400 });
         }
     };
 
@@ -133,10 +152,10 @@ export class BotController {
             const botId = req.params.botId;
             await this.botService.deleteById(botId);
             await VectorService.deleteTable(`vector_table_${botId}`);
-            res.status(200).json("Bot was deleted successfully.");
+            sendResponse({ res, success: true, message: "Bot deleted successfully", status: 200 });
         } catch (error) {
             console.log(error);
-            res.status(400).json({ error: "Failed to update bot" });
+            sendResponse({ res, success: false, message: "Failed to delete bot", status: 400 });
         }
     };
 }
