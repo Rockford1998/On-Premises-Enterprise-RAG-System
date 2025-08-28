@@ -1,4 +1,5 @@
 import { user } from "../models/shared.model";
+import bcrypt from "bcryptjs";
 
 
 export class UserService {
@@ -23,9 +24,13 @@ export class UserService {
         lastName: string;
         userName: string;
         email: string;
-        passwordHash: string;
+        password?: string;
     }) => {
-        const newUser = new user(userData);
+        const salt = await bcrypt.genSalt(10);
+        userData.password = await bcrypt.hash(userData.password as string, salt);
+        const newUser = new user({
+            ...userData,
+        });
         return await newUser.save();
     };
 
@@ -36,7 +41,7 @@ export class UserService {
             firstName: string;
             lastName: string;
             userName: string;
-            passwordHash: string;
+            password: string;
             isActive: boolean;
         }>
     ) => {

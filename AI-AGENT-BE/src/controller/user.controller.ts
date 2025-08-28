@@ -5,6 +5,7 @@ import { UserService } from "../services/user.service";
 export class UserController {
     userService = new UserService();
     // Method to handle user-related requests
+    
     readUser = async (req: Request, res: Response) => {
         try {
             const { page = 1, limit = 10 } = req.query;
@@ -87,5 +88,4 @@ export class UserController {
             res.status(500).json({ error: "Failed to delete user" });
         }
     }
-
 }

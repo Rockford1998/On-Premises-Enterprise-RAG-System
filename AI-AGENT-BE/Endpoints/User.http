@@ -16,7 +16,7 @@ Content-Type:  application/json
     "firstName": "s",
     "lastName": "s",
     "email": "s.bb@gmail.com",
-    "passwordHash": "string"
+    "password": "string"
 }
 
 ### Update by email
@@ -28,7 +28,7 @@ Content-Type:  application/json
     "lastName": "string",
     "userName": "string",
     "email": "s.b@gmail.com",
-    "passwordHash": "string"
+    "password": "string"
 }
 
 ### Delete by email

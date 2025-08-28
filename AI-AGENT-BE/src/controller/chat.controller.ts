@@ -35,14 +35,15 @@ export class ChatController {
                 }
             }
 
-            // Step 2: Proceed with normal vector search flow if no tool was used
+            // Proceed with normal vector search flow if no tool was used
             const queryEmbedding = await generateEmbedding(question);
             const bot = await this.botService.readByBotId(botId);
+
             if (!bot || typeof bot.vectorTable !== 'string') {
                 throw new Error("Bot not found or vectorTable is invalid");
             }
 
-            const relevantChunks = await VectorService.searchVectors(
+            const contextChunks = await VectorService.searchVectors(
                 {
                     tableName: bot.vectorTable,
                     queryEmbedding,
@@ -50,7 +51,7 @@ export class ChatController {
                 }
             );
 
-            if (relevantChunks.length === 0) {
+            if (contextChunks.length === 0) {
                 res.status(200).json({
                     success: false,
                     message: "No relevant information found. Please try a different question.",
@@ -58,7 +59,7 @@ export class ChatController {
                 return
             }
 
-            const answer = await generateAnswer(question, relevantChunks);
+            const answer = await generateAnswer({ question, contextChunks, instruction: bot.instruction || "" });
             res.status(200).json({
                 success: true,
                 answer: answer,

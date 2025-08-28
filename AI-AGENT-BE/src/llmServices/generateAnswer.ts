@@ -8,9 +8,11 @@ type relevantChunks = {
 };
 
 export const generateAnswer = async (
-  query: string,
-  contextChunks: Array<relevantChunks>,
-  model: string = "llama3.2:latest",
+  { question, contextChunks, instruction }: {
+    question: string,
+    contextChunks: Array<relevantChunks>,
+    instruction: string
+  }
 ): Promise<string> => {
   try {
     const baseModel = process.env.BASE_MODEL || "gemma3:4b";
@@ -19,13 +21,13 @@ export const generateAnswer = async (
       .map((c, i) => `[Context ${i + 1}]: ${c.content}`)
       .join("\n\n");
 
-    const prompt = `Answer the following question using only the context below. If the context does not contain the answer, say "I don't know."
+    const prompt = `${instruction}
 
                     Context:
                     ${context}
 
                     Question:
-                    ${query}
+                    ${question}
 
                     Answer:
                     `;
@@ -44,7 +46,7 @@ export const generateAnswer = async (
   } catch (error) {
     console.error("Answer generation failed:", {
       error: error instanceof Error ? error.message : String(error),
-      query,
+      question,
       contextLength: contextChunks.length,
     });
     throw new Error("Failed to generate answer");

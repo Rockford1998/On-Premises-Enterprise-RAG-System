@@ -82,7 +82,7 @@ export class BotController {
                 baseModel: process.env.BASE_MODEL || "mistral:latest",
                 embedModel: process.env.EMBED_MODEL || "BASE_EMBEDDING_MODEL",
                 toolModel: process.env.TOOL_MODEL || "mistral:latest",
-                instruction: "You are a helpful assistant.",
+                instruction: "You are a helpful assistant. Answer the following question using only the context below. If the context does not contain the answer, say \"I don't know.\"",
                 kbsearchMethod: "semantic",
                 vectorTable: `vector_table_${botId}`,
                 publicAccess: false,

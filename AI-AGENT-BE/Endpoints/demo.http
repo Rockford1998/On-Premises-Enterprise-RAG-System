@@ -7,7 +7,7 @@ Content-Type: application/json
   "lastName": "Doe",
   "userName": "johndoe",
   "email": "john.doe@gmail.com",
-  "passwordHash": "your_password_hash"
+  "password": "your_password_hash"
 }
 
 
