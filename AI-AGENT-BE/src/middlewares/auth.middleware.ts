@@ -1,12 +1,14 @@
 import jwt from "jsonwebtoken";
 import { Request, Response, NextFunction } from "express";
+import { sendResponse } from "../util/sendResponse";
 
 const JWT_SECRET = process.env.JWT_SECRET || "your_jwt_secret";
 
 export const authenticateJWT = (req: Request, res: Response, next: NextFunction) => {
     const authHeader = req.headers["authorization"];
     if (!authHeader || !authHeader.startsWith("Bearer ")) {
-        return res.status(401).json({ error: "No token provided" });
+        sendResponse({ res, status: 401, message: "No token provided", success: false });
+        return;
     }
     const token = authHeader.split(" ")[1];
     try {
@@ -15,6 +17,7 @@ export const authenticateJWT = (req: Request, res: Response, next: NextFunction)
         (req as any).user = decoded;
         next();
     } catch (err) {
-        return res.status(401).json({ error: "Invalid or expired token" });
+        sendResponse({ res, status: 401, message: "Invalid or expired token", success: false });
+        return;
     }
 };
