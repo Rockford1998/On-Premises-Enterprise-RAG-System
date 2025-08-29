@@ -18,7 +18,7 @@ Content-Type: application/json
 {
   "botId": "bot_mdqa1e6y_MMF8T9",
   "name": "get_weather",
-  "description": "Fetches the current weather for a given city.",
+  "description": "Fetches the currennt weather for a given city.",
   "category": "weather",
   "parameters": {
     "location": {
