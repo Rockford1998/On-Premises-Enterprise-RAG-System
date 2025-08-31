@@ -1,1 +1,1 @@
-export { Test } from "./src/components/Test";
+export * from "./src/index"
