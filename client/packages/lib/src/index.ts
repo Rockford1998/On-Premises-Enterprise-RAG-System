@@ -4,6 +4,7 @@ export * from './components/layout/Footer';
 export * from './components/layout/Header';
 export * from './components/layout/Layout';
 export * from './components/layout/PageWrap';
+export * from './components/menus/MenuUserProfile';
 export * from './components/nav/NavBar';
 export * from './components/notifications/Notifications';
 export * from './constants/baseRoute';
