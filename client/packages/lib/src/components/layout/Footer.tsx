@@ -26,8 +26,7 @@ export const Footer = () => (
         }}
       >
         <Typography variant="caption" color="text.secondary" noWrap>
-          © {new Date().getFullYear()} DOYEN Infosolutions Pvt. Ltd. All Rights
-          Reserved.
+          © {new Date().getFullYear()} Rockford
         </Typography>
       </Box>
     </Box>
