@@ -255,7 +255,6 @@ export const Navbar = ({ navItems }: NavbarProps) => {
             horizontal: moreMenuAnchor === null ? "left" : "right",
           }}
           sx={{
-            // mt: moreMenuAnchor === null ? 0.5 : 0,
             mr: 0.5,
           }}
         >
