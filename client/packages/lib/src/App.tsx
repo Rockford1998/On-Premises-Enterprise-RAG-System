@@ -1,9 +1,9 @@
-import { Button } from "@/components/ui/button";
+import { Buttons } from "./components";
 
 function App() {
   return (
     <div className="flex min-h-svh flex-col items-center justify-center">
-      <Button size={"sm"}>Click me</Button>
+      <Buttons />
     </div>
   );
 }

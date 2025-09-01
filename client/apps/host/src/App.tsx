@@ -1,10 +1,9 @@
-import { Buttons } from "lib";
-import "./App.css";
+import { Layout } from "lib";
 
 function App() {
   return (
     <>
-      <Buttons />
+      <Layout />
     </>
   );
 }
