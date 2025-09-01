@@ -1,9 +1,15 @@
 import React from "react";
-import { Button, TextField, Typography } from "@mui/material";
+import {
+  Button,
+  TextField,
+  Typography,
+  Box,
+  Card,
+  CardContent,
+} from "@mui/material";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { PageWrap } from "../components";
 
 const signUpSchema = z.object({
   firstName: z.string().min(1, "First name is required"),
@@ -31,60 +37,75 @@ const SignUp: React.FC = () => {
   };
 
   return (
-    <PageWrap>
-      <Typography variant="h5" mb={2} align="center">
-        Sign Up
-      </Typography>
-      <form onSubmit={handleSubmit(onSubmit)} noValidate>
-        <TextField
-          label="First Name"
-          fullWidth
-          margin="normal"
-          {...register("firstName")}
-          error={!!errors.firstName}
-          helperText={errors.firstName?.message}
-          required
-        />
-        <TextField
-          label="Last Name"
-          fullWidth
-          margin="normal"
-          {...register("lastName")}
-          error={!!errors.lastName}
-          helperText={errors.lastName?.message}
-          required
-        />
-        <TextField
-          label="Email"
-          type="email"
-          fullWidth
-          margin="normal"
-          {...register("email")}
-          error={!!errors.email}
-          helperText={errors.email?.message}
-          required
-        />
-        <TextField
-          label="Password"
-          type="password"
-          fullWidth
-          margin="normal"
-          {...register("password")}
-          error={!!errors.password}
-          helperText={errors.password?.message}
-          required
-        />
-        <Button
-          type="submit"
-          variant="contained"
-          color="primary"
-          fullWidth
-          sx={{ mt: 2 }}
-        >
-          Sign Up
-        </Button>
-      </form>
-    </PageWrap>
+    <Box
+      display="flex"
+      justifyContent="center"
+      alignItems="center"
+      minHeight="100vh"
+      bgcolor="#f5f5f5"
+    >
+      <Card sx={{ minWidth: 320, maxWidth: 360, width: "100%", boxShadow: 3 }}>
+        <CardContent>
+          <Typography variant="h5" mb={2} align="center">
+            Sign Up
+          </Typography>
+          <form onSubmit={handleSubmit(onSubmit)} noValidate>
+            <TextField
+              label="First Name"
+              fullWidth
+              size="small"
+              margin="normal"
+              {...register("firstName")}
+              error={!!errors.firstName}
+              helperText={errors.firstName?.message}
+              required
+            />
+            <TextField
+              label="Last Name"
+              fullWidth
+              size="small"
+              margin="normal"
+              {...register("lastName")}
+              error={!!errors.lastName}
+              helperText={errors.lastName?.message}
+              required
+            />
+            <TextField
+              label="Email"
+              type="email"
+              fullWidth
+              size="small"
+              margin="normal"
+              {...register("email")}
+              error={!!errors.email}
+              helperText={errors.email?.message}
+              required
+            />
+            <TextField
+              label="Password"
+              type="password"
+              fullWidth
+              size="small"
+              margin="normal"
+              {...register("password")}
+              error={!!errors.password}
+              helperText={errors.password?.message}
+              required
+            />
+            <Button
+              type="submit"
+              variant="contained"
+              color="primary"
+              fullWidth
+              size="small"
+              sx={{ mt: 2 }}
+            >
+              Sign Up
+            </Button>
+          </form>
+        </CardContent>
+      </Card>
+    </Box>
   );
 };
 

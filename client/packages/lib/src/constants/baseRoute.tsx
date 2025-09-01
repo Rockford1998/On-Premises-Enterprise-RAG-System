@@ -1,4 +1,5 @@
 export const CONST_PAGE_ROUTES = {
-  login: "/auth/login",
+  SignIn: "/auth/signin",
+  SignUp: "/auth/signup",
   home: "/app/home",
 };
