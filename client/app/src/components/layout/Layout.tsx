@@ -1,6 +1,5 @@
 import { SidebarInset, SidebarProvider } from "@/shadcn/ui/sidebar";
 import { AppSidebar } from "./AppSidebar";
-import { Header } from "./Header";
 import { Outlet } from "react-router";
 import { useState } from "react";
 
@@ -11,9 +10,9 @@ export const Layout = () => {
     <>
       <SidebarProvider defaultOpen={open}>
         <AppSidebar open={open} setOpen={setOpen} />
+
         <SidebarInset>
-          <Header />
-          <main className="flex-1 px-1 m-1 border-1">
+          <main className="flex-1 p-4 min-h-screen">
             <Outlet />
           </main>
         </SidebarInset>

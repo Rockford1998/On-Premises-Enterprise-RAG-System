@@ -49,7 +49,7 @@ export function AppSidebar({
         <SidebarHeader className="flex flex-row justify-between">
           {open === true && (
             <div>
-              <h1>Mark</h1>
+              <h3>Mark</h3>
             </div>
           )}
           <div>
