@@ -3,6 +3,7 @@ import { Button } from "@/shadcn/ui/button";
 import { columns, type Payment } from "./Columns";
 import { DataTable } from "./DataTable";
 import { Separator } from "@/shadcn/ui/separator";
+import { ExampleForm } from "./ExampleForm";
 
 export const Home = () => {
   const { payments } = useHome();
@@ -16,13 +17,15 @@ export const Home = () => {
       }
     >
       <Separator />
-
       <h4>Table</h4>
       <div>
         <DataTable columns={columns} data={payments} />
       </div>
       <Separator />
-      <h4>form</h4>
+      <div className="space-y-4">
+        <h4>form</h4>
+        <ExampleForm />
+      </div>
     </PageWrapper>
   );
 };
