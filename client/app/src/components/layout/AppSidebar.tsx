@@ -15,6 +15,7 @@ import {
 import { NavUser } from "../nav/NavUser";
 import { Separator } from "@/shadcn/ui/separator";
 import { Link } from "react-router";
+import { useIsMobile } from "@/shadcn/hooks/use-mobile";
 
 const user = {
   name: "shadcn",
@@ -43,20 +44,24 @@ export function AppSidebar({
   setOpen: (open: boolean) => void;
   open: boolean;
 }) {
+  const isMobile = useIsMobile();
+
   return (
     <Sidebar collapsible="icon">
       <SidebarContent>
         <SidebarHeader className="flex flex-row justify-between">
           {open === true && (
             <div>
-              <h3>Mark</h3>
+              <h3>Lamma RAG</h3>
             </div>
           )}
           <div>
-            <SidebarTrigger
-              onClick={() => setOpen(!open)}
-              className="cursor-pointer"
-            />
+            {!isMobile && (
+              <SidebarTrigger
+                onClick={() => setOpen(!open)}
+                className="cursor-pointer"
+              />
+            )}
           </div>
         </SidebarHeader>
         <SidebarGroup>
