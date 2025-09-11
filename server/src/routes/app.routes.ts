@@ -6,6 +6,7 @@ import { UserController } from "../controller/user.controller";
 import { BotController } from "../controller/bot.controller";
 import { ChatController } from "../controller/chat.controller";
 import { ToolController } from "../controller/tool.controller";
+import { AuthController } from "../controller/auth.controller";
 
 
 const router = Router();
@@ -14,6 +15,7 @@ const botController = new BotController();
 const knowledgeBaseController = new KnowledgeBaseController();
 const chatController = new ChatController();
 const toolController = new ToolController();
+const authController = new AuthController();
 
 // User management endpoints
 router.get("/users", userController.readUser);
@@ -48,4 +50,7 @@ router.post("/tools", toolController.createTool);
 router.put("/tools/:id", toolController.updateTool);
 router.delete("/tools/:id", toolController.deleteTool);
 
+
+// auth 
+router.post("/auth", authController.login)
 export default router;

@@ -3,12 +3,19 @@ import { Home } from "./pages/Home";
 import { Settings } from "./pages/Settings";
 import { RouterProvider } from "react-router/dom";
 import { Layout } from "./components/layout/Layout";
+import { ThemeProvider } from "./components/theme-provider/ThemeProvider";
+import { ProtectedRoute } from "./components/protected-route.tsx/ProtectedRoute";
+import { Login } from "./pages/Login";
 
 export const App = () => {
   const route = createBrowserRouter([
     {
       path: "/",
-      element: <Layout />,
+      element: (
+        <ProtectedRoute>
+          <Layout />
+        </ProtectedRoute>
+      ),
       children: [
         {
           index: true,
@@ -21,8 +28,18 @@ export const App = () => {
         },
       ],
     },
+    {
+      path: "/login",
+      element: (
+        <ProtectedRoute>
+          <Login />
+        </ProtectedRoute>
+      ),
+    },
   ]);
-
-  return <RouterProvider router={route} />;
+  return (
+    <ThemeProvider>
+      <RouterProvider router={route} />
+    </ThemeProvider>
+  );
 };
-

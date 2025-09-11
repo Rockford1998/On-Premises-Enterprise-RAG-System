@@ -24,6 +24,8 @@ import {
   LogOut,
   UserCircle,
 } from "lucide-react";
+import { useStoreAuth } from "@/store/useStoreAuth";
+import { Button } from "@/shadcn/ui/button";
 
 export function NavUser({
   user,
@@ -35,6 +37,12 @@ export function NavUser({
   };
 }) {
   const { isMobile } = useSidebar();
+  const logOut = useStoreAuth((state) => state.logOut);
+
+  const handleLogOut = () => {
+    console.log("handle logout");
+    logOut();
+  };
 
   return (
     <SidebarMenu>
@@ -95,8 +103,13 @@ export function NavUser({
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
             <DropdownMenuItem>
-              <LogOut />
-              Log out
+              <Button
+                variant={"ghost"}
+                className="cursor-pointer flex"
+                onClick={handleLogOut}
+              >
+                <LogOut /> Log out
+              </Button>
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

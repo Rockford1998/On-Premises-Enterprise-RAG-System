@@ -5,7 +5,14 @@ import { sendResponse } from "../util/sendResponse";
 const JWT_SECRET = process.env.JWT_SECRET || "your_jwt_secret";
 
 export const authenticateJWT = (req: Request, res: Response, next: NextFunction) => {
+    // Skip auth for POST /users
+    if (req.method === "POST" && (req.path === "/users" || req.path === "/auth")) {
+        return next();
+
+    }
+
     const authHeader = req.headers["authorization"];
+
     if (!authHeader || !authHeader.startsWith("Bearer ")) {
         sendResponse({ res, status: 401, message: "No token provided", success: false });
         return;

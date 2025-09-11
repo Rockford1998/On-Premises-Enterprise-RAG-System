@@ -36,7 +36,7 @@ export class ToolController {
             const toolData = req.body;
             const newTool = await this.toolService.create(toolData);
             sendResponse({ res, success: true, message: "Tool created successfully", data: newTool, status: 201 });
-        } catch (error) {
+    } catch (error) {
             console.error("Error creating tool:", error);
             sendResponse({ res, success: false, message: "Failed to create tool", status: 500 });
         }

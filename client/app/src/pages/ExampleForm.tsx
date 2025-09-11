@@ -34,13 +34,7 @@ import {
   CommandItem,
   CommandList,
 } from "@/shadcn/ui/command";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/shadcn/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/shadcn/ui/card";
 
 const formSchema = z.object({
   username: z.string().min(2, {
