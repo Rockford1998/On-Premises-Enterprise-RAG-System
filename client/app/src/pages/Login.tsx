@@ -108,6 +108,7 @@ export const Login = () => {
 
 const useLogin = () => {
   const setAccessToken = useStoreAuth((state) => state.setAccessToken);
+  const setUserProfile = useStoreAuth((state) => state.setUserProfile);
   const navigate = useNavigate();
 
   // form component
@@ -126,8 +127,10 @@ const useLogin = () => {
         console.log(response);
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         setAccessToken(response.data.data.token);
+        setUserProfile(response.data.data.user);
         navigate("/");
       }
+
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
       console.log(error);

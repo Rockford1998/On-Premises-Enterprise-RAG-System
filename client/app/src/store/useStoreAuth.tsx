@@ -6,6 +6,7 @@ interface UseStoreAuthProps {
   accessToken: string | null;
   userProfile: any;
   setAccessToken: (accessToken: UseStoreAuthProps["accessToken"]) => void;
+  setUserProfile: (userProfile: UseStoreAuthProps["userProfile"]) => void;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   logOut: () => void;
 }
@@ -17,11 +18,12 @@ export const useStoreAuth = create(
       accessToken: null,
       setAccessToken: (accessToken) => set(() => ({ accessToken })),
       userProfile: null,
+      setUserProfile: (userProfile) => set(() => ({ userProfile })),
       logOut: () => set(() => ({ accessToken: null, userProfile: null })),
     }),
     {
       name: "store-auth", // unique name
       storage: createJSONStorage(() => localStorage), // (optional) by default, 'localStorage' is used
-    }
-  )
+    },
+  ),
 );

@@ -148,8 +148,8 @@ export const ExampleForm = ({
                                           ])
                                         : field.onChange(
                                             field.value?.filter(
-                                              (value) => value !== item.id
-                                            )
+                                              (value) => value !== item.id,
+                                            ),
                                           );
                                     }}
                                   />
@@ -303,12 +303,13 @@ export const ExampleForm = ({
                               role="combobox"
                               className={cn(
                                 "w-[200px] justify-between",
-                                !field.value && "text-muted-foreground"
+                                !field.value && "text-muted-foreground",
                               )}
                             >
                               {field.value
                                 ? languages.find(
-                                    (language) => language.value === field.value
+                                    (language) =>
+                                      language.value === field.value,
                                   )?.label
                                 : "Select language"}
                               <ChevronsUpDown className="opacity-50" />
@@ -338,7 +339,7 @@ export const ExampleForm = ({
                                         "ml-auto",
                                         language.value === field.value
                                           ? "opacity-100"
-                                          : "opacity-0"
+                                          : "opacity-0",
                                       )}
                                     />
                                   </CommandItem>

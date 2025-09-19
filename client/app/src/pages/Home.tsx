@@ -4,6 +4,20 @@ import { columns, type Payment } from "./Columns";
 import { DataTable } from "./DataTable";
 import { Separator } from "@/shadcn/ui/separator";
 import { ExampleForm } from "./ExampleForm";
+import { Input } from "@/shadcn/ui/input";
+import z from "zod";
+import { useForm } from "react-hook-form";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/shadcn/ui/form";
+import { Textarea } from "@/shadcn/ui/textarea";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { FormDialogBox } from "@/components/dialog-box/FormDialogBox";
 
 export const Home = () => {
   const { payments } = useHome();
@@ -16,6 +30,7 @@ export const Home = () => {
         </Button>
       }
     >
+      <CreateBot />
       <Separator />
       <h4>Table</h4>
       <div>
@@ -60,4 +75,75 @@ const useHome = () => {
   ];
 
   return { payments };
+};
+const formSchema = z.object({
+  botName: z.string().min(3, {
+    message: "Bot name must be at least 3 characters.",
+  }),
+  botDesc: z.string().min(3, {
+    message: "Bot description must be at least 3 characters.",
+  }),
+});
+
+export const CreateBot = () => {
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      botName: "",
+      botDesc: "",
+    },
+  });
+
+  const handleSubmit = form.handleSubmit((values) => {
+    console.log("Submitted:", values);
+    form.reset();
+  });
+
+  return (
+    <FormDialogBox
+      title="Create Bot"
+      triggerLabel="Create Bot"
+      onSubmit={handleSubmit}
+      onOpenChange={(open) => {
+        if (!open) form.reset(); // reset when dialog closes
+      }}
+    >
+      <Form {...form}>
+        {/* ✅ Assign formId so submit button inside DialogBox can trigger it */}
+        <form id="dialog-form" onSubmit={handleSubmit} className="space-y-6">
+          <FormField
+            control={form.control}
+            name="botName"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Username</FormLabel>
+                <FormControl>
+                  <Input placeholder="Bot name" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="botDesc"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Bio</FormLabel>
+                <FormControl>
+                  <Textarea
+                    placeholder="Bot description"
+                    className="resize-none"
+                    {...field}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </form>
+      </Form>
+    </FormDialogBox>
+  );
 };
