@@ -73,7 +73,7 @@ export const Login = () => {
                         <FormControl>
                           <Input
                             type="password"
-                            placeholder="This is your public display name"
+                            placeholder="Password"
                             className="text-base sm:text-sm"
                             {...field}
                           />
