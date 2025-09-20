@@ -5,6 +5,7 @@ import { useState } from "react";
 import { useIsMobile } from "@/shadcn/hooks/use-mobile";
 import { MobileHeader } from "./MobileHeader";
 import { WebHeader } from "./WebHeader";
+import { Toaster } from "@/shadcn/ui/sonner";
 
 export const Layout = () => {
   const [open, setOpen] = useState(false);
@@ -14,6 +15,7 @@ export const Layout = () => {
     <>
       <SidebarProvider defaultOpen={open}>
         <AppSidebar open={open} setOpen={setOpen} />
+        <Toaster />
         <SidebarInset>
           {isMobile ? (
             <MobileHeader open={open} setOpen={setOpen} />

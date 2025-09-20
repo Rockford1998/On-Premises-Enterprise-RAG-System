@@ -6,6 +6,7 @@ import { Layout } from "./components/layout/Layout";
 import { ThemeProvider } from "./components/theme-provider/ThemeProvider";
 import { ProtectedRoute } from "./components/protected-route.tsx/ProtectedRoute";
 import { Login } from "./pages/Login";
+import { AgentsOverview } from "./pages/Agents/AgentsOverview";
 
 export const App = () => {
   const route = createBrowserRouter([
@@ -25,6 +26,10 @@ export const App = () => {
         {
           path: "settings",
           element: <Settings />,
+        },
+        {
+          path: "agents/overview",
+          element: <AgentsOverview />,
         },
       ],
     },

@@ -23,6 +23,7 @@ import z from "zod";
 import axios from "axios";
 import { useStoreAuth } from "@/store/useStoreAuth";
 import { useNavigate } from "react-router";
+import { mediator } from "@/utils/mediator";
 
 export const Login = () => {
   const { form, onSubmit } = useLogin();
@@ -122,7 +123,7 @@ const useLogin = () => {
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
-      const response = await axios.post("http://localhost:3000/auth", values);
+      const response = await mediator.post("/auth", values);
       if (response.status === 201) {
         console.log(response);
         // eslint-disable-next-line @typescript-eslint/no-unused-vars

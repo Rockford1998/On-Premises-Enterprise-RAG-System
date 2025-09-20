@@ -40,7 +40,6 @@ export function NavUser({
   const logOut = useStoreAuth((state) => state.logOut);
 
   const handleLogOut = () => {
-    console.log("handle logout");
     logOut();
   };
 

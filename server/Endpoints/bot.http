@@ -7,7 +7,8 @@ http://localhost:3000/bots/688a5f0aba9551f726aab91e
 
 
 ### Get by owner(email address)
-http://localhost:3000/bots/owner/s.bb@gmail.com
+http://localhost:3000/bots/owner/shubhambankar65@gmail.com
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4YzMxZWZlNDI3M2M2NzBhMTYxNjFhOCIsImVtYWlsIjoic2h1YmhhbWJhbmthcjY1QGdtYWlsLmNvbSIsInVzZXJOYW1lIjoiTWFyazEiLCJpYXQiOjE3NTgzODE0MjcsImV4cCI6MTc1ODQ2NzgyN30.JSDnKJ1jnhm-7Wao8lkpdwb2_a-aN7jErLPFhdOxEQM
 
 
 ### 

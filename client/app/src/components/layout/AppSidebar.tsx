@@ -35,6 +35,11 @@ const items = [
     url: "/Settings",
     icon: Settings,
   },
+  {
+    title: "Agents",
+    url: "/agents/overview",
+    icon: Settings,
+  },
 ];
 
 export function AppSidebar({
