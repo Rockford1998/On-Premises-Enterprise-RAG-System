@@ -20,6 +20,10 @@ export class KnowledgeBaseService {
         return await KnowledgeBase.findById(id).exec();
     }
 
+    readByBotId = async ({ botId }: { botId: string }) => {
+        return await KnowledgeBase.find({ botId }).exec();
+    }
+
     //
     deleteKnowledgeBase = async ({ fileName, botId }: { fileName: string, botId: string }): Promise<void> => {
 
@@ -36,7 +40,7 @@ export class KnowledgeBaseService {
             // Delete from file system
             const safeFileName = path.basename(fileName);
             const safeBotId = path.basename(botId);
-            const filePath = path.join(__dirname, '..', 'uploads', safeBotId, safeFileName);
+            const filePath = path.join(__dirname, '..', '..', 'uploads', safeBotId, safeFileName);
 
             console.log("Trying to delete file:", filePath);
 

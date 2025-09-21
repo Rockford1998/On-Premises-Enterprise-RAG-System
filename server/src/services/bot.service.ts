@@ -1,7 +1,7 @@
 import { botProfile } from "../models/shared.model";
 
 export class BotService {
-  
+
   //
   read = async ({ page = 1, limit = 10, users }: { page: number, limit: number, users?: string }) => {
     const query: any = {};
@@ -12,19 +12,20 @@ export class BotService {
 
     const bots = await botProfile.find(query)
       .skip((page - 1) * limit)
-      .limit(limit);
+      .limit(limit)
+      .select('-owner.password');;
 
     return bots;
   };
 
   //
   readByBotId = async (botId: string) => {
-    return await botProfile.findOne({ botId }).exec();
+    return await botProfile.findOne({ botId }).select('-owner.password').exec();
   };
   //
 
   readByBotOwner = async (owner: string) => {
-    return await botProfile.find({ "owner.email": owner }).exec();
+    return await botProfile.find({ "owner.email": owner }).select('-owner.password').exec();
   };
 
 

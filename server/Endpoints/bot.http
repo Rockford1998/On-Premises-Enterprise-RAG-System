@@ -1,9 +1,14 @@
-   ### get all
+### get all
+
+
 ### passing paramters for now  page and limit only
 http://localhost:3000/bots
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4YzMxZWZlNDI3M2M2NzBhMTYxNjFhOCIsImVtYWlsIjoic2h1YmhhbWJhbmthcjY1QGdtYWlsLmNvbSIsInVzZXJOYW1lIjoiTWFyazEiLCJpYXQiOjE3NTgzODE0MjcsImV4cCI6MTc1ODQ2NzgyN30.JSDnKJ1jnhm-7Wao8lkpdwb2_a-aN7jErLPFhdOxEQM
+
 
 ### Get by botId
-http://localhost:3000/bots/688a5f0aba9551f726aab91e
+http://localhost:3000/bots/bot_mfsfekoi_Z96YMW
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4YzMxZWZlNDI3M2M2NzBhMTYxNjFhOCIsImVtYWlsIjoic2h1YmhhbWJhbmthcjY1QGdtYWlsLmNvbSIsInVzZXJOYW1lIjoiTWFyazEiLCJpYXQiOjE3NTgzODE0MjcsImV4cCI6MTc1ODQ2NzgyN30.JSDnKJ1jnhm-7Wao8lkpdwb2_a-aN7jErLPFhdOxEQM
 
 
 ### Get by owner(email address)
@@ -20,6 +25,7 @@ Content-Type:  application/json
     "botDesc": "Mark3 is a test bot",
     "owner": "s.bb@gmail.com"
 }
+
 
 ### Update by email
 PUT http://localhost:3000/bots/bot_mdqa1e6y_MMF8T9

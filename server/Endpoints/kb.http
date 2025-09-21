@@ -1,23 +1,33 @@
 ### get all
-### passing paramters for now  page and limit only
 
+
+### passing paramters for now  page and limit only
 http://localhost:3000/bots
 
-### Get by botId
-http://localhost:3000/kb
+
+### Get by kb id
+http://localhost:3000/kb/bot_mdqa1e6y_MMF8T9
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4YzMxZWZlNDI3M2M2NzBhMTYxNjFhOCIsImVtYWlsIjoic2h1YmhhbWJhbmthcjY1QGdtYWlsLmNvbSIsInVzZXJOYW1lIjoiTWFyazEiLCJpYXQiOjE3NTgzODE0MjcsImV4cCI6MTc1ODQ2NzgyN30.JSDnKJ1jnhm-7Wao8lkpdwb2_a-aN7jErLPFhdOxEQM
+
+
+### Get by kb botId
+http://localhost:3000/kb/bot-id/bot_mdqa1e6y_MMF8T9
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4YzMxZWZlNDI3M2M2NzBhMTYxNjFhOCIsImVtYWlsIjoic2h1YmhhbWJhbmthcjY1QGdtYWlsLmNvbSIsInVzZXJOYW1lIjoiTWFyazEiLCJpYXQiOjE3NTgzODE0MjcsImV4cCI6MTc1ODQ2NzgyN30.JSDnKJ1jnhm-7Wao8lkpdwb2_a-aN7jErLPFhdOxEQM
+
 
 ### knowledge base upload
 http://localhost:3000/kb/upload/bot_mdqa1e6y_MMF8T9
 //use postman to test this endpoint
+bot_mfsfekoi_Z96YMW
+
 
 ### delete by file name and botId
 POST http://localhost:3000/kb/delete 
- Content-Type:  application/json
+Content-Type:  application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4YzMxZWZlNDI3M2M2NzBhMTYxNjFhOCIsImVtYWlsIjoic2h1YmhhbWJhbmthcjY1QGdtYWlsLmNvbSIsInVzZXJOYW1lIjoiTWFyazEiLCJpYXQiOjE3NTgzODE0MjcsImV4cCI6MTc1ODQ2NzgyN30.JSDnKJ1jnhm-7Wao8lkpdwb2_a-aN7jErLPFhdOxEQM
+
 
 {
 "fileName":"resume.pdf",
- "botId":"bot_mdqa1e6y_MMF8T9"
-} 
-
-
- 
+ "botId":"bot_mfsfekoi_Z96YMW"
+}

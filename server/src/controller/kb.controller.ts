@@ -2,6 +2,8 @@ import { Request, Response } from "express";
 import { KnowledgeBaseService } from "../services/knowledgebase.service";
 import { BotService } from "../services/bot.service";
 import { sendResponse } from "../util/sendResponse";
+import path from "path";
+import fs from "fs";
 
 
 //  read knowledge base with pagination 
@@ -61,6 +63,17 @@ export class KnowledgeBaseController {
     }
   };
 
+  readBybotId = async (req: Request, res: Response) => {
+    try {
+      const { botId } = req.params;
+      const knowledgeBaseEntry = await this.knowledgeBaseService.readByBotId({ botId });
+      sendResponse({ res, success: true, message: "Knowledge base entry retrieved successfully", data: knowledgeBaseEntry, status: 200 });
+    } catch (error) {
+      console.error("Error reading knowledge base entry by ID:", error);
+      sendResponse({ res, success: false, message: "Failed to read knowledge base entry", status: 500 });
+    }
+  };
+
   //
   addKnowledgeBase = async (req: Request, res: Response) => {
     const startTime = Date.now();
@@ -75,7 +88,7 @@ export class KnowledgeBaseController {
       sendResponse({
         res,
         success: true,
-        message: "Knowledge base added successfully",
+        message: "File added to knowledge base successfully.",
         data: responseBody,
         status: 201,
       });
@@ -91,6 +104,49 @@ export class KnowledgeBaseController {
     }
   };
 
+  downloadFile = async (req: Request, res: Response) => {
+    try {
+      const { id } = req.params;
+      const file = await this.knowledgeBaseService.readById(id)
+      if (file) {
+        const safeFilePath = path.join(__dirname, "..", "..", file?.downloadUrl);
+        console.log(safeFilePath)
+        if (!fs.existsSync(safeFilePath)) {
+          sendResponse({
+            res,
+            success: false,
+            message: "File not found.",
+            status: 500,
+          })
+          return
+        }
+
+        const fileName = path.basename(safeFilePath);
+        res.download(safeFilePath, fileName, (err) => {
+          if (err) res.status(500).send({ message: "Error while downloading file." });
+        });
+
+      } else {
+        sendResponse({
+          res,
+          success: false,
+          message: "File not found.",
+          status: 500,
+        })
+        return
+      }
+    } catch (error) {
+      console.log(error)
+      sendResponse({
+        res,
+        success: false,
+        message: "Unable to download file currently.",
+        status: 500,
+      })
+
+    }
+  };
+
 
 
   //
@@ -98,7 +154,6 @@ export class KnowledgeBaseController {
     try {
       const { fileName, botId } = req.body;
       console.log("Received request to delete knowledge base:", { fileName, botId });
-
       // Validate input
       await this.knowledgeBaseService.deleteKnowledgeBase({ fileName, botId })
       sendResponse({
