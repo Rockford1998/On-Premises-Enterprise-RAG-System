@@ -16,7 +16,10 @@ import {
   DialogTrigger,
 } from "@/shadcn/ui/dialog";
 import { Button } from "@/shadcn/ui/button";
+import { Download, MessageSquareMore } from "lucide-react";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/shadcn/ui/tooltip";
 
+//
 type Bot = {
   _id: string;
   fileName: string;
@@ -26,6 +29,7 @@ type Bot = {
   downloadUrl: string;
 };
 
+//
 export const Tabknowledge = () => {
   const { botId } = useAgentContext();
   const [knowledge, Setknowledge] = useState<any>([]);
@@ -111,23 +115,39 @@ export const Tabknowledge = () => {
         const kb = row.original;
         return (
           <Dialog>
-            <DialogTrigger>
-              <Button variant="outline" size="sm">
-                View Content
-              </Button>
+            <DialogTrigger asChild>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="cursor-pointer"
+                  >
+                    <MessageSquareMore />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <h6>View content</h6>
+                </TooltipContent>
+              </Tooltip>
             </DialogTrigger>
             <DialogContent className="w-[28rem] max-h-[32rem] flex flex-col">
               <DialogHeader>
                 <h3>{kb.fileName} - Content</h3>
               </DialogHeader>
-
               <div className="flex-1 overflow-auto whitespace-pre-wrap text-sm p-2 border-l border-t border-b">
                 {kb.content}
               </div>
               {/* Fixed Footer */}
               <DialogFooter className="flex-shrink-0">
                 <DialogClose>
-                  <Button size="sm">Close</Button>
+                  <Button
+                    size="sm"
+                    variant={"outline"}
+                    className="cursor-pointer"
+                  >
+                    Close
+                  </Button>
                 </DialogClose>
               </DialogFooter>
             </DialogContent>
@@ -148,11 +168,14 @@ export const Tabknowledge = () => {
               onConfirm={() => onDeletConfirm({ fileName: kb.fileName })}
             />
             <Button
+              size={"icon"}
+              variant={"ghost"}
+              className="cursor-pointer"
               onClick={() =>
                 handleDownload({ fileId: kb._id, fileName: kb.fileName })
               }
             >
-              Download
+              <Download />
             </Button>
           </>
         );

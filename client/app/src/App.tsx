@@ -8,6 +8,7 @@ import { ProtectedRoute } from "./components/protected-route.tsx/ProtectedRoute"
 import { Login } from "./pages/Login";
 import { AgentsOverview } from "./pages/Agents/AgentsOverview";
 import { AgentsDetail } from "./pages/Agents/AgentsDetail";
+import { BotHubOverview } from "./pages/bot-hub/BotHubOverview";
 
 export const App = () => {
   const route = createBrowserRouter([
@@ -25,8 +26,8 @@ export const App = () => {
           element: <Home />,
         },
         {
-          path: "settings",
-          element: <Settings />,
+          path: "/hub",
+          element: <BotHubOverview />,
         },
         {
           path: "agents/overview",

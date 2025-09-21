@@ -50,8 +50,10 @@ export function DeleteAlertDialogBox({
           )}
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel>{cancelLabel}</AlertDialogCancel>
-          <AlertDialogAction onClick={onConfirm}>
+          <AlertDialogCancel className="cursor-pointer">
+            {cancelLabel}
+          </AlertDialogCancel>
+          <AlertDialogAction onClick={onConfirm} className="cursor-pointer">
             {confirmLabel}
           </AlertDialogAction>
         </AlertDialogFooter>

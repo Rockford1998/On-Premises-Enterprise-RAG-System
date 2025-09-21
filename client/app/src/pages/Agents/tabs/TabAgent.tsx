@@ -19,9 +19,13 @@ export function TabAgent() {
       {/* outer wrapper should have height */}
       <Tabs defaultValue="knowledge" className="flex flex-col flex-1">
         {/* Tabs header */}
-        <TabsList className="grid grid-cols-2 w-full">
-          <TabsTrigger value="knowledge">Knowledge</TabsTrigger>
-          <TabsTrigger value="password">Password</TabsTrigger>
+        <TabsList>
+          <TabsTrigger value="knowledge" className="cursor-pointer">
+            Knowledge
+          </TabsTrigger>
+          <TabsTrigger value="password" className="cursor-pointer">
+            Password
+          </TabsTrigger>
         </TabsList>
 
         {/* Tabs content */}

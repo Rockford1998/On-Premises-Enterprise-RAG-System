@@ -49,7 +49,9 @@ export const FormDialogBox: React.FC<FormDialogBoxProps> = ({
       onOpenChange={handleOpenChange}
     >
       <DialogTrigger asChild>
-        <Button variant="outline">{triggerLabel}</Button>
+        <Button variant="outline" className="cursor-pointer">
+          {triggerLabel}
+        </Button>
       </DialogTrigger>
 
       <DialogContent className={maxWidth}>
@@ -62,12 +64,21 @@ export const FormDialogBox: React.FC<FormDialogBoxProps> = ({
         {showFooter && (
           <DialogFooter>
             <DialogClose asChild>
-              <Button type="button" variant="secondary">
+              <Button
+                type="button"
+                variant="secondary"
+                className="cursor-pointer"
+              >
                 {closeLabel}
               </Button>
             </DialogClose>
             {onSubmit && (
-              <Button type="submit" form="dialog-form" onClick={onSubmit}>
+              <Button
+                type="submit"
+                form="dialog-form"
+                onClick={onSubmit}
+                className="cursor-pointer"
+              >
                 {submitLabel}
               </Button>
             )}
