@@ -61,9 +61,10 @@ export const UploadFileDropdown: React.FC<UploadFileDropdownProps> = ({
       refreshData();
     } catch (error: any) {
       console.log(error);
-      if (error.data.message) {
-        toast(error.data.message);
+      if (error.response.data.message) {
+        toast(error.response.data.message);
       }
+      setUploading(false);
     }
   };
 

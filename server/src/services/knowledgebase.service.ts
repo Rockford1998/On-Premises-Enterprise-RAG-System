@@ -42,7 +42,6 @@ export class KnowledgeBaseService {
             const safeBotId = path.basename(botId);
             const filePath = path.join(__dirname, '..', '..', 'uploads', safeBotId, safeFileName);
 
-            console.log("Trying to delete file:", filePath);
 
             if (fs.existsSync(filePath)) {
                 fs.unlinkSync(filePath);
@@ -129,6 +128,19 @@ export class KnowledgeBaseService {
             } else {
 
                 await VectorService.deleteOutdatedKnowledgeByFileHash({ fileHash, tableName: bot.vectorTable });
+
+                // Delete from file system
+                const safeFileName = path.basename(file.originalname);
+                const safeBotId = path.basename(botId);
+                const filePath = path.join(__dirname, '..', '..', 'uploads', safeBotId, safeFileName);
+
+
+                if (fs.existsSync(filePath)) {
+                    fs.unlinkSync(filePath);
+                    console.log("File deleted.");
+                } else {
+                    console.log("File does not exist.");
+                }
                 return {
                     status: 500,
                     body: {

@@ -85,13 +85,22 @@ export class KnowledgeBaseController {
       });
       const duration = (Date.now() - startTime) / 1000;
       const responseBody = { ...result.body, duration };
-      sendResponse({
-        res,
-        success: true,
-        message: "File added to knowledge base successfully.",
-        data: responseBody,
-        status: 201,
-      });
+      if (result.body.success) {
+        sendResponse({
+          res,
+          success: result.body.success,
+          message: result.body.message,
+          data: responseBody,
+          status: 201,
+        });
+      } else {
+        sendResponse({
+          res,
+          success: false,
+          message: result.body.message,
+          status: 500,
+        });
+      }
     } catch (error) {
       const duration = (Date.now() - startTime) / 1000;
       console.error(`Training failed after ${duration} seconds:`, error);
