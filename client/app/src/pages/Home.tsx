@@ -5,7 +5,6 @@ import { DataTable } from "./DataTable";
 import { Separator } from "@/shadcn/ui/separator";
 import { ExampleForm } from "./ExampleForm";
 import z from "zod";
-import { CreateBotDialog } from "./bot-hub/CreateBotDialog";
 
 export const Home = () => {
   const { payments } = useHome();
@@ -18,7 +17,6 @@ export const Home = () => {
         </Button>
       }
     >
-      <CreateBotDialog />
       <Separator />
       <h4>Table</h4>
       <div>

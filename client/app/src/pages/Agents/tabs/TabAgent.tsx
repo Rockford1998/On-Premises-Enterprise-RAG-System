@@ -20,11 +20,11 @@ export function TabAgent() {
       <Tabs defaultValue="knowledge" className="flex flex-col flex-1">
         {/* Tabs header */}
         <TabsList>
-          <TabsTrigger value="knowledge" className="cursor-pointer">
-            Knowledge
-          </TabsTrigger>
           <TabsTrigger value="password" className="cursor-pointer">
             Password
+          </TabsTrigger>
+          <TabsTrigger value="knowledge" className="cursor-pointer">
+            Knowledge
           </TabsTrigger>
         </TabsList>
 

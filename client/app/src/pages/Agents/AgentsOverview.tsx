@@ -9,6 +9,8 @@ import { Pen } from "lucide-react";
 import { Badge } from "@/shadcn/ui/badge";
 import { PageWrapper } from "@/components/layout/PageWrapper";
 import { useNavigate } from "react-router";
+import { CreateBotDialog } from "../bot-hub/CreateBotDialog";
+import { useRefreshData } from "@/components/hook/useRefreshData";
 
 type Bot = {
   _id: string;
@@ -22,13 +24,14 @@ export const AgentsOverview = () => {
   const userProfile = useStoreAuth((state) => state.userProfile);
   const navigate = useNavigate();
   const [bots, setBots] = useState<any>([]);
+  const { count, refreshData } = useRefreshData();
 
   useEffect(() => {
     (async () => {
       const res = await mediator.get(`bots/owner/${userProfile.email}`);
       setBots(res.data.data);
     })();
-  }, []);
+  }, [count]);
 
   const columns: ColumnDef<Bot>[] = [
     {
@@ -78,7 +81,14 @@ export const AgentsOverview = () => {
   ];
 
   return (
-    <PageWrapper title="Agents">
+    <PageWrapper
+      title="Agents"
+      actions={
+        <>
+          <CreateBotDialog refreshData={refreshData} />
+        </>
+      }
+    >
       <DataTable columns={columns} data={bots} />
     </PageWrapper>
   );

@@ -9,11 +9,11 @@ interface PageWrapProps {
 export const PageWrapper = ({ children, actions, title }: PageWrapProps) => {
   return (
     <div>
-      <div className="flex justify-between items-center mb-3">
-        <h3 className="scroll-m-20 text-2xl font-semibold tracking-tight">
+      <div className="flex justify-between items-center mb-6">
+        <h2 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-gray-900 dark:text-white border-b-2 border-black dark:border-white pb-1">
           {title}
-        </h3>
-        <div className="flex">{actions ? actions : null}</div>
+        </h2>
+        <div className="flex">{actions ?? null}</div>
       </div>
       <div>{children}</div>
     </div>

@@ -13,7 +13,9 @@ import { useStoreAuth } from "@/store/useStoreAuth";
 import { mediator } from "@/utils/mediator";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
+import { useState } from "react";
 import z from "zod";
+import { toast } from "sonner";
 
 const formSchema = z.object({
   botName: z.string().min(3, {
@@ -24,8 +26,13 @@ const formSchema = z.object({
   }),
 });
 
-export const CreateBotDialog = () => {
+export const CreateBotDialog = ({
+  refreshData,
+}: {
+  refreshData: () => void;
+}) => {
   const userProfile = useStoreAuth((state) => state.userProfile);
+  const [open, setOpen] = useState(false);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -38,14 +45,17 @@ export const CreateBotDialog = () => {
   const handleSubmit = form.handleSubmit(async (values) => {
     console.log("Submitted:", values);
     try {
-      const bot = await mediator.post("/bots", {
+      await mediator.post("/bots", {
         owner: userProfile.email,
         ...values,
       });
-      console.log(bot);
       form.reset();
+      setOpen(false); // ✅ close dialog on success
+      toast("Bot created successfully.");
+      refreshData();
     } catch (error: any) {
-      console.log(error);
+      console.error(error);
+      toast("Bot created successfully.");
     }
   });
 
@@ -53,10 +63,12 @@ export const CreateBotDialog = () => {
     <FormDialogBox
       title="Create Bot"
       triggerLabel="Create Bot"
-      onSubmit={handleSubmit}
-      onOpenChange={(open) => {
-        if (!open) form.reset();
+      open={open}
+      onOpenChange={(o) => {
+        setOpen(o);
+        if (!o) form.reset();
       }}
+      onSubmit={handleSubmit}
     >
       <Form {...form}>
         <form id="dialog-form" onSubmit={handleSubmit} className="space-y-6">

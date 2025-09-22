@@ -9,16 +9,12 @@ import { useRefreshData } from "@/components/hook/useRefreshData";
 import { UploadFileDropdown } from "../UploadFileDropdown";
 import {
   Dialog,
-  DialogClose,
   DialogContent,
-  DialogFooter,
   DialogHeader,
   DialogTrigger,
 } from "@/shadcn/ui/dialog";
 import { Button } from "@/shadcn/ui/button";
 import { Download, MessageSquareMore } from "lucide-react";
-import { Tooltip, TooltipContent, TooltipTrigger } from "@/shadcn/ui/tooltip";
-
 //
 type Bot = {
   _id: string;
@@ -116,40 +112,18 @@ export const Tabknowledge = () => {
         return (
           <Dialog>
             <DialogTrigger asChild>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="cursor-pointer"
-                  >
-                    <MessageSquareMore />
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent>
-                  <h6>View content</h6>
-                </TooltipContent>
-              </Tooltip>
+              <Button variant="outline" size="sm" className="cursor-pointer">
+                <MessageSquareMore /> Knowledge
+              </Button>
             </DialogTrigger>
             <DialogContent className="w-[28rem] max-h-[32rem] flex flex-col">
               <DialogHeader>
                 <h3>{kb.fileName} - Content</h3>
               </DialogHeader>
-              <div className="flex-1 overflow-auto whitespace-pre-wrap text-sm p-2 border-l border-t border-b">
+              <div className="flex-1 overflow-auto whitespace-pre-wrap text-sm p-2 border-l ">
                 {kb.content}
               </div>
               {/* Fixed Footer */}
-              <DialogFooter className="flex-shrink-0">
-                <DialogClose>
-                  <Button
-                    size="sm"
-                    variant={"outline"}
-                    className="cursor-pointer"
-                  >
-                    Close
-                  </Button>
-                </DialogClose>
-              </DialogFooter>
             </DialogContent>
           </Dialog>
         );
