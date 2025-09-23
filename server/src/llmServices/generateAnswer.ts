@@ -7,16 +7,20 @@ type relevantChunks = {
   distance: number;
 };
 
-export const generateAnswer = async (
-  { question, contextChunks, instruction }: {
-    question: string,
-    contextChunks: Array<relevantChunks>,
-    instruction: string
-  }
-): Promise<string> => {
+export const generateAnswer = async ({
+  question,
+  contextChunks,
+  instruction,
+}: {
+  question: string;
+  contextChunks: Array<relevantChunks>;
+  instruction: string;
+}): Promise<string> => {
   try {
     const baseModel = process.env.BASE_MODEL || "gemma3:4b";
-    const OLLAMA_BASE_URL = process.env.OLLAMA_BASE_URL || "http://localhost:11434";
+    console.log({ baseModel });
+    const OLLAMA_BASE_URL =
+      process.env.OLLAMA_BASE_URL || "http://localhost:11434";
     const context = contextChunks
       .map((c, i) => `[Context ${i + 1}]: ${c.content}`)
       .join("\n\n");
@@ -60,21 +64,42 @@ export const generateStreamAnswer = async (
 ): Promise<string> => {
   try {
     const baseModel = process.env.BASE_MODEL || "llama3.2:latest";
-    const OLLAMA_BASE_URL = process.env.OLLAMA_BASE_URL || "http://localhost:11434";
+    const OLLAMA_BASE_URL =
+      process.env.OLLAMA_BASE_URL || "http://localhost:11434";
     const context = contextChunks
       .map((c, i) => `[Context ${i + 1}]: ${c.content}`)
       .join("\n\n");
 
-    const prompt = `Answer the following question using only the context below. If the context does not contain the answer, say "I don't know."
+    const prompt = `
+    You are a helpful assistant. Follow these rules carefully:
 
-                    Context:
-                    ${context}
+        1. Check the provided context for relevant information:
+          - If the context contains relevant information, answer the question ONLY using the context.
+          - If the context does not contain enough information, answer using your general knowledge.
 
-                    Question:
-                    ${query}
+        2. Always return your answer in **Markdown** format, using a fenced code block with the language set to 'json'.
 
-                    Answer:
-                    `;
+          3. The JSON object must follow this exact structure:
+          {
+            "answerSource": "context" | "general",
+            "answer": "string (can include markdown formatting such as **bold**, lists, or code blocks)",
+            "metadata": {
+              "confidence": "high" | "medium" | "low",
+              "contextUsed": true | false
+            }
+          }
+
+          4. Do not add any explanation outside the JSON block.
+          5. Ensure the JSON is valid and properly escaped so it can be parsed by a frontend application.
+
+          Context:
+          ${context}
+
+          Question:
+          ${query}
+
+          Answer:
+    `;
 
     const res = await axios.post(
       `${OLLAMA_BASE_URL}/api/generate`,

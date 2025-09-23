@@ -4,7 +4,7 @@
   "main": "index.js",
   "scripts": {
     "start": "node dist/index.js",
-    "dev": "nodemon src/index.ts",
+    "dev": "set NODE_ENV=local && nodemon src/index.ts --legacy-watch",
     "dep:check": "npx depcheck"
   },
   "author": "",

@@ -13,8 +13,10 @@ Content-Type:  application/json
 ### 
 POST http://localhost:3000/chat
 Content-Type:  application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4YzQwYWQ2MDA3NWUwMTAzYTAxNTZlNiIsImVtYWlsIjoic2h1YmhhbWJhbmthcjY1QGdtYWlsLmNvbSIsInVzZXJOYW1lIjoiTWFyazEiLCJpYXQiOjE3NTg2NTE1MTQsImV4cCI6MTc1ODczNzkxNH0.kGWjHkD0d8Lro5JST7zqBzwbYKgv5XOApzJJdIt-5ws
+
 
 {
-   "botId":"bot_mdqa1e6y_MMF8T9", 
-   "question":"details about shubhams resume"
+   "botId":"bot_mfv2vn5t_ZTPOE4", 
+   "question":"Tell me about angular"
 }

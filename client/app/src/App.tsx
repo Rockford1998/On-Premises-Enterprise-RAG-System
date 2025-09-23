@@ -1,6 +1,5 @@
 import { createBrowserRouter } from "react-router";
 import { Home } from "./pages/Home";
-import { Settings } from "./pages/Settings";
 import { RouterProvider } from "react-router/dom";
 import { Layout } from "./components/layout/Layout";
 import { ThemeProvider } from "./components/theme-provider/ThemeProvider";
@@ -9,6 +8,7 @@ import { Login } from "./pages/Login";
 import { AgentsOverview } from "./pages/Agents/AgentsOverview";
 import { AgentsDetail } from "./pages/Agents/AgentsDetail";
 import { BotHubOverview } from "./pages/bot-hub/BotHubOverview";
+import { ChatBox } from "./pages/chat/ChatBox";
 
 export const App = () => {
   const route = createBrowserRouter([
@@ -36,6 +36,10 @@ export const App = () => {
         {
           path: "agents/Detail/:id",
           element: <AgentsDetail />,
+        },
+        {
+          path: "agents/chat/:botId",
+          element: <ChatBox />,
         },
       ],
     },

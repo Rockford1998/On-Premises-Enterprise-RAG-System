@@ -22,7 +22,7 @@ export const Layout = () => {
           ) : (
             <WebHeader />
           )}
-          <main className="flex-1 p-4 min-h-screen">
+          <main className="flex-1 p-4 h-screen">
             <Outlet />
           </main>
         </SidebarInset>

@@ -18,7 +18,7 @@ export const BotHubOverview = () => {
       const res = await mediator.get(`bots/owner/${userProfile.email}`);
       setBots(res.data.data);
     })();
-  }, []);
+  }, [userProfile.email]);
 
   return (
     <PageWrapper title="Your bots">
@@ -53,6 +53,7 @@ export const BotHubOverview = () => {
                 variant="outline"
                 size="sm"
                 className="mt-1 h-6 text-[11px] px-2 gap-1 rounded cursor-pointer"
+                onClick={() => navigate(`/agents/chat/${bot.botId}`)}
               >
                 <MessageSquare className="h-3 w-3" />
                 Chat

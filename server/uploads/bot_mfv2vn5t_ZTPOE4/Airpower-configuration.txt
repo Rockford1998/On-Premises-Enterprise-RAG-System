@@ -1,0 +1,1031 @@
+{
+  "_id": {
+    "$oid": "5efc4137332f798baaf5b522"
+  },
+  "unit": "AIH",
+  "__v": 0,
+  "acls": [
+    {
+      "key": "KeyUser",
+      "values": [
+        "audrey.brits@atlascopco.com",
+        "guy.verstappen@external.atlascopco.com",
+        "jan.reniers@atlascopco.com",
+        "kris.de.jonghe@external.atlascopco.com",
+        "peter.antonis@atlascopco.com",
+        "peter.larsson@atlascopco.com",
+        "teis.lamoen@atlascopco.com",
+        "thomas.van.bosstraeten@atlascopco.com"
+      ]
+    },
+    {
+      "key": "SuperReader",
+      "values": [
+        "alikhan.ibragimov@external.atlascopco.com",
+        "audrey.brits@atlascopco.com",
+        "bart.roscam@atlascopco.com",
+        "catherine.moens@atlascopco.com",
+        "freek.hautecler@external.atlascopco.com",
+        "guy.verstappen@external.atlascopco.com",
+        "jan.dehornois@external.atlascopco.com",
+        "javier.barrios@external.atlascopco.com",
+        "jurgen.oelbrandt@atlascopco.com",
+        "kris.de.jonghe@external.atlascopco.com",
+        "marie.clementine.skwara@atlascopco.com",
+        "peter.antonis@atlascopco.com",
+        "redouan.tezaoui@external.atlascopco.com",
+        "sven.de.belie@atlascopco.com",
+        "teis.lamoen@atlascopco.com",
+        "thomas.van.bosstraeten@atlascopco.com",
+        "tom.vanopstal@atlascopco.com"
+      ]
+    }
+  ],
+  "company": {
+    "_id": "5c36dcabb2b7578fa4dcff41",
+    "Unit": "AIH",
+    "Country": "Belgium",
+    "BaName": "Compressor Technique",
+    "Status": "A",
+    "CountryCode": "BEL",
+    "Region": "EMEA",
+    "Location": "BE_WIL_AIH",
+    "Currency": "EUR",
+    "Type": "XO",
+    "Ba": "CT",
+    "Division": "C_CT",
+    "Name": "Airpower Corporate"
+  },
+  "editLogs": [
+    "2025-2-26 12:59:20 UTC0: : Audrey BRITS updated.",
+    "2025-2-24 10:49:49 UTC0: : Audrey BRITS updated.",
+    "2025-2-13 8:6:48 UTC0: : Peter Larsson updated.",
+    "2025-2-4 9:0:22 UTC0: : Peter Larsson updated.",
+    "2025-1-15 7:27:50 UTC0: : Audrey BRITS updated.",
+    "2024-12-9 9:38:24 UTC0: : Peter Larsson updated.",
+    "2024-12-9 9:7:30 UTC0: : Peter Larsson updated.",
+    "2024-9-25 7:53:31 UTC0: : Peter Larsson updated.",
+    "2024-9-24 13:58:24 UTC0: : Peter Larsson updated.",
+    "2024-9-24 13:49:53 UTC0: : Peter Larsson updated.",
+    "2024-9-19 12:42:17 UTC0: : Audrey BRITS updated.",
+    "2024-8-19 13:53:29 UTC0: : Audrey BRITS updated.",
+    "2024-6-25 10:8:5 UTC0: : Audrey BRITS updated.",
+    "2024-4-29 7:56:21 UTC0: : Peter Larsson updated.",
+    "2024-3-4 10:22:9 UTC0: : Audrey BRITS updated.",
+    "2024-2-20 13:19:49 UTC0: : Audrey BRITS updated.",
+    "2024-2-20 12:53:8 UTC0: : Peter Larsson updated.",
+    "2023-12-21 15:28:52 UTC0: : Audrey BRITS updated.",
+    "2023-12-18 10:41:36 UTC0: : Audrey BRITS updated.",
+    "2023-11-28 10:12:24 UTC0: : Audrey BRITS updated.",
+    "2023-11-13 15:33:12 UTC0: : Peter Larsson updated.",
+    "2023-8-31 7:28:38 UTC0: Peter Larsson updated.",
+    "2023-8-24 13:0:37 UTC0: Muhammad Rashid updated.",
+    "2023-8-22 6:49:1 UTC0: Peter Larsson updated.",
+    "2023-8-22 6:47:46 UTC0: Peter Larsson updated.",
+    "2023-8-18 5:29:33 UTC0: Peter Larsson updated.",
+    "2023-8-18 5:27:1 UTC0: Peter Larsson updated.",
+    "2023-7-31 11:23:17 UTC0: Audrey BRITS updated.",
+    "2023-6-21 15:13:41 UTC0: Audrey BRITS updated.",
+    "2023-4-11 17:58:15 UTC8: Audrey BRITS updated.",
+    "2023-4-4 23:38:11 UTC8: Audrey BRITS updated.",
+    "2023-3-21 14:48:52 UTC8: Peter Larsson updated.",
+    "2023-3-17 20:18:16 UTC8: Audrey BRITS updated.",
+    "2023-3-13 21:37:25 UTC8: Audrey BRITS updated.",
+    "2023-1-18 2:45:42 UTC8: Peter Larsson updated.",
+    "2023-1-16 22:42:11 UTC8: Audrey BRITS updated.",
+    "2022-12-9 21:14:31 UTC8: Audrey BRITS updated.",
+    "2022-11-4 19:24:3 UTC8: Audrey BRITS updated.",
+    "2022-10-20 22:11:28 UTC8: Audrey BRITS updated.",
+    "2022-10-3 20:23:45 UTC8: Audrey BRITS updated.",
+    "2022-9-14 23:26:39 UTC8: Audrey BRITS updated.",
+    "2021-06-24 22:26:42 UTC8: Audrey BRITS - update doc",
+    "2021-06-24 0:16:11 UTC8: Audrey BRITS - update doc",
+    "2021-06-16 20:15:48 UTC8: Tim De Bra - update doc",
+    "2021-06-16 17:52:40 UTC8: Audrey BRITS - update doc",
+    "2021-04-23 19:51:56 UTC8: Audrey BRITS - update doc",
+    "2021-04-22 17:2:8 UTC8: Audrey BRITS - update doc",
+    "2021-03-22 16:57:3 UTC8: William De Coster - update doc",
+    "2021-03-01 16:37:4 UTC8: Audrey BRITS - update doc",
+    "2021-02-18 18:11:28 UTC8: William De Coster - update doc",
+    "2021-02-16 20:55:18 UTC8: Audrey BRITS - update doc"
+  ],
+  "keywords": [
+    {
+      "key": "AccessoryTypes",
+      "values": [
+        "24” screen : +/- 140€",
+        "27” screen : +/- 200€"
+      ]
+    },
+    {
+      "key": "AllowNoPackageRequired",
+      "values": [
+        "Yes"
+      ]
+    },
+    {
+      "key": "Location",
+      "values": [
+        "Belgium - Wilrijk/Aartselaar",
+        "Home Office",
+        "Remote Office Location"
+      ]
+    },
+    {
+      "key": "PCPeripheralTypes",
+      "values": [
+        "15” briefcase",
+        "17” backpack",
+        "Wired Keyboard and Mouse",
+        "Docking Station"
+      ]
+    },
+    {
+      "key": "PCTypes",
+      "values": [
+        "14” Standard laptop with 16Gb memory + 256Gb SSD  +/- 650€",
+        "16\" Engineering laptop (Fury workstation) with 64Gb memory + 1Tb SSD +/- 2500€",
+        "Other"
+      ]
+    },
+    {
+      "key": "UpnDomain",
+      "values": [
+        "@atlascopco.com",
+        "@external.atlascopco.com"
+      ]
+    }
+  ],
+  "logs": [
+    "2025-6-10 11:9:33 UTC0: Rename service - BA - Deactivate Corporate Credit Card -> Deactivate Corporate Credit Card - 2.EMEA",
+    "2025-2-26 13:59:19 GMT1 Audrey BRITS: added Tom Van Opstal as superreader:doc.acls[1].values[11]: nyasha.ruzvidzo@atlascopco.com -> peter.antonis@atlascopco.com; doc.acls[1].values[12]: peter.antonis@atlascopco.com -> redouan.tezaoui@external.atlascopco.com; doc.acls[1].values[13]: redouan.tezaoui@external.atlascopco.com -> sven.de.belie@atlascopco.com; doc.acls[1].values[14]: sven.de.belie@atlascopco.com -> teis.lamoen@atlascopco.com; doc.acls[1].values[15]: teis.lamoen@atlascopco.com -> thomas.van.bosstraeten@atlascopco.com; doc.acls[1].values[16]: thomas.van.bosstraeten@atlascopco.com -> tom.vanopstal@atlascopco.com; doc.results.acls.SuperReader[11]: nyasha.ruzvidzo@atlascopco.com -> peter.antonis@atlascopco.com; doc.results.acls.SuperReader[12]: peter.antonis@atlascopco.com -> redouan.tezaoui@external.atlascopco.com; doc.results.acls.SuperReader[13]: redouan.tezaoui@external.atlascopco.com -> sven.de.belie@atlascopco.com; doc.results.acls.SuperReader[14]: sven.de.belie@atlascopco.com -> teis.lamoen@atlascopco.com; doc.results.acls.SuperReader[15]: teis.lamoen@atlascopco.com -> thomas.van.bosstraeten@atlascopco.com; doc.results.acls.SuperReader[16]: thomas.van.bosstraeten@atlascopco.com -> tom.vanopstal@atlascopco.com; doc.editStatus: Published -> Editing",
+    "2025-2-24 11:49:48 GMT1 Audrey BRITS: updated pc types keywords:doc.keywords[4].values[1]: 17\" Engineering laptop (Precision workstation) with 32Gb memory + 512Gb SSD +/- 1900€ -> 16\" Engineering laptop (Fury workstation) with 64Gb memory + 1Tb SSD +/- 2500€; doc.results.keywords.PCTypes[1]: 17\" Engineering laptop (Precision workstation) with 32Gb memory + 512Gb SSD +/- 1900€ -> 16\" Engineering laptop (Fury workstation) with 64Gb memory + 1Tb SSD +/- 2500€; doc.editStatus: Published -> Editing",
+    "2025-2-13 9:6:47 GMT1 Peter Larsson: Add APV to config:doc.shareUnits: AIHT,APA,APC,APF,APG,APH,API,APM,APP,APS,APT,APU -> AIHT,APA,APC,APF,APG,APH,API,APM,APP,APS,APT,APU,APV; doc.shareUnitsData.count: 12 -> 13; doc.shareUnitsData.APV: [NewValue] -> [object Object]; doc.editStatus: Published -> Editing",
+    "2025-2-4 10:0:21 GMT1 Peter Larsson: Add APM as shared unit:doc.services[21].isCustomizedRitm: [NewValue] -> false; doc.shareUnits: AIHT,APA,APC,APF,APG,APH,API,APP,APS,APT,APU -> AIHT,APA,APC,APF,APG,APH,API,APM,APP,APS,APT,APU; doc.shareUnitsData.count: 11 -> 12; doc.shareUnitsData.APM: [NewValue] -> [object Object]; doc.editStatus: Published -> Editing",
+    "2025-1-15 8:27:49 GMT1 Audrey BRITS: added new service Provide Password for account:doc.services[21].key: Onboard - IT - Purchase Accessories and Peripherals -> Onboard - IT - Provide Password for account; doc.services[21].name: IT - Purchase Accessories and Peripherals -> IT - Provide Password for account; doc.services[21].snowGroup.sys_id: b6d89b92db2cf810bd245947f4961901 -> 889ecd804f58da008352f1728110c712; doc.services[21].snowGroup.name: Group IT Purchasing - Benelux -> ServiceDesk-TCS; doc.services[21].resp:  -> undefined; doc.services[21].isCustomizedRitm: false -> [Removed]; doc.services[21].mustDone: [NewValue] -> undefined; doc.services[22].key: Onboard - IT - Request Additional Microsoft Products -> Onboard - IT - Purchase Accessories and Peripherals; doc.services[22].name: IT - Request Additional Microsoft Products -> IT - Purchase Accessories and Peripherals; doc.services[22].mustDone: Yes -> [Removed]; doc.services[22].snowGroup.sys_id: 08e191f81bc198100e9086abee4bcbe2 -> b6d89b92db2cf810bd245947f4961901; doc.services[22].snowGroup.name: Group IT Solutions - O365 -> Group IT Purchasing - Benelux; doc.services[23].key: Onboard - IT - Subscribe for Adobe products -> Onboard - IT - Request Additional Microsoft Products; doc.services[23].name: IT - Subscribe for Adobe products -> IT - Request Additional Microsoft Products; doc.services[23].snowGroup.sys_id: b6d89b92db2cf810bd245947f4961901 -> 08e191f81bc198100e9086abee4bcbe2; doc.services[23].snowGroup.name: Group IT Purchasing - Benelux -> Group IT Solutions - O365; doc.services[23].mustDone: [NewValue] -> Yes; doc.services[24]: [NewValue] -> [object Object]; doc.editStatus: Published -> Editing",
+    "2025-1-1 3:0:3 UTC0:  UPN changed - .results.acls.SuperReader.2:bart.roscam@external.atlascopco.com->bart.roscam@atlascopco.com",
+    "2025-1-1 3:0:3 UTC0:  UPN changed - .acls.1.values.2:bart.roscam@external.atlascopco.com->bart.roscam@atlascopco.com",
+    "2024-12-20 10:26:46 UTC0: Retire service - BA - Create SAP-BW account - 1.Global",
+    "2024-12-9 10:38:23 GMT1 Peter Larsson: up:doc.services[22].key: Onboard - IT - Provide Password for account -> Onboard - IT - Purchase Accessories and Peripherals; doc.services[22].name: IT - Provide Password for account -> IT - Purchase Accessories and Peripherals; doc.services[22].snowGroup.sys_id: 8ff3a12f4f232e00c7b8ce6bb110c754 -> b6d89b92db2cf810bd245947f4961901; doc.services[22].snowGroup.name: Group IT Onsite - Belgium -> Group IT Purchasing - Benelux; doc.services[22].resp: [NewValue] -> ; doc.services[22].isCustomizedRitm: [NewValue] -> false; doc.services[23].key: Onboard - IT - Purchase Accessories and Peripherals -> Onboard - IT - Request Additional Microsoft Products; doc.services[23].name: IT - Purchase Accessories and Peripherals -> IT - Request Additional Microsoft Products; doc.services[23].snowGroup.sys_id: b6d89b92db2cf810bd245947f4961901 -> 08e191f81bc198100e9086abee4bcbe2; doc.services[23].snowGroup.name: Group IT Purchasing - Benelux -> Atlas Copco IT Services CBA - O365; doc.services[23].mustDone: [NewValue] -> Yes; doc.services[24].key: Onboard - IT - Request Additional Microsoft Products -> Onboard - IT - Subscribe for Adobe products; doc.services[24].name: IT - Request Additional Microsoft Products -> IT - Subscribe for Adobe products; doc.services[24].mustDone: Yes -> [Removed]; doc.services[24].snowGroup.sys_id: 08e191f81bc198100e9086abee4bcbe2 -> b6d89b92db2cf810bd245947f4961901; doc.services[24].snowGroup.name: Atlas Copco IT Services CBA - O365 -> Group IT Purchasing - Benelux; doc.services[25]: [object Object] -> undefined; doc.editStatus: Published -> Editing",
+    "2024-12-9 10:7:29 GMT1 Peter Larsson: up:doc.services[22].key: Onboard - IT - Purchase Accessories and Peripherals -> Onboard - IT - Provide Password for account; doc.services[22].name: IT - Purchase Accessories and Peripherals -> IT - Provide Password for account; doc.services[22].snowGroup.sys_id: b6d89b92db2cf810bd245947f4961901 -> 8ff3a12f4f232e00c7b8ce6bb110c754; doc.services[22].snowGroup.name: Group IT Purchasing - Benelux -> Group IT Onsite - Belgium; doc.services[22].resp:  -> undefined; doc.services[22].isCustomizedRitm: false -> [Removed]; doc.services[22].mustDone: [NewValue] -> undefined; doc.services[23].key: Onboard - IT - Request Additional Microsoft Products -> Onboard - IT - Purchase Accessories and Peripherals; doc.services[23].name: IT - Request Additional Microsoft Products -> IT - Purchase Accessories and Peripherals; doc.services[23].mustDone: Yes -> [Removed]; doc.services[23].snowGroup.sys_id: 08e191f81bc198100e9086abee4bcbe2 -> b6d89b92db2cf810bd245947f4961901; doc.services[23].snowGroup.name: Atlas Copco IT Services CBA - O365 -> Group IT Purchasing - Benelux; doc.services[24].key: Onboard - IT - Subscribe for Adobe products -> Onboard - IT - Request Additional Microsoft Products; doc.services[24].name: IT - Subscribe for Adobe products -> IT - Request Additional Microsoft Products; doc.services[24].snowGroup.sys_id: b6d89b92db2cf810bd245947f4961901 -> 08e191f81bc198100e9086abee4bcbe2; doc.services[24].snowGroup.name: Group IT Purchasing - Benelux -> Atlas Copco IT Services CBA - O365; doc.services[24].mustDone: [NewValue] -> Yes; doc.services[25]: [NewValue] -> [object Object]; doc.editStatus: Published -> Editing",
+    "2024-12-6 3:0:2 UTC0:  UPN changed - .results.acls.SuperReader.16:thomas.van.bosstraeten@external.atlascopco.com->thomas.van.bosstraeten@atlascopco.com",
+    "2024-12-6 3:0:2 UTC0:  UPN changed - .results.acls.KeyUser.7:thomas.van.bosstraeten@external.atlascopco.com->thomas.van.bosstraeten@atlascopco.com",
+    "2024-12-6 3:0:2 UTC0:  UPN changed - .acls.1.values.16:thomas.van.bosstraeten@external.atlascopco.com->thomas.van.bosstraeten@atlascopco.com",
+    "2024-12-6 3:0:2 UTC0:  UPN changed - .acls.0.values.7:thomas.van.bosstraeten@external.atlascopco.com->thomas.van.bosstraeten@atlascopco.com",
+    "2024-12-5 10:21:6 UTC0: Retire service - BA - Create GPS account - 1.Global",
+    "2024-12-5 9:58:10 UTC0: Retire service - BA - Disable GPS Account - 1.Global",
+    "2024-12-5 9:19:41 UTC0: Retire service - BA - Disable SAP BW Account - 2.EMEA",
+    "2024-12-5 3:0:2 UTC0:  UPN changed - .results.acls.SuperReader.16:thomas.van.bosstraeten@atlascopco.com->thomas.van.bosstraeten@external.atlascopco.com",
+    "2024-12-5 3:0:2 UTC0:  UPN changed - .results.acls.KeyUser.7:thomas.van.bosstraeten@atlascopco.com->thomas.van.bosstraeten@external.atlascopco.com",
+    "2024-12-5 3:0:2 UTC0:  UPN changed - .acls.1.values.16:thomas.van.bosstraeten@atlascopco.com->thomas.van.bosstraeten@external.atlascopco.com",
+    "2024-12-5 3:0:2 UTC0:  UPN changed - .acls.0.values.7:thomas.van.bosstraeten@atlascopco.com->thomas.van.bosstraeten@external.atlascopco.com",
+    "2024-9-25 9:53:30 GMT2 Peter Larsson: UP:doc.wfRouters[3].doneNotice[2]: [NewValue] -> Package Selection$NOTYETCREATEDTEMPLATE$doc.onboard.manager.ManagerUserPrincipalName!=\"philippe.ernens@atlascopco.com\"; doc.editStatus: Published -> Editing",
+    "2024-9-24 15:58:23 GMT2 Peter Larsson: up:doc.wfRouters[1].name: onboard -> offboard.copy.testPL; doc.wfRouters[1].route[1]: Package Selection$doc.onboard.manager.userPrincipalName$doc.onboard.manager.ManagerUserPrincipalName,HRM$doc.onboard.manager.ManagerUserPrincipalName -> Package Selection$doc.offboard.employee.ManagerUserPrincipalName$doc.offboard.employee.GrandManagerUserPrincipalName,HRM$doc.offboard.employee.GrandManagerUserPrincipalName$doc.offboard.employee.GrandManagerUserPrincipalName!=\"philippe.ernens@atlascopco.com\"; doc.wfRouters[1].doneNotice[0]: Package Selection$Onboard_EmployeeType_NoticeAirpower_disabled -> undefined; doc.wfRouters[1].doneNotice[1]: Package Selection$Onboard_NoticeManager_Airpower -> undefined; doc.wfRouters[1].triggerNotice: [NewValue] -> ; doc.wfRouters[2].name: onboard.copy.testPL -> onboard; doc.wfRouters[2].route[1]: Package Selection$doc.onboard.manager.userPrincipalName$doc.onboard.manager.ManagerUserPrincipalName,HRM$doc.onboard.manager.ManagerUserPrincipalName$doc.onboard.manager.ManagerUserPrincipalName!=\"philippe.ernens@atlascopco.com\" -> Package Selection$doc.onboard.manager.userPrincipalName$doc.onboard.manager.ManagerUserPrincipalName,HRM$doc.onboard.manager.ManagerUserPrincipalName; doc.wfRouters[2].triggerNotice:  -> [Removed]; doc.wfRouters[3]: [NewValue] -> [object Object]; doc.editStatus: Published -> Editing",
+    "2024-9-24 15:49:52 GMT2 Peter Larsson: up:doc.wfRouters[2]: [NewValue] -> [object Object]; doc.editStatus: Published -> Editing",
+    "2024-9-19 14:42:16 GMT2 Audrey BRITS: added Thomas Van Bosstraeten as keyuser:doc.acls[0].values[7]: [NewValue] -> thomas.van.bosstraeten@atlascopco.com; doc.results.acls.KeyUser[7]: [NewValue] -> thomas.van.bosstraeten@atlascopco.com; doc.editStatus: Published -> Editing",
+    "2024-8-19 15:53:28 GMT2 Audrey BRITS: removed create AD account service:doc.services[15].key: Onboard - IT - Create AD Admin Account -> Onboard - IT - Create BPCS Account (Product Company); doc.services[15].name: IT - Create AD Admin Account -> IT - Create BPCS Account (Product Company); doc.services[15].snowGroup.sys_id: 28e9794bdb774890cd75253948961974 -> 2c080bc0db928784c6319637db961913; doc.services[15].snowGroup.name: Atlas Copco IT Services - Infra & Ops - Atos Requests -> Atlas Copco IT Services CBA BPCS Product Company User Security; doc.services[16].key: Onboard - IT - Create BPCS Account (Product Company) -> Onboard - IT - Create BPCS Dispatch Account (Product Company); doc.services[16].name: IT - Create BPCS Account (Product Company) -> IT - Create BPCS Dispatch Account (Product Company); doc.services[17].key: Onboard - IT - Create BPCS Dispatch Account (Product Company) -> Onboard - IT - Create C4C Sharepoint Permission; doc.services[17].name: IT - Create BPCS Dispatch Account (Product Company) -> IT - Create C4C Sharepoint Permission; doc.services[17].snowGroup.sys_id: 2c080bc0db928784c6319637db961913 -> 889ecd804f58da008352f1728110c712; doc.services[17].snowGroup.name: Atlas Copco IT Services CBA BPCS Product Company User Security -> ServiceDesk-TCS; doc.services[17].resp:  -> [Removed]; doc.services[18].key: Onboard - IT - Create C4C Sharepoint Permission -> Onboard - IT - Create Mobile Device Management Account; doc.services[18].name: IT - Create C4C Sharepoint Permission -> IT - Create Mobile Device Management Account; doc.services[18].resp: [NewValue] -> ; doc.services[18].triggerNotices: [NewValue] -> ; doc.services[19].key: Onboard - IT - Create Mobile Device Management Account -> Onboard - IT - Create password for kiosk account; doc.services[19].name: IT - Create Mobile Device Management Account -> IT - Create password for kiosk account; doc.services[19].snowGroup.sys_id: 889ecd804f58da008352f1728110c712 -> 8ff3a12f4f232e00c7b8ce6bb110c754; doc.services[19].snowGroup.name: ServiceDesk-TCS -> Atlas Copco IT Services CS Belgium Onsite; doc.services[20].key: Onboard - IT - Create password for kiosk account -> Onboard - IT - Deploy PC for Airpower; doc.services[20].name: IT - Create password for kiosk account -> IT - Deploy PC for Airpower; doc.services[21].isSnowIntegrate: Yes -> No; doc.services[21].key: Onboard - IT - Deploy PC for Airpower -> Onboard - IT - Dummy service for requests without services; doc.services[21].name: IT - Deploy PC for Airpower -> IT - Dummy service for requests without services; doc.services[21].snowGroupType: Select -> [Removed]; doc.services[21].snowGroup: [object Object] -> [Removed]; doc.services[21].resp[0]: [NewValue] -> Dummy; doc.services[21].triggerNotices:  -> [Removed]; doc.services[21].mustDone: [NewValue] -> No; doc.services[22].depands[0]: [NewValue] -> IT - Create BPCS Account (Product Company); doc.services[22].isSnowIntegrate: No -> Yes; doc.services[22].key: Onboard - IT - Dummy service for requests without services -> Onboard - IT - Enable specialized PDF printing in BPCS (Transform) for DN or Invoice/bolla pdf printing; doc.services[22].name: IT - Dummy service for requests without services -> IT - Enable specialized PDF printing in BPCS (Transform) for DN or Invoice/bolla pdf printing; doc.services[22].mustDone: No -> [Removed]; doc.services[22].resp[0]: Dummy -> undefined; doc.services[22].snowGroupType: [NewValue] -> Select; doc.services[22].snowGroup: [NewValue] -> [object Object]; doc.services[23].depands[0]: IT - Create BPCS Account (Product Company) -> undefined; doc.services[23].key: Onboard - IT - Enable specialized PDF printing in BPCS (Transform) for DN or Invoice/bolla pdf printing -> Onboard - IT - Provide Access to MediusFlow; doc.services[23].name: IT - Enable specialized PDF printing in BPCS (Transform) for DN or Invoice/bolla pdf printing -> IT - Provide Access to MediusFlow; doc.services[23].snowGroup.sys_id: 1f9012014f3eb280445cecd18110c7cf -> a6b18b1cdb552b88d357fe9b0c9619bb; doc.services[23].snowGroup.name: Atlas Copco - CT - IS - BPCS Support -> 20010101; doc.services[24].key: Onboard - IT - Provide Access to MediusFlow -> Onboard - IT - Provide access to Network drives/folders; doc.services[24].name: IT - Provide Access to MediusFlow -> IT - Provide access to Network drives/folders; doc.services[24].snowGroup.sys_id: a6b18b1cdb552b88d357fe9b0c9619bb -> 889ecd804f58da008352f1728110c712; doc.services[24].snowGroup.name: 20010101 -> ServiceDesk-TCS; doc.services[24].resp[0]: [NewValue] -> IT_Admin; doc.services[24].mustDone: [NewValue] -> Yes; doc.services[25].name: IT - Provide access to Network drives/folders -> IT - Purchase Accessories and Peripherals; doc.services[25].mustDone: Yes -> [Removed]; doc.services[25].resp[0]: IT_Admin -> undefined; doc.services[25].snowGroup.sys_id: 889ecd804f58da008352f1728110c712 -> b6d89b92db2cf810bd245947f4961901; doc.services[25].snowGroup.name: ServiceDesk-TCS -> Atlas Copco IT Services CS Benelux Purchasing; doc.services[25].key: Onboard - IT - Provide access to Network drives/folders -> Onboard - IT - Purchase Accessories and Peripherals; doc.services[26].key: Onboard - IT - Purchase Accessories and Peripherals -> Onboard - IT - Request Additional Microsoft Products; doc.services[26].name: IT - Purchase Accessories and Peripherals -> IT - Request Additional Microsoft Products; doc.services[26].snowGroup.sys_id: b6d89b92db2cf810bd245947f4961901 -> 08e191f81bc198100e9086abee4bcbe2; doc.services[26].snowGroup.name: Atlas Copco IT Services CS Benelux Purchasing -> Atlas Copco IT Services CBA - O365; doc.services[26].mustDone: [NewValue] -> Yes; doc.services[27].key: Onboard - IT - Request Additional Microsoft Products -> Onboard - IT - Subscribe for Adobe products; doc.services[27].name: IT - Request Additional Microsoft Products -> IT - Subscribe for Adobe products; doc.services[27].mustDone: Yes -> [Removed]; doc.services[27].snowGroup.sys_id: 08e191f81bc198100e9086abee4bcbe2 -> b6d89b92db2cf810bd245947f4961901; doc.services[27].snowGroup.name: Atlas Copco IT Services CBA - O365 -> Atlas Copco IT Services CS Benelux Purchasing; doc.services[28]: [object Object] -> undefined; doc.editStatus: Published -> Editing",
+    "2024-6-25 12:8:4 GMT2 Audrey BRITS: removed Jorre Verelst from keyuser list:doc.acls[0].values[3]: jorre.verelst@external.atlascopco.com -> kris.de.jonghe@external.atlascopco.com; doc.acls[0].values[4]: kris.de.jonghe@external.atlascopco.com -> peter.antonis@atlascopco.com; doc.acls[0].values[5]: peter.antonis@atlascopco.com -> peter.larsson@atlascopco.com; doc.acls[0].values[6]: peter.larsson@atlascopco.com -> teis.lamoen@atlascopco.com; doc.acls[0].values[7]: teis.lamoen@atlascopco.com -> undefined; doc.acls[1].values[8]: jorre.verelst@external.atlascopco.com -> jurgen.oelbrandt@atlascopco.com; doc.acls[1].values[9]: jurgen.oelbrandt@atlascopco.com -> kris.de.jonghe@external.atlascopco.com; doc.acls[1].values[10]: kris.de.jonghe@external.atlascopco.com -> marie.clementine.skwara@atlascopco.com; doc.acls[1].values[11]: marie.clementine.skwara@atlascopco.com -> nyasha.ruzvidzo@atlascopco.com; doc.acls[1].values[12]: nyasha.ruzvidzo@atlascopco.com -> peter.antonis@atlascopco.com; doc.acls[1].values[13]: peter.antonis@atlascopco.com -> redouan.tezaoui@external.atlascopco.com; doc.acls[1].values[14]: redouan.tezaoui@external.atlascopco.com -> sven.de.belie@atlascopco.com; doc.acls[1].values[15]: sven.de.belie@atlascopco.com -> teis.lamoen@atlascopco.com; doc.acls[1].values[16]: teis.lamoen@atlascopco.com -> thomas.van.bosstraeten@atlascopco.com; doc.acls[1].values[17]: thomas.van.bosstraeten@atlascopco.com -> undefined; doc.results.acls.KeyUser[3]: jorre.verelst@external.atlascopco.com -> kris.de.jonghe@external.atlascopco.com; doc.results.acls.KeyUser[4]: kris.de.jonghe@external.atlascopco.com -> peter.antonis@atlascopco.com; doc.results.acls.KeyUser[5]: peter.antonis@atlascopco.com -> peter.larsson@atlascopco.com; doc.results.acls.KeyUser[6]: peter.larsson@atlascopco.com -> teis.lamoen@atlascopco.com; doc.results.acls.KeyUser[7]: teis.lamoen@atlascopco.com -> undefined; doc.results.acls.SuperReader[8]: jorre.verelst@external.atlascopco.com -> jurgen.oelbrandt@atlascopco.com; doc.results.acls.SuperReader[9]: jurgen.oelbrandt@atlascopco.com -> kris.de.jonghe@external.atlascopco.com; doc.results.acls.SuperReader[10]: kris.de.jonghe@external.atlascopco.com -> marie.clementine.skwara@atlascopco.com; doc.results.acls.SuperReader[11]: marie.clementine.skwara@atlascopco.com -> nyasha.ruzvidzo@atlascopco.com; doc.results.acls.SuperReader[12]: nyasha.ruzvidzo@atlascopco.com -> peter.antonis@atlascopco.com; doc.results.acls.SuperReader[13]: peter.antonis@atlascopco.com -> redouan.tezaoui@external.atlascopco.com; doc.results.acls.SuperReader[14]: redouan.tezaoui@external.atlascopco.com -> sven.de.belie@atlascopco.com; doc.results.acls.SuperReader[15]: sven.de.belie@atlascopco.com -> teis.lamoen@atlascopco.com; doc.results.acls.SuperReader[16]: teis.lamoen@atlascopco.com -> thomas.van.bosstraeten@atlascopco.com; doc.results.acls.SuperReader[17]: thomas.van.bosstraeten@atlascopco.com -> undefined; doc.editStatus: Published -> Editing",
+    "2024-4-29 9:56:20 GMT2 Peter Larsson: update superreader marie clementine:doc.acls[1].values[4]: david.nauwelaerts@external.atlascopco.com -> freek.hautecler@external.atlascopco.com; doc.acls[1].values[5]: freek.hautecler@external.atlascopco.com -> guy.verstappen@external.atlascopco.com; doc.acls[1].values[6]: guy.verstappen@external.atlascopco.com -> jan.dehornois@external.atlascopco.com; doc.acls[1].values[7]: jan.dehornois@external.atlascopco.com -> javier.barrios@external.atlascopco.com; doc.acls[1].values[8]: javier.barrios@external.atlascopco.com -> jorre.verelst@external.atlascopco.com; doc.acls[1].values[9]: jorre.verelst@external.atlascopco.com -> jurgen.oelbrandt@atlascopco.com; doc.acls[1].values[10]: jurgen.oelbrandt@atlascopco.com -> kris.de.jonghe@external.atlascopco.com; doc.acls[1].values[11]: kris.de.jonghe@external.atlascopco.com -> marie.clementine.skwara@atlascopco.com; doc.results.acls.SuperReader[4]: david.nauwelaerts@external.atlascopco.com -> freek.hautecler@external.atlascopco.com; doc.results.acls.SuperReader[5]: freek.hautecler@external.atlascopco.com -> guy.verstappen@external.atlascopco.com; doc.results.acls.SuperReader[6]: guy.verstappen@external.atlascopco.com -> jan.dehornois@external.atlascopco.com; doc.results.acls.SuperReader[7]: jan.dehornois@external.atlascopco.com -> javier.barrios@external.atlascopco.com; doc.results.acls.SuperReader[8]: javier.barrios@external.atlascopco.com -> jorre.verelst@external.atlascopco.com; doc.results.acls.SuperReader[9]: jorre.verelst@external.atlascopco.com -> jurgen.oelbrandt@atlascopco.com; doc.results.acls.SuperReader[10]: jurgen.oelbrandt@atlascopco.com -> kris.de.jonghe@external.atlascopco.com; doc.results.acls.SuperReader[11]: kris.de.jonghe@external.atlascopco.com -> marie.clementine.skwara@atlascopco.com; doc.editStatus: Published -> Editing",
+    "2024-3-4 11:22:11 GMT1 Audrey BRITS: added Kris De Jonghe as keyuser:doc.acls[0].values[4]: peter.antonis@atlascopco.com -> kris.de.jonghe@external.atlascopco.com; doc.acls[0].values[5]: peter.larsson@atlascopco.com -> peter.antonis@atlascopco.com; doc.acls[0].values[6]: teis.lamoen@atlascopco.com -> peter.larsson@atlascopco.com; doc.acls[0].values[7]: [NewValue] -> teis.lamoen@atlascopco.com; doc.results.acls.KeyUser[4]: peter.antonis@atlascopco.com -> kris.de.jonghe@external.atlascopco.com; doc.results.acls.KeyUser[5]: peter.larsson@atlascopco.com -> peter.antonis@atlascopco.com; doc.results.acls.KeyUser[6]: teis.lamoen@atlascopco.com -> peter.larsson@atlascopco.com; doc.results.acls.KeyUser[7]: [NewValue] -> teis.lamoen@atlascopco.com; doc.services[0].isCustomizedRitm: [NewValue] -> false; doc.editStatus: Published -> Editing",
+    "2024-2-20 14:19:47 GMT1 Audrey BRITS: added offboarding service for credit card:doc.services[0].isSnowIntegrate: Yes -> No; doc.services[0].key: Offboard - BA - Disable GPS Account -> Offboard - BA - Deactivate Corporate Credit Card; doc.services[0].name: BA - Disable GPS Account -> BA - Deactivate Corporate Credit Card; doc.services[0].snowGroupType: Select -> [Removed]; doc.services[0].snowGroup: [object Object] -> [Removed]; doc.services[0].triggerAt: @Today >= doc.offboard.lastWorkingDayNum -> [Removed]; doc.services[0].resp[0]: [NewValue] -> creditcard_admin; doc.services[0].isCustomizedRitm: false -> [Removed]; doc.services[0].mustDone: [NewValue] -> No; doc.services[0].triggerAtDiff: [NewValue] -> -1; doc.services[1].key: Offboard - BA - Disable SAP BW Account -> Offboard - BA - Disable GPS Account; doc.services[1].name: BA - Disable SAP BW Account -> BA - Disable GPS Account; doc.services[2].key: Offboard - IT - Cancel/Transfer Mobile Subscription Airpower -> Offboard - BA - Disable SAP BW Account; doc.services[2].name: IT - Cancel/Transfer Mobile Subscription Airpower -> BA - Disable SAP BW Account; doc.services[2].snowGroup.sys_id: 8ff3a12f4f232e00c7b8ce6bb110c754 -> e9961a77dbc17740069d9ce8db961930; doc.services[2].snowGroup.name: Atlas Copco IT Services CS Belgium Onsite -> Atlas Copco - Group Reporting; doc.services[2].triggerAtDiff: null -> [Removed]; doc.services[2].triggerNotices:  -> [Removed]; doc.services[2].triggerAt: [NewValue] -> @Today >= doc.offboard.lastWorkingDayNum; doc.services[2].resp: [NewValue] -> ; doc.services[3].key: Offboard - IT - Disable AD Admin Account -> Offboard - IT - Cancel/Transfer Mobile Subscription Airpower; doc.services[3].name: IT - Disable AD Admin Account -> IT - Cancel/Transfer Mobile Subscription Airpower; doc.services[3].snowGroup.sys_id: 28e9794bdb774890cd75253948961974 -> 8ff3a12f4f232e00c7b8ce6bb110c754; doc.services[3].snowGroup.name: Atlas Copco IT Services - Infra & Ops - Atos Requests -> Atlas Copco IT Services CS Belgium Onsite; doc.services[3].triggerAt: @Today >= doc.offboard.lastWorkingDayNum -> [Removed]; doc.services[3].resp:  -> [Removed]; doc.services[3].triggerAtDiff: [NewValue] -> null; doc.services[3].triggerNotices: [NewValue] -> ; doc.services[4].key: Offboard - IT - Disable BPCS account (Product Company) -> Offboard - IT - Disable AD Admin Account; doc.services[4].name: IT - Disable BPCS account (Product Company) -> IT - Disable AD Admin Account; doc.services[4].snowGroup.sys_id: 2c080bc0db928784c6319637db961913 -> 28e9794bdb774890cd75253948961974; doc.services[4].snowGroup.name: Atlas Copco IT Services CBA BPCS Product Company User Security -> Atlas Copco IT Services - Infra & Ops - Atos Requests; doc.services[5].isSnowIntegrate: No -> Yes; doc.services[5].key: Offboard - IT - Dummy service for requests without services. -> Offboard - IT - Disable BPCS account (Product Company); doc.services[5].name: IT - Dummy service for requests without services. -> IT - Disable BPCS account (Product Company); doc.services[5].mustDone: No -> [Removed]; doc.services[5].resp[0]: Dummy -> undefined; doc.services[5].snowGroupType: [NewValue] -> Select; doc.services[5].snowGroup: [NewValue] -> [object Object]; doc.services[5].triggerAt: [NewValue] -> @Today >= doc.offboard.lastWorkingDayNum; doc.services[6].isSnowIntegrate: Yes -> No; doc.services[6].key: Offboard - IT - Remove access to MediusFlow -> Offboard - IT - Dummy service for requests without services.; doc.services[6].name: IT - Remove access to MediusFlow -> IT - Dummy service for requests without services.; doc.services[6].snowGroupType: Select -> [Removed]; doc.services[6].snowGroup: [object Object] -> [Removed]; doc.services[6].triggerAtDiff: -1 -> [Removed]; doc.services[6].mustDone: [NewValue] -> No; doc.services[6].resp: [NewValue] -> Dummy; doc.services[7].key: Offboard - IT - Remove access to Network drives/folders -> Offboard - IT - Remove access to MediusFlow; doc.services[7].name: IT - Remove access to Network drives/folders -> IT - Remove access to MediusFlow; doc.services[7].snowGroup.sys_id: 889ecd804f58da008352f1728110c712 -> a6b18b1cdb552b88d357fe9b0c9619bb; doc.services[7].snowGroup.name: ServiceDesk-TCS -> 20010101; doc.services[8].key: Offboard - IT - Return PC asset -> Offboard - IT - Remove access to Network drives/folders; doc.services[8].name: IT - Return PC asset -> IT - Remove access to Network drives/folders; doc.services[8].mustDone: Yes -> [Removed]; doc.services[8].snowGroup.sys_id: 8ff3a12f4f232e00c7b8ce6bb110c754 -> 889ecd804f58da008352f1728110c712; doc.services[8].snowGroup.name: Atlas Copco IT Services CS Belgium Onsite -> ServiceDesk-TCS; doc.services[8].triggerAt: @Today >= doc.offboard.lastWorkingDayNum -> [Removed]; doc.services[8].resp:  -> [Removed]; doc.services[8].triggerNotices:  -> [Removed]; doc.services[8].triggerAtDiff: [NewValue] -> -1; doc.services[9].name: IT - Revoke Adobe License -> IT - Return PC asset; doc.services[9].resp[0]: Adobe_Admin -> undefined; doc.services[9].snowGroup.sys_id: b6d89b92db2cf810bd245947f4961901 -> 8ff3a12f4f232e00c7b8ce6bb110c754; doc.services[9].snowGroup.name: Atlas Copco IT Services CS Benelux Purchasing -> Atlas Copco IT Services CS Belgium Onsite; doc.services[9].key: Offboard - IT - Revoke Adobe License -> Offboard - IT - Return PC asset; doc.services[9].triggerNotices: [NewValue] -> ; doc.services[10].key: Onboard - BA - Create GPS account -> Offboard - IT - Revoke Adobe License; doc.services[10].name: BA - Create GPS account -> IT - Revoke Adobe License; doc.services[10].type: Onboard -> Offboard; doc.services[10].snowGroup.sys_id: e9961a77dbc17740069d9ce8db961930 -> b6d89b92db2cf810bd245947f4961901; doc.services[10].snowGroup.name: Atlas Copco - Group Reporting -> Atlas Copco IT Services CS Benelux Purchasing; doc.services[10].resp[0]: [NewValue] -> Adobe_Admin; doc.services[10].mustDone: [NewValue] -> Yes; doc.services[10].triggerAt: [NewValue] -> @Today >= doc.offboard.lastWorkingDayNum; doc.services[11].key: Onboard - BA - Create SAP-BW account -> Onboard - BA - Create GPS account; doc.services[11].name: BA - Create SAP-BW account -> BA - Create GPS account; doc.services[11].mustDone: Yes -> [Removed]; doc.services[12].key: Onboard - IT - Activate remote access to corporate Network -> Onboard - BA - Create SAP-BW account; doc.services[12].name: IT - Activate remote access to corporate Network -> BA - Create SAP-BW account; doc.services[12].snowGroup.sys_id: 889ecd804f58da008352f1728110c712 -> e9961a77dbc17740069d9ce8db961930; doc.services[12].snowGroup.name: ServiceDesk-TCS -> Atlas Copco - Group Reporting; doc.services[12].mustDone: [NewValue] -> Yes; doc.services[13].triggerAt:  -> [Removed]; doc.services[13].key: Onboard - IT - Add a landline phone number to MS Teams (UCaaS) -> Onboard - IT - Activate remote access to corporate Network; doc.services[13].name: IT - Add a landline phone number to MS Teams (UCaaS) -> IT - Activate remote access to corporate Network; doc.services[14].key: Onboard - IT - Create AD Admin Account -> Onboard - IT - Add a landline phone number to MS Teams (UCaaS); doc.services[14].name: IT - Create AD Admin Account -> IT - Add a landline phone number to MS Teams (UCaaS); doc.services[14].snowGroup.sys_id: 28e9794bdb774890cd75253948961974 -> 889ecd804f58da008352f1728110c712; doc.services[14].snowGroup.name: Atlas Copco IT Services - Infra & Ops - Atos Requests -> ServiceDesk-TCS; doc.services[14].triggerAt: [NewValue] -> ; doc.services[15].key: Onboard - IT - Create BPCS Account (Product Company) -> Onboard - IT - Create AD Admin Account; doc.services[15].name: IT - Create BPCS Account (Product Company) -> IT - Create AD Admin Account; doc.services[15].snowGroup.sys_id: 2c080bc0db928784c6319637db961913 -> 28e9794bdb774890cd75253948961974; doc.services[15].snowGroup.name: Atlas Copco IT Services CBA BPCS Product Company User Security -> Atlas Copco IT Services - Infra & Ops - Atos Requests; doc.services[16].key: Onboard - IT - Create BPCS Dispatch Account (Product Company) -> Onboard - IT - Create BPCS Account (Product Company); doc.services[16].name: IT - Create BPCS Dispatch Account (Product Company) -> IT - Create BPCS Account (Product Company); doc.services[17].key: Onboard - IT - Create C4C Sharepoint Permission -> Onboard - IT - Create BPCS Dispatch Account (Product Company); doc.services[17].name: IT - Create C4C Sharepoint Permission -> IT - Create BPCS Dispatch Account (Product Company); doc.services[17].snowGroup.sys_id: 889ecd804f58da008352f1728110c712 -> 2c080bc0db928784c6319637db961913; doc.services[17].snowGroup.name: ServiceDesk-TCS -> Atlas Copco IT Services CBA BPCS Product Company User Security; doc.services[17].resp: [NewValue] -> ; doc.services[18].key: Onboard - IT - Create Mobile Device Management Account -> Onboard - IT - Create C4C Sharepoint Permission; doc.services[18].name: IT - Create Mobile Device Management Account -> IT - Create C4C Sharepoint Permission; doc.services[18].resp:  -> [Removed]; doc.services[18].triggerNotices:  -> [Removed]; doc.services[19].key: Onboard - IT - Create password for kiosk account -> Onboard - IT - Create Mobile Device Management Account; doc.services[19].name: IT - Create password for kiosk account -> IT - Create Mobile Device Management Account; doc.services[19].snowGroup.sys_id: 8ff3a12f4f232e00c7b8ce6bb110c754 -> 889ecd804f58da008352f1728110c712; doc.services[19].snowGroup.name: Atlas Copco IT Services CS Belgium Onsite -> ServiceDesk-TCS; doc.services[20].key: Onboard - IT - Deploy PC for Airpower -> Onboard - IT - Create password for kiosk account; doc.services[20].name: IT - Deploy PC for Airpower -> IT - Create password for kiosk account; doc.services[21].isSnowIntegrate: No -> Yes; doc.services[21].key: Onboard - IT - Dummy service for requests without services -> Onboard - IT - Deploy PC for Airpower; doc.services[21].name: IT - Dummy service for requests without services -> IT - Deploy PC for Airpower; doc.services[21].mustDone: No -> [Removed]; doc.services[21].resp[0]: Dummy -> undefined; doc.services[21].snowGroupType: [NewValue] -> Select; doc.services[21].snowGroup: [NewValue] -> [object Object]; doc.services[21].triggerNotices: [NewValue] -> ; doc.services[22].depands[0]: IT - Create BPCS Account (Product Company) -> undefined; doc.services[22].isSnowIntegrate: Yes -> No; doc.services[22].key: Onboard - IT - Enable specialized PDF printing in BPCS (Transform) for DN or Invoice/bolla pdf printing -> Onboard - IT - Dummy service for requests without services; doc.services[22].name: IT - Enable specialized PDF printing in BPCS (Transform) for DN or Invoice/bolla pdf printing -> IT - Dummy service for requests without services; doc.services[22].snowGroupType: Select -> [Removed]; doc.services[22].snowGroup: [object Object] -> [Removed]; doc.services[22].resp[0]: [NewValue] -> Dummy; doc.services[22].mustDone: [NewValue] -> No; doc.services[23].depands[0]: [NewValue] -> IT - Create BPCS Account (Product Company); doc.services[23].key: Onboard - IT - Provide Access to MediusFlow -> Onboard - IT - Enable specialized PDF printing in BPCS (Transform) for DN or Invoice/bolla pdf printing; doc.services[23].name: IT - Provide Access to MediusFlow -> IT - Enable specialized PDF printing in BPCS (Transform) for DN or Invoice/bolla pdf printing; doc.services[23].snowGroup.sys_id: a6b18b1cdb552b88d357fe9b0c9619bb -> 1f9012014f3eb280445cecd18110c7cf; doc.services[23].snowGroup.name: 20010101 -> Atlas Copco - CT - IS - BPCS Support; doc.services[24].name: IT - Provide access to Network drives/folders -> IT - Provide Access to MediusFlow; doc.services[24].mustDone: Yes -> [Removed]; doc.services[24].resp[0]: IT_Admin -> undefined; doc.services[24].snowGroup.sys_id: 889ecd804f58da008352f1728110c712 -> a6b18b1cdb552b88d357fe9b0c9619bb; doc.services[24].snowGroup.name: ServiceDesk-TCS -> 20010101; doc.services[24].key: Onboard - IT - Provide access to Network drives/folders -> Onboard - IT - Provide Access to MediusFlow; doc.services[25].key: Onboard - IT - Purchase Accessories and Peripherals -> Onboard - IT - Provide access to Network drives/folders; doc.services[25].name: IT - Purchase Accessories and Peripherals -> IT - Provide access to Network drives/folders; doc.services[25].snowGroup.sys_id: b6d89b92db2cf810bd245947f4961901 -> 889ecd804f58da008352f1728110c712; doc.services[25].snowGroup.name: Atlas Copco IT Services CS Benelux Purchasing -> ServiceDesk-TCS; doc.services[25].resp[0]: [NewValue] -> IT_Admin; doc.services[25].mustDone: [NewValue] -> Yes; doc.services[26].key: Onboard - IT - Request Additional Microsoft Products -> Onboard - IT - Purchase Accessories and Peripherals; doc.services[26].name: IT - Request Additional Microsoft Products -> IT - Purchase Accessories and Peripherals; doc.services[26].mustDone: Yes -> [Removed]; doc.services[26].snowGroup.sys_id: 08e191f81bc198100e9086abee4bcbe2 -> b6d89b92db2cf810bd245947f4961901; doc.services[26].snowGroup.name: Atlas Copco IT Services CBA - O365 -> Atlas Copco IT Services CS Benelux Purchasing; doc.services[27].key: Onboard - IT - Subscribe for Adobe products -> Onboard - IT - Request Additional Microsoft Products; doc.services[27].name: IT - Subscribe for Adobe products -> IT - Request Additional Microsoft Products; doc.services[27].snowGroup.sys_id: b6d89b92db2cf810bd245947f4961901 -> 08e191f81bc198100e9086abee4bcbe2; doc.services[27].snowGroup.name: Atlas Copco IT Services CS Benelux Purchasing -> Atlas Copco IT Services CBA - O365; doc.services[27].mustDone: [NewValue] -> Yes; doc.services[28]: [NewValue] -> [object Object]; doc.editStatus: Published -> Editing",
+    "2024-2-20 13:53:6 GMT1 Peter Larsson: up:doc.wfRoles[3]: [NewValue] -> [object Object]; doc.editStatus: Published -> Editing",
+    "2023-12-21 16:28:52 GMT1 Audrey BRITS: added Nyasha as superreader and removed from keyuser role:doc.acls[0].values[4]: nyasha.ruzvidzo@atlascopco.com -> peter.antonis@atlascopco.com; doc.acls[0].values[5]: peter.antonis@atlascopco.com -> peter.larsson@atlascopco.com; doc.acls[0].values[6]: peter.larsson@atlascopco.com -> teis.lamoen@atlascopco.com; doc.acls[0].values[7]: teis.lamoen@atlascopco.com -> undefined; doc.acls[1].values[12]: peter.antonis@atlascopco.com -> nyasha.ruzvidzo@atlascopco.com; doc.acls[1].values[13]: redouan.tezaoui@external.atlascopco.com -> peter.antonis@atlascopco.com; doc.acls[1].values[14]: sven.de.belie@atlascopco.com -> redouan.tezaoui@external.atlascopco.com; doc.acls[1].values[15]: teis.lamoen@atlascopco.com -> sven.de.belie@atlascopco.com; doc.acls[1].values[16]: thomas.van.bosstraeten@atlascopco.com -> teis.lamoen@atlascopco.com; doc.acls[1].values[17]: [NewValue] -> thomas.van.bosstraeten@atlascopco.com; doc.results.acls.KeyUser[4]: nyasha.ruzvidzo@atlascopco.com -> peter.antonis@atlascopco.com; doc.results.acls.KeyUser[5]: peter.antonis@atlascopco.com -> peter.larsson@atlascopco.com; doc.results.acls.KeyUser[6]: peter.larsson@atlascopco.com -> teis.lamoen@atlascopco.com; doc.results.acls.KeyUser[7]: teis.lamoen@atlascopco.com -> undefined; doc.results.acls.SuperReader[12]: peter.antonis@atlascopco.com -> nyasha.ruzvidzo@atlascopco.com; doc.results.acls.SuperReader[13]: redouan.tezaoui@external.atlascopco.com -> peter.antonis@atlascopco.com; doc.results.acls.SuperReader[14]: sven.de.belie@atlascopco.com -> redouan.tezaoui@external.atlascopco.com; doc.results.acls.SuperReader[15]: teis.lamoen@atlascopco.com -> sven.de.belie@atlascopco.com; doc.results.acls.SuperReader[16]: thomas.van.bosstraeten@atlascopco.com -> teis.lamoen@atlascopco.com; doc.results.acls.SuperReader[17]: [NewValue] -> thomas.van.bosstraeten@atlascopco.com; doc.editStatus: Published -> Editing",
+    "2023-12-18 11:41:35 GMT1 Audrey BRITS: added Alikhan Ibragimov as superreader:doc.acls[1].values[0]: audrey.brits@atlascopco.com -> alikhan.ibragimov@external.atlascopco.com; doc.acls[1].values[1]: bart.roscam@external.atlascopco.com -> audrey.brits@atlascopco.com; doc.acls[1].values[2]: catherine.moens@atlascopco.com -> bart.roscam@external.atlascopco.com; doc.acls[1].values[3]: daniel.fernandes@external.atlascopco.com -> catherine.moens@atlascopco.com; doc.acls[1].values[12]: patrick.poncelet@atlascopco.com -> peter.antonis@atlascopco.com; doc.acls[1].values[13]: peter.antonis@atlascopco.com -> redouan.tezaoui@external.atlascopco.com; doc.acls[1].values[14]: redouan.tezaoui@external.atlascopco.com -> sven.de.belie@atlascopco.com; doc.acls[1].values[15]: sven.de.belie@atlascopco.com -> teis.lamoen@atlascopco.com; doc.acls[1].values[16]: teis.lamoen@atlascopco.com -> thomas.van.bosstraeten@atlascopco.com; doc.acls[1].values[17]: thomas.van.bosstraeten@atlascopco.com -> undefined; doc.results.acls.SuperReader[0]: audrey.brits@atlascopco.com -> alikhan.ibragimov@external.atlascopco.com; doc.results.acls.SuperReader[1]: bart.roscam@external.atlascopco.com -> audrey.brits@atlascopco.com; doc.results.acls.SuperReader[2]: catherine.moens@atlascopco.com -> bart.roscam@external.atlascopco.com; doc.results.acls.SuperReader[3]: daniel.fernandes@external.atlascopco.com -> catherine.moens@atlascopco.com; doc.results.acls.SuperReader[12]: patrick.poncelet@atlascopco.com -> peter.antonis@atlascopco.com; doc.results.acls.SuperReader[13]: peter.antonis@atlascopco.com -> redouan.tezaoui@external.atlascopco.com; doc.results.acls.SuperReader[14]: redouan.tezaoui@external.atlascopco.com -> sven.de.belie@atlascopco.com; doc.results.acls.SuperReader[15]: sven.de.belie@atlascopco.com -> teis.lamoen@atlascopco.com; doc.results.acls.SuperReader[16]: teis.lamoen@atlascopco.com -> thomas.van.bosstraeten@atlascopco.com; doc.results.acls.SuperReader[17]: thomas.van.bosstraeten@atlascopco.com -> undefined; doc.editStatus: Published -> Editing",
+    "2023-11-28 11:12:22 GMT1 Audrey BRITS: removed offboarding service for App Security as this no longer follows correct process:doc.services[8].key: Offboard - IT - Remove account for Appsecurity -> Offboard - IT - Return PC asset; doc.services[8].name: IT - Remove account for Appsecurity -> IT - Return PC asset; doc.services[8].snowGroup.sys_id: 889ecd804f58da008352f1728110c712 -> 8ff3a12f4f232e00c7b8ce6bb110c754; doc.services[8].snowGroup.name: ServiceDesk-TCS -> Atlas Copco IT Services CS Belgium Onsite; doc.services[8].mustDone: [NewValue] -> Yes; doc.services[8].triggerNotices: [NewValue] -> ; doc.services[9].key: Offboard - IT - Return PC asset -> Offboard - IT - Revoke Adobe License; doc.services[9].name: IT - Return PC asset -> IT - Revoke Adobe License; doc.services[9].snowGroup.sys_id: 8ff3a12f4f232e00c7b8ce6bb110c754 -> b6d89b92db2cf810bd245947f4961901; doc.services[9].snowGroup.name: Atlas Copco IT Services CS Belgium Onsite -> Atlas Copco IT Services CS Benelux Purchasing; doc.services[9].resp[0]: [NewValue] -> Adobe_Admin; doc.services[9].triggerNotices:  -> [Removed]; doc.services[10].name: IT - Revoke Adobe License -> BA - Create GPS account; doc.services[10].type: Offboard -> Onboard; doc.services[10].mustDone: Yes -> [Removed]; doc.services[10].resp[0]: Adobe_Admin -> undefined; doc.services[10].triggerAt: @Today >= doc.offboard.lastWorkingDayNum -> [Removed]; doc.services[10].snowGroup.sys_id: b6d89b92db2cf810bd245947f4961901 -> e9961a77dbc17740069d9ce8db961930; doc.services[10].snowGroup.name: Atlas Copco IT Services CS Benelux Purchasing -> Atlas Copco - Group Reporting; doc.services[10].key: Offboard - IT - Revoke Adobe License -> Onboard - BA - Create GPS account; doc.services[11].key: Onboard - BA - Create GPS account -> Onboard - BA - Create SAP-BW account; doc.services[11].name: BA - Create GPS account -> BA - Create SAP-BW account; doc.services[11].mustDone: [NewValue] -> Yes; doc.services[12].key: Onboard - BA - Create SAP-BW account -> Onboard - IT - Activate remote access to corporate Network; doc.services[12].name: BA - Create SAP-BW account -> IT - Activate remote access to corporate Network; doc.services[12].mustDone: Yes -> [Removed]; doc.services[12].snowGroup.sys_id: e9961a77dbc17740069d9ce8db961930 -> 889ecd804f58da008352f1728110c712; doc.services[12].snowGroup.name: Atlas Copco - Group Reporting -> ServiceDesk-TCS; doc.services[13].key: Onboard - IT - Activate remote access to corporate Network -> Onboard - IT - Add a landline phone number to MS Teams (UCaaS); doc.services[13].name: IT - Activate remote access to corporate Network -> IT - Add a landline phone number to MS Teams (UCaaS); doc.services[13].triggerAt: [NewValue] -> ; doc.services[14].triggerAt:  -> [Removed]; doc.services[14].key: Onboard - IT - Add a landline phone number to MS Teams (UCaaS) -> Onboard - IT - Create AD Admin Account; doc.services[14].name: IT - Add a landline phone number to MS Teams (UCaaS) -> IT - Create AD Admin Account; doc.services[14].snowGroup.sys_id: 889ecd804f58da008352f1728110c712 -> 28e9794bdb774890cd75253948961974; doc.services[14].snowGroup.name: ServiceDesk-TCS -> Atlas Copco IT Services - Infra & Ops - Atos Requests; doc.services[15].key: Onboard - IT - Create AD Admin Account -> Onboard - IT - Create BPCS Account (Product Company); doc.services[15].name: IT - Create AD Admin Account -> IT - Create BPCS Account (Product Company); doc.services[15].snowGroup.sys_id: 28e9794bdb774890cd75253948961974 -> 2c080bc0db928784c6319637db961913; doc.services[15].snowGroup.name: Atlas Copco IT Services - Infra & Ops - Atos Requests -> Atlas Copco IT Services CBA BPCS Product Company User Security; doc.services[16].key: Onboard - IT - Create BPCS Account (Product Company) -> Onboard - IT - Create BPCS Dispatch Account (Product Company); doc.services[16].name: IT - Create BPCS Account (Product Company) -> IT - Create BPCS Dispatch Account (Product Company); doc.services[17].key: Onboard - IT - Create BPCS Dispatch Account (Product Company) -> Onboard - IT - Create C4C Sharepoint Permission; doc.services[17].name: IT - Create BPCS Dispatch Account (Product Company) -> IT - Create C4C Sharepoint Permission; doc.services[17].snowGroup.sys_id: 2c080bc0db928784c6319637db961913 -> 889ecd804f58da008352f1728110c712; doc.services[17].snowGroup.name: Atlas Copco IT Services CBA BPCS Product Company User Security -> ServiceDesk-TCS; doc.services[17].resp:  -> [Removed]; doc.services[18].key: Onboard - IT - Create C4C Sharepoint Permission -> Onboard - IT - Create Mobile Device Management Account; doc.services[18].name: IT - Create C4C Sharepoint Permission -> IT - Create Mobile Device Management Account; doc.services[18].resp: [NewValue] -> ; doc.services[18].triggerNotices: [NewValue] -> ; doc.services[19].key: Onboard - IT - Create Mobile Device Management Account -> Onboard - IT - Create password for kiosk account; doc.services[19].name: IT - Create Mobile Device Management Account -> IT - Create password for kiosk account; doc.services[19].snowGroup.sys_id: 889ecd804f58da008352f1728110c712 -> 8ff3a12f4f232e00c7b8ce6bb110c754; doc.services[19].snowGroup.name: ServiceDesk-TCS -> Atlas Copco IT Services CS Belgium Onsite; doc.services[20].key: Onboard - IT - Create password for kiosk account -> Onboard - IT - Deploy PC for Airpower; doc.services[20].name: IT - Create password for kiosk account -> IT - Deploy PC for Airpower; doc.services[21].isSnowIntegrate: Yes -> No; doc.services[21].key: Onboard - IT - Deploy PC for Airpower -> Onboard - IT - Dummy service for requests without services; doc.services[21].name: IT - Deploy PC for Airpower -> IT - Dummy service for requests without services; doc.services[21].snowGroupType: Select -> [Removed]; doc.services[21].snowGroup: [object Object] -> [Removed]; doc.services[21].resp[0]: [NewValue] -> Dummy; doc.services[21].triggerNotices:  -> [Removed]; doc.services[21].mustDone: [NewValue] -> No; doc.services[22].depands[0]: [NewValue] -> IT - Create BPCS Account (Product Company); doc.services[22].isSnowIntegrate: No -> Yes; doc.services[22].key: Onboard - IT - Dummy service for requests without services -> Onboard - IT - Enable specialized PDF printing in BPCS (Transform) for DN or Invoice/bolla pdf printing; doc.services[22].name: IT - Dummy service for requests without services -> IT - Enable specialized PDF printing in BPCS (Transform) for DN or Invoice/bolla pdf printing; doc.services[22].mustDone: No -> [Removed]; doc.services[22].resp[0]: Dummy -> undefined; doc.services[22].snowGroupType: [NewValue] -> Select; doc.services[22].snowGroup: [NewValue] -> [object Object]; doc.services[23].depands[0]: IT - Create BPCS Account (Product Company) -> undefined; doc.services[23].key: Onboard - IT - Enable specialized PDF printing in BPCS (Transform) for DN or Invoice/bolla pdf printing -> Onboard - IT - Provide Access to MediusFlow; doc.services[23].name: IT - Enable specialized PDF printing in BPCS (Transform) for DN or Invoice/bolla pdf printing -> IT - Provide Access to MediusFlow; doc.services[23].snowGroup.sys_id: 1f9012014f3eb280445cecd18110c7cf -> a6b18b1cdb552b88d357fe9b0c9619bb; doc.services[23].snowGroup.name: Atlas Copco - CT - IS - BPCS Support -> 20010101; doc.services[24].key: Onboard - IT - Provide Access to MediusFlow -> Onboard - IT - Provide access to Network drives/folders; doc.services[24].name: IT - Provide Access to MediusFlow -> IT - Provide access to Network drives/folders; doc.services[24].snowGroup.sys_id: a6b18b1cdb552b88d357fe9b0c9619bb -> 889ecd804f58da008352f1728110c712; doc.services[24].snowGroup.name: 20010101 -> ServiceDesk-TCS; doc.services[24].resp[0]: [NewValue] -> IT_Admin; doc.services[24].mustDone: [NewValue] -> Yes; doc.services[25].name: IT - Provide access to Network drives/folders -> IT - Purchase Accessories and Peripherals; doc.services[25].mustDone: Yes -> [Removed]; doc.services[25].resp[0]: IT_Admin -> undefined; doc.services[25].snowGroup.sys_id: 889ecd804f58da008352f1728110c712 -> b6d89b92db2cf810bd245947f4961901; doc.services[25].snowGroup.name: ServiceDesk-TCS -> Atlas Copco IT Services CS Benelux Purchasing; doc.services[25].key: Onboard - IT - Provide access to Network drives/folders -> Onboard - IT - Purchase Accessories and Peripherals; doc.services[26].key: Onboard - IT - Purchase Accessories and Peripherals -> Onboard - IT - Request Additional Microsoft Products; doc.services[26].name: IT - Purchase Accessories and Peripherals -> IT - Request Additional Microsoft Products; doc.services[26].snowGroup.sys_id: b6d89b92db2cf810bd245947f4961901 -> 08e191f81bc198100e9086abee4bcbe2; doc.services[26].snowGroup.name: Atlas Copco IT Services CS Benelux Purchasing -> Atlas Copco IT Services CBA - O365; doc.services[26].mustDone: [NewValue] -> Yes; doc.services[27].key: Onboard - IT - Request Additional Microsoft Products -> Onboard - IT - Subscribe for Adobe products; doc.services[27].name: IT - Request Additional Microsoft Products -> IT - Subscribe for Adobe products; doc.services[27].mustDone: Yes -> [Removed]; doc.services[27].snowGroup.sys_id: 08e191f81bc198100e9086abee4bcbe2 -> b6d89b92db2cf810bd245947f4961901; doc.services[27].snowGroup.name: Atlas Copco IT Services CBA - O365 -> Atlas Copco IT Services CS Benelux Purchasing; doc.services[28]: [object Object] -> undefined; doc.editStatus: Published -> Editing",
+    "2023-11-13 16:33:11 GMT1 Peter Larsson: UP:doc.services[19].key: Onboard - IT - Create Mobile Device Management Account  -> Onboard - IT - Create Mobile Device Management Account; doc.services[19].name: IT - Create Mobile Device Management Account  -> IT - Create Mobile Device Management Account; doc.services[19].triggerNotices: [NewValue] -> ; doc.editStatus: Published -> Editing",
+    "2023-8-31 9:28:37 GMT2 Peter Larsson: up:services;",
+    "2023-8-24 18:0:35 GMT5 Muhammad Rashid: Key User are updated as requested by Nyasha:",
+    "2023-8-22 8:49:2 GMT2 Peter Larsson: up:",
+    "2023-8-22 8:47:47 GMT2 Peter Larsson: up:",
+    "2023-8-18 7:29:32 GMT2 Peter Larsson: up:",
+    "2023-8-18 7:27:0 GMT2 Peter Larsson: up:",
+    "2023-7-31 13:23:16 GMT2 Audrey BRITS: added Redouan Tezaoui as superreader:",
+    "2023-7-18 7:54:53 UTC0: Retire service - IT - Remove Lotus Notes account - 1.Global",
+    "2023-6-21 17:13:39 GMT2 Audrey BRITS: added Freek Hautecler as superreader:",
+    "2023-6-21 8:33:44 UTC0: Retire service - IT - Create Lotus Notes Account - 2.EMEA",
+    "2023-4-11 11:58:14 GMT2 Audrey BRITS: added Jan De Hornois to superreader role:",
+    "2023-4-4 17:38:10 GMT2 Audrey BRITS: changed Airpower onsite assignments to Belgium onsite :services;",
+    "2023-3-21 7:48:52 GMT1 Peter Larsson: up:",
+    "2023-3-17 13:18:15 GMT1 Audrey BRITS: removed Appsecurity onboarding service:services;",
+    "2023-3-13 14:37:24 GMT1 Audrey BRITS: added Jan Reniers as keyuser for package testing:services;"
+  ],
+  "packages": [],
+  "results": {
+    "acls": {
+      "KeyUser": [
+        "audrey.brits@atlascopco.com",
+        "guy.verstappen@external.atlascopco.com",
+        "jan.reniers@atlascopco.com",
+        "kris.de.jonghe@external.atlascopco.com",
+        "peter.antonis@atlascopco.com",
+        "peter.larsson@atlascopco.com",
+        "teis.lamoen@atlascopco.com",
+        "thomas.van.bosstraeten@atlascopco.com"
+      ],
+      "SuperReader": [
+        "alikhan.ibragimov@external.atlascopco.com",
+        "audrey.brits@atlascopco.com",
+        "bart.roscam@atlascopco.com",
+        "catherine.moens@atlascopco.com",
+        "freek.hautecler@external.atlascopco.com",
+        "guy.verstappen@external.atlascopco.com",
+        "jan.dehornois@external.atlascopco.com",
+        "javier.barrios@external.atlascopco.com",
+        "jurgen.oelbrandt@atlascopco.com",
+        "kris.de.jonghe@external.atlascopco.com",
+        "marie.clementine.skwara@atlascopco.com",
+        "peter.antonis@atlascopco.com",
+        "redouan.tezaoui@external.atlascopco.com",
+        "sven.de.belie@atlascopco.com",
+        "teis.lamoen@atlascopco.com",
+        "thomas.van.bosstraeten@atlascopco.com",
+        "tom.vanopstal@atlascopco.com"
+      ]
+    },
+    "keywords": {
+      "AccessoryTypes": [
+        "24” screen : +/- 140€",
+        "27” screen : +/- 200€"
+      ],
+      "AllowNoPackageRequired": [
+        "Yes"
+      ],
+      "Location": [
+        "Belgium - Wilrijk/Aartselaar",
+        "Home Office",
+        "Remote Office Location"
+      ],
+      "PCPeripheralTypes": [
+        "15” briefcase",
+        "17” backpack",
+        "Wired Keyboard and Mouse",
+        "Docking Station"
+      ],
+      "PCTypes": [
+        "14” Standard laptop with 16Gb memory + 256Gb SSD  +/- 650€",
+        "16\" Engineering laptop (Fury workstation) with 64Gb memory + 1Tb SSD +/- 2500€",
+        "Other"
+      ],
+      "UpnDomain": [
+        "@atlascopco.com",
+        "@external.atlascopco.com"
+      ]
+    },
+    "count": 8
+  },
+  "services": [
+    {
+      "resp": [
+        "creditcard_admin"
+      ],
+      "depands": [],
+      "isSnowIntegrate": "No",
+      "completeNotices": [],
+      "completeNoticesByRole": [],
+      "key": "Offboard - Deactivate Corporate Credit Card",
+      "name": "Deactivate Corporate Credit Card",
+      "type": "Offboard",
+      "mustDone": "No",
+      "triggerAtDiff": -1,
+      "isCustomizedRitm": false
+    },
+    {
+      "depands": [],
+      "isSnowIntegrate": "Yes",
+      "completeNotices": [],
+      "completeNoticesByRole": [],
+      "key": "Offboard - IT - Cancel/Transfer Mobile Subscription Airpower",
+      "name": "IT - Cancel/Transfer Mobile Subscription Airpower",
+      "type": "Offboard",
+      "snowGroupType": "Select",
+      "snowGroup": {
+        "_id": "5d22b31f6b8f9955cd9eb21e",
+        "sys_id": "8ff3a12f4f232e00c7b8ce6bb110c754",
+        "name": "Group IT Onsite - Belgium"
+      },
+      "triggerAtDiff": null,
+      "isCustomizedRitm": false,
+      "triggerNotices": []
+    },
+    {
+      "depands": [],
+      "isSnowIntegrate": "Yes",
+      "key": "Offboard - IT - Disable AD Admin Account",
+      "name": "IT - Disable AD Admin Account",
+      "type": "Offboard",
+      "snowGroupType": "Select",
+      "snowGroup": {
+        "_id": "5eba87d0e9d7af36df330ffc",
+        "sys_id": "28e9794bdb774890cd75253948961974",
+        "name": "Group IT - I&O - Atos Requests"
+      },
+      "triggerAt": "@Today >= doc.offboard.lastWorkingDayNum",
+      "resp": [],
+      "completeNotices": [],
+      "completeNoticesByRole": [],
+      "isCustomizedRitm": false
+    },
+    {
+      "depands": [],
+      "isSnowIntegrate": "Yes",
+      "key": "Offboard - IT - Disable BPCS account (Product Company)",
+      "name": "IT - Disable BPCS account (Product Company)",
+      "type": "Offboard",
+      "snowGroupType": "Select",
+      "snowGroup": {
+        "_id": "5d22b408d734c304c97e6189",
+        "sys_id": "2c080bc0db928784c6319637db961913",
+        "name": "Group IT Solutions - BPCS Product Company User Security"
+      },
+      "triggerAt": "@Today >= doc.offboard.lastWorkingDayNum",
+      "resp": [],
+      "completeNotices": [],
+      "completeNoticesByRole": [],
+      "isCustomizedRitm": false
+    },
+    {
+      "depands": [],
+      "isSnowIntegrate": "No",
+      "key": "Offboard - IT - Dummy service for requests without services.",
+      "name": "IT - Dummy service for requests without services.",
+      "type": "Offboard",
+      "mustDone": "No",
+      "resp": [
+        "Dummy"
+      ],
+      "completeNotices": [],
+      "completeNoticesByRole": [],
+      "isCustomizedRitm": false
+    },
+    {
+      "depands": [],
+      "isSnowIntegrate": "Yes",
+      "completeNotices": [],
+      "completeNoticesByRole": [],
+      "key": "Offboard - IT - Remove access to MediusFlow",
+      "name": "IT - Remove access to MediusFlow",
+      "type": "Offboard",
+      "snowGroupType": "Select",
+      "snowGroup": {
+        "_id": "5d22b31f6b8f9955cd9eb20e",
+        "sys_id": "a6b18b1cdb552b88d357fe9b0c9619bb",
+        "name": "Atlas Copco - CT - IS - MediusFlow Level 1"
+      },
+      "triggerAtDiff": -1,
+      "isCustomizedRitm": false
+    },
+    {
+      "depands": [],
+      "isSnowIntegrate": "Yes",
+      "completeNotices": [],
+      "completeNoticesByRole": [],
+      "key": "Offboard - IT - Remove access to Network drives/folders",
+      "name": "IT - Remove access to Network drives/folders",
+      "type": "Offboard",
+      "snowGroupType": "Select",
+      "snowGroup": {
+        "_id": "5d22b31f6b8f9955cd9eb1cf",
+        "sys_id": "889ecd804f58da008352f1728110c712",
+        "name": "ServiceDesk-TCS"
+      },
+      "triggerAtDiff": -1,
+      "isCustomizedRitm": false
+    },
+    {
+      "depands": [],
+      "isSnowIntegrate": "Yes",
+      "key": "Offboard - IT - Return PC asset",
+      "name": "IT - Return PC asset",
+      "type": "Offboard",
+      "mustDone": "Yes",
+      "snowGroupType": "Select",
+      "snowGroup": {
+        "_id": "5d22b31f6b8f9955cd9eb21e",
+        "sys_id": "8ff3a12f4f232e00c7b8ce6bb110c754",
+        "name": "Group IT Onsite - Belgium"
+      },
+      "triggerAt": "@Today >= doc.offboard.lastWorkingDayNum",
+      "resp": [],
+      "completeNotices": [],
+      "completeNoticesByRole": [],
+      "isCustomizedRitm": false,
+      "triggerNotices": []
+    },
+    {
+      "depands": [],
+      "_id": "5d2d7d2ec973d91c94cea433",
+      "name": "IT - Revoke Adobe License",
+      "type": "Offboard",
+      "isSnowIntegrate": "Yes",
+      "mustDone": "Yes",
+      "resp": [
+        "Adobe_Admin"
+      ],
+      "completeNotices": [],
+      "triggerAt": "@Today >= doc.offboard.lastWorkingDayNum",
+      "snowGroupType": "Select",
+      "snowGroup": {
+        "_id": "60c558986c9c102a39d1ca6a",
+        "sys_id": "b6d89b92db2cf810bd245947f4961901",
+        "name": "Group IT Purchasing - Benelux"
+      },
+      "key": "Offboard - IT - Revoke Adobe License",
+      "completeNoticesByRole": [],
+      "isCustomizedRitm": false
+    },
+    {
+      "depands": [],
+      "isSnowIntegrate": "Yes",
+      "key": "Onboard - IT - Activate remote access to corporate Network",
+      "name": "IT - Activate remote access to corporate Network",
+      "type": "Onboard",
+      "snowGroupType": "Select",
+      "snowGroup": {
+        "_id": "5d22b408d734c304c97e6328",
+        "sys_id": "889ecd804f58da008352f1728110c712",
+        "name": "ServiceDesk-TCS"
+      },
+      "resp": [],
+      "completeNotices": [],
+      "completeNoticesByRole": [],
+      "isCustomizedRitm": false
+    },
+    {
+      "depands": [],
+      "isSnowIntegrate": "Yes",
+      "triggerAt": "",
+      "resp": [],
+      "key": "Onboard - IT - Add a landline phone number to MS Teams (UCaaS)",
+      "name": "IT - Add a landline phone number to MS Teams (UCaaS)",
+      "type": "Onboard",
+      "snowGroupType": "Select",
+      "snowGroup": {
+        "_id": "5d22b31f6b8f9955cd9eb1cf",
+        "sys_id": "889ecd804f58da008352f1728110c712",
+        "name": "ServiceDesk-TCS"
+      },
+      "completeNotices": [],
+      "completeNoticesByRole": [],
+      "isCustomizedRitm": false
+    },
+    {
+      "depands": [],
+      "isSnowIntegrate": "Yes",
+      "key": "Onboard - IT - Create BPCS Account (Product Company)",
+      "name": "IT - Create BPCS Account (Product Company)",
+      "type": "Onboard",
+      "snowGroupType": "Select",
+      "snowGroup": {
+        "_id": "5d22b408d734c304c97e6189",
+        "sys_id": "2c080bc0db928784c6319637db961913",
+        "name": "Group IT Solutions - BPCS Product Company User Security"
+      },
+      "resp": [],
+      "completeNotices": [],
+      "completeNoticesByRole": [],
+      "isCustomizedRitm": false
+    },
+    {
+      "depands": [],
+      "isSnowIntegrate": "Yes",
+      "key": "Onboard - IT - Create BPCS Dispatch Account (Product Company)",
+      "name": "IT - Create BPCS Dispatch Account (Product Company)",
+      "type": "Onboard",
+      "snowGroupType": "Select",
+      "snowGroup": {
+        "_id": "5d22b408d734c304c97e6189",
+        "sys_id": "2c080bc0db928784c6319637db961913",
+        "name": "Group IT Solutions - BPCS Product Company User Security"
+      },
+      "resp": [],
+      "completeNotices": [],
+      "completeNoticesByRole": [],
+      "isCustomizedRitm": false
+    },
+    {
+      "depands": [],
+      "isSnowIntegrate": "Yes",
+      "completeNotices": [],
+      "completeNoticesByRole": [],
+      "key": "Onboard - IT - Create C4C Sharepoint Permission",
+      "name": "IT - Create C4C Sharepoint Permission",
+      "type": "Onboard",
+      "snowGroupType": "Select",
+      "snowGroup": {
+        "_id": "5d22b31f6b8f9955cd9eb1cf",
+        "sys_id": "889ecd804f58da008352f1728110c712",
+        "name": "ServiceDesk-TCS"
+      },
+      "isCustomizedRitm": false
+    },
+    {
+      "depands": [],
+      "isSnowIntegrate": "Yes",
+      "key": "Onboard - IT - Create Mobile Device Management Account",
+      "name": "IT - Create Mobile Device Management Account",
+      "type": "Onboard",
+      "snowGroupType": "Select",
+      "snowGroup": {
+        "_id": "5d22b408d734c304c97e6328",
+        "sys_id": "889ecd804f58da008352f1728110c712",
+        "name": "ServiceDesk-TCS"
+      },
+      "resp": [],
+      "completeNotices": [],
+      "completeNoticesByRole": [],
+      "isCustomizedRitm": false,
+      "triggerNotices": []
+    },
+    {
+      "depands": [],
+      "isSnowIntegrate": "Yes",
+      "key": "Onboard - IT - Create password for kiosk account",
+      "name": "IT - Create password for kiosk account",
+      "type": "Onboard",
+      "snowGroupType": "Select",
+      "snowGroup": {
+        "_id": "5d22b31f6b8f9955cd9eb21e",
+        "sys_id": "8ff3a12f4f232e00c7b8ce6bb110c754",
+        "name": "Group IT Onsite - Belgium"
+      },
+      "resp": [],
+      "completeNotices": [],
+      "completeNoticesByRole": [],
+      "isCustomizedRitm": false,
+      "triggerNotices": []
+    },
+    {
+      "depands": [],
+      "isSnowIntegrate": "Yes",
+      "key": "Onboard - IT - Deploy PC for Airpower",
+      "name": "IT - Deploy PC for Airpower",
+      "type": "Onboard",
+      "snowGroupType": "Select",
+      "snowGroup": {
+        "_id": "5d22b31f6b8f9955cd9eb21e",
+        "sys_id": "8ff3a12f4f232e00c7b8ce6bb110c754",
+        "name": "Group IT Onsite - Belgium"
+      },
+      "resp": [],
+      "completeNotices": [],
+      "completeNoticesByRole": [],
+      "isCustomizedRitm": false,
+      "triggerNotices": []
+    },
+    {
+      "depands": [],
+      "isSnowIntegrate": "No",
+      "key": "Onboard - IT - Dummy service for requests without services",
+      "name": "IT - Dummy service for requests without services",
+      "type": "Onboard",
+      "mustDone": "No",
+      "resp": [
+        "Dummy"
+      ],
+      "completeNotices": [],
+      "completeNoticesByRole": [],
+      "isCustomizedRitm": false
+    },
+    {
+      "depands": [
+        "IT - Create BPCS Account (Product Company)"
+      ],
+      "isSnowIntegrate": "Yes",
+      "key": "Onboard - IT - Enable specialized PDF printing in BPCS (Transform) for DN or Invoice/bolla pdf printing",
+      "name": "IT - Enable specialized PDF printing in BPCS (Transform) for DN or Invoice/bolla pdf printing",
+      "type": "Onboard",
+      "snowGroupType": "Select",
+      "snowGroup": {
+        "_id": "5d22b408d734c304c97e614f",
+        "sys_id": "1f9012014f3eb280445cecd18110c7cf",
+        "name": "Atlas Copco - CT - IS - BPCS Support"
+      },
+      "resp": [],
+      "completeNotices": [],
+      "completeNoticesByRole": [],
+      "isCustomizedRitm": false
+    },
+    {
+      "depands": [],
+      "isSnowIntegrate": "Yes",
+      "key": "Onboard - IT - Provide Access to MediusFlow",
+      "name": "IT - Provide Access to MediusFlow",
+      "type": "Onboard",
+      "snowGroupType": "Select",
+      "snowGroup": {
+        "_id": "5d22b408d734c304c97e633c",
+        "sys_id": "a6b18b1cdb552b88d357fe9b0c9619bb",
+        "name": "Atlas Copco - CT - IS - MediusFlow Level 1"
+      },
+      "resp": [],
+      "completeNotices": [],
+      "completeNoticesByRole": [],
+      "isCustomizedRitm": false
+    },
+    {
+      "_id": "5c082ba4cecff2051843e681",
+      "name": "IT - Provide access to Network drives/folders",
+      "type": "Onboard",
+      "mustDone": "Yes",
+      "depands": [],
+      "resp": [
+        "IT_Admin"
+      ],
+      "completeNotices": [],
+      "isSnowIntegrate": "Yes",
+      "snowGroupType": "Select",
+      "snowGroup": {
+        "_id": "5d22b408d734c304c97e6328",
+        "sys_id": "889ecd804f58da008352f1728110c712",
+        "name": "ServiceDesk-TCS"
+      },
+      "key": "Onboard - IT - Provide access to Network drives/folders",
+      "completeNoticesByRole": [],
+      "isCustomizedRitm": false
+    },
+    {
+      "depands": [],
+      "isSnowIntegrate": "Yes",
+      "completeNotices": [],
+      "completeNoticesByRole": [],
+      "key": "Onboard - IT - Provide Password for account",
+      "name": "IT - Provide Password for account",
+      "type": "Onboard",
+      "snowGroupType": "Select",
+      "snowGroup": {
+        "_id": "5d22b31f6b8f9955cd9eb1cf",
+        "sys_id": "889ecd804f58da008352f1728110c712",
+        "name": "ServiceDesk-TCS"
+      },
+      "isCustomizedRitm": false
+    },
+    {
+      "depands": [],
+      "isSnowIntegrate": "Yes",
+      "key": "Onboard - IT - Purchase Accessories and Peripherals",
+      "name": "IT - Purchase Accessories and Peripherals",
+      "type": "Onboard",
+      "snowGroupType": "Select",
+      "snowGroup": {
+        "_id": "60c558986c9c102a39d1ca6a",
+        "sys_id": "b6d89b92db2cf810bd245947f4961901",
+        "name": "Group IT Purchasing - Benelux"
+      },
+      "resp": [],
+      "completeNotices": [],
+      "completeNoticesByRole": [],
+      "isCustomizedRitm": false
+    },
+    {
+      "depands": [],
+      "isSnowIntegrate": "Yes",
+      "key": "Onboard - IT - Request Additional Microsoft Products",
+      "name": "IT - Request Additional Microsoft Products",
+      "type": "Onboard",
+      "mustDone": "Yes",
+      "snowGroupType": "Select",
+      "snowGroup": {
+        "_id": "5ef93cf3332f798baae186fd",
+        "sys_id": "08e191f81bc198100e9086abee4bcbe2",
+        "name": "Group IT Solutions - O365"
+      },
+      "resp": [],
+      "completeNotices": [],
+      "completeNoticesByRole": [],
+      "isCustomizedRitm": false
+    },
+    {
+      "depands": [],
+      "isSnowIntegrate": "Yes",
+      "key": "Onboard - IT - Subscribe for Adobe products",
+      "name": "IT - Subscribe for Adobe products",
+      "type": "Onboard",
+      "snowGroupType": "Select",
+      "snowGroup": {
+        "_id": "60c558986c9c102a39d1ca6a",
+        "sys_id": "b6d89b92db2cf810bd245947f4961901",
+        "name": "Group IT Purchasing - Benelux"
+      },
+      "resp": [],
+      "completeNotices": [],
+      "completeNoticesByRole": [],
+      "isCustomizedRitm": false
+    }
+  ],
+  "status": "Production",
+  "wfLookup": "",
+  "wfMapRoles": [],
+  "wfRoles": [
+    {
+      "key": "JRML_Agent_Behalf",
+      "values": [
+        "iris.liu@atlascopco.com"
+      ]
+    },
+    {
+      "values": [
+        "peter.antonis@atlascopco.com",
+        "teis.lamoen@atlascopco.com"
+      ],
+      "key": "HRM"
+    },
+    {
+      "key": "Dummy",
+      "values": [
+        "dummy@dummy.dummy"
+      ]
+    },
+    {
+      "key": "creditcard_admin",
+      "values": [
+        "card.admin@atlascopco.com"
+      ]
+    }
+  ],
+  "wfRouters": [
+    {
+      "name": "offboard",
+      "route": [
+        "Create Request$CreatedBy$HRM",
+        "Package Selection$doc.offboard.employee.ManagerUserPrincipalName$doc.offboard.employee.GrandManagerUserPrincipalName,HRM$doc.offboard.employee.GrandManagerUserPrincipalName",
+        "Services Process$[System Agent]$doc.allSvcSta.TheBall$$doc.allSvcSta.allDone=='Yes'"
+      ],
+      "validate": [
+        "Package Selection$doc.allSvcSta.serviceRequiredField$doc.allSvcSta.serviceRequiredField"
+      ],
+      "editStep": [
+        "Package Selection",
+        "Additional Approval / Action"
+      ],
+      "codMsg": [],
+      "doneNotice": []
+    },
+    {
+      "name": "offboard.copy.testPL",
+      "route": [
+        "Create Request$CreatedBy$HRM",
+        "Package Selection$doc.offboard.employee.ManagerUserPrincipalName$doc.offboard.employee.GrandManagerUserPrincipalName,HRM$doc.offboard.employee.GrandManagerUserPrincipalName$doc.offboard.employee.GrandManagerUserPrincipalName!=\"philippe.ernens@atlascopco.com\"",
+        "Services Process$[System Agent]$doc.allSvcSta.TheBall$$doc.allSvcSta.allDone=='Yes'"
+      ],
+      "validate": [
+        "Package Selection$doc.allSvcSta.serviceRequiredField$doc.allSvcSta.serviceRequiredField"
+      ],
+      "editStep": [
+        "Package Selection",
+        "Additional Approval / Action"
+      ],
+      "codMsg": [],
+      "doneNotice": [],
+      "triggerNotice": []
+    },
+    {
+      "name": "onboard",
+      "route": [
+        "Create Request$CreatedBy$HRM",
+        "Package Selection$doc.onboard.manager.userPrincipalName$doc.onboard.manager.ManagerUserPrincipalName,HRM$doc.onboard.manager.ManagerUserPrincipalName",
+        "Services Process$[System Agent]$doc.allSvcSta.TheBall$$doc.allSvcSta.allDone=='Yes'"
+      ],
+      "validate": [
+        "Package Selection$doc.allSvcSta.serviceRequiredField$doc.allSvcSta.serviceRequiredField"
+      ],
+      "editStep": [
+        "Package Selection",
+        "Additional Approval / Action"
+      ],
+      "codMsg": [],
+      "doneNotice": [
+        "Package Selection$Onboard_EmployeeType_NoticeAirpower_disabled",
+        "Package Selection$Onboard_NoticeManager_Airpower"
+      ]
+    },
+    {
+      "name": "onboard.copy.testPL",
+      "route": [
+        "Create Request$CreatedBy$HRM",
+        "Package Selection$doc.onboard.manager.userPrincipalName$doc.onboard.manager.ManagerUserPrincipalName,HRM$doc.onboard.manager.ManagerUserPrincipalName$doc.onboard.manager.ManagerUserPrincipalName!=\"philippe.ernens@atlascopco.com\"",
+        "Services Process$[System Agent]$doc.allSvcSta.TheBall$$doc.allSvcSta.allDone=='Yes'"
+      ],
+      "validate": [
+        "Package Selection$doc.allSvcSta.serviceRequiredField$doc.allSvcSta.serviceRequiredField"
+      ],
+      "editStep": [
+        "Package Selection",
+        "Additional Approval / Action"
+      ],
+      "codMsg": [],
+      "doneNotice": [
+        "Package Selection$Onboard_EmployeeType_NoticeAirpower_disabled",
+        "Package Selection$Onboard_NoticeManager_Airpower",
+        "Package Selection$NOTYETCREATEDTEMPLATE$doc.onboard.manager.ManagerUserPrincipalName!=\"philippe.ernens@atlascopco.com\""
+      ],
+      "triggerNotice": []
+    }
+  ],
+  "updatedAt": {
+    "$date": "2025-06-10T11:09:33.344Z"
+  },
+  "docType": "CompanyProfile",
+  "shareUnits": "AIHT,APA,APC,APF,APG,APH,API,APM,APP,APS,APT,APU,APV",
+  "shareUnitsData": {
+    "count": 13,
+    "AIHT": {
+      "_id": "5c36dcabb2b7578fa4dcfc83",
+      "Unit": "AIHT",
+      "Country": "Belgium",
+      "BaName": "Compressor Technique",
+      "Status": "A",
+      "CountryCode": "BEL",
+      "Region": "EMEA",
+      "Location": "BE_WIL_AIHT",
+      "Currency": "EUR",
+      "Type": "XO",
+      "Ba": "CT",
+      "Division": "C_CT",
+      "Name": "Airpower Corporate - Operational"
+    },
+    "APA": {
+      "_id": "5c36dcabb2b7578fa4dcfd1b",
+      "Unit": "APA",
+      "Country": "Belgium",
+      "BaName": "Compressor Technique",
+      "Status": "A",
+      "CountryCode": "BEL",
+      "Region": "EMEA",
+      "Location": "BE_WIL_APA",
+      "Currency": "EUR",
+      "Type": "PC",
+      "Ba": "CT",
+      "Division": "AIA",
+      "Name": "Airtec Product Company"
+    },
+    "APC": {
+      "_id": "5c36dcabb2b7578fa4dcfd1d",
+      "Unit": "APC",
+      "Country": "Belgium",
+      "BaName": "Compressor Technique",
+      "Status": "A",
+      "CountryCode": "BEL",
+      "Region": "EMEA",
+      "Location": "BE_WIL_APC",
+      "Currency": "EUR",
+      "Type": "XO",
+      "Ba": "CT",
+      "Division": "CTS",
+      "Name": "Airpower CTS"
+    },
+    "APF": {
+      "_id": "5c36dcabb2b7578fa4dcfe25",
+      "Unit": "APF",
+      "Country": "Belgium",
+      "BaName": "Compressor Technique",
+      "Status": "A",
+      "CountryCode": "BEL",
+      "Region": "EMEA",
+      "Location": "BE_WIL_APF",
+      "Currency": "EUR",
+      "Type": "PC",
+      "Ba": "CT",
+      "Division": "OFA",
+      "Name": "Oilfree Air Product Company"
+    },
+    "APG": {
+      "_id": "5c36dcabb2b7578fa4dcfcad",
+      "Unit": "APG",
+      "Country": "Belgium",
+      "BaName": "Power Technique",
+      "Status": "A",
+      "CountryCode": "BEL",
+      "Region": "EMEA",
+      "Location": "BE_WIL_APG",
+      "Currency": "EUR",
+      "Type": "XO",
+      "Ba": "PT",
+      "Division": "CRS",
+      "Name": "Airpower PTS"
+    },
+    "APH": {
+      "_id": "5c36dcabb2b7578fa4dcfd1f",
+      "Unit": "APH",
+      "Country": "Belgium",
+      "BaName": "Corporate Units",
+      "Status": "A",
+      "CountryCode": "BEL",
+      "Region": "EMEA",
+      "Location": "BE_WIL_APH",
+      "Currency": "EUR",
+      "Type": "H",
+      "Ba": "CO",
+      "Division": "HCO",
+      "Name": "Airpower Holding"
+    },
+    "API": {
+      "_id": "5c36dcabb2b7578fa4dcfd21",
+      "Unit": "API",
+      "Country": "Belgium",
+      "BaName": "Compressor Technique",
+      "Status": "A",
+      "CountryCode": "BEL",
+      "Region": "EMEA",
+      "Location": "BE_WIL_API",
+      "Currency": "EUR",
+      "Type": "PC",
+      "Ba": "CT",
+      "Division": "IAT",
+      "Name": "Industrial Air Product Company"
+    },
+    "APM": {
+      "_id": "677601623fba05435b6dec8e",
+      "Unit": "APM",
+      "Ba": "CT",
+      "BaName": "Compressor Technique",
+      "Country": "Belgium",
+      "CountryCode": "BEL",
+      "Currency": "EUR",
+      "Division": "QAD",
+      "Location": "BE_WIL_APM",
+      "Name": "Airpower QAD",
+      "Region": "EMEA",
+      "Status": "A",
+      "Type": "XO"
+    },
+    "APP": {
+      "_id": "5c36dcabb2b7578fa4dcfd2f",
+      "Unit": "APP",
+      "Country": "Belgium",
+      "BaName": "Power Technique",
+      "Status": "A",
+      "CountryCode": "BEL",
+      "Region": "EMEA",
+      "Location": "BE_WIL_APP",
+      "Currency": "EUR",
+      "Type": "PC",
+      "Ba": "PT",
+      "Division": "APE",
+      "Name": "Portable Air Product Company"
+    },
+    "APS": {
+      "_id": "5c36dcabb2b7578fa4dcfd31",
+      "Unit": "APS",
+      "Country": "Belgium",
+      "BaName": "Compressor Technique",
+      "Status": "A",
+      "CountryCode": "BEL",
+      "Region": "EMEA",
+      "Location": "BE_WIL_APS",
+      "Currency": "EUR",
+      "Type": "DC",
+      "Ba": "CT",
+      "Division": "CTS",
+      "Name": "Airpower Service Center"
+    },
+    "APT": {
+      "_id": "5c36dcabb2b7578fa4dcfd33",
+      "Unit": "APT",
+      "Country": "Belgium",
+      "BaName": "Power Technique",
+      "Status": "A",
+      "CountryCode": "BEL",
+      "Region": "EMEA",
+      "Location": "BE_WIL_APT",
+      "Currency": "EUR",
+      "Type": "XO",
+      "Ba": "PT",
+      "Division": "APE",
+      "Name": "Airpower Portable Air Division"
+    },
+    "APU": {
+      "_id": "5fffe0393d5e9ead8d49bd84",
+      "Unit": "APU",
+      "Ba": "PT",
+      "BaName": "Power Technique",
+      "Country": "Belgium",
+      "CountryCode": "BEL",
+      "Currency": "EUR",
+      "Division": "C_PT",
+      "Location": "BE_WIL_APU",
+      "Name": "Airpower PT BA HQ",
+      "Region": "EMEA",
+      "Status": "A",
+      "Type": "XO"
+    },
+    "APV": {
+      "_id": "677601623fba05435b6dec8d",
+      "Unit": "APV",
+      "Ba": "CT",
+      "BaName": "Compressor Technique",
+      "Country": "Belgium",
+      "CountryCode": "BEL",
+      "Currency": "EUR",
+      "Division": "AGA",
+      "Location": "BE_WIL_APV",
+      "Name": "Airpower AGA",
+      "Region": "EMEA",
+      "Status": "A",
+      "Type": "XO"
+    }
+  },
+  "editStatus": "Published",
+  "empJouSetting": {
+    "isEnable": false
+  }
+}

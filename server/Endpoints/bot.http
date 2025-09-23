@@ -17,7 +17,7 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4YzMxZWZlN
 
 
 ### 
-POST http://localhost:3000/bots
+POST http://localhost:3000/botsp
 Content-Type:  application/json
 
 {

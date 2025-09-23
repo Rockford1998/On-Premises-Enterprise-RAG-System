@@ -2,15 +2,15 @@ import express from "express";
 import { init } from "./db/init";
 import router from "./routes/app.routes";
 import cors from "cors";
-import dotenv from 'dotenv';
-import './db/mongo';
+import dotenv from "dotenv";
+import "./db/mongo";
 import { authenticateJWT } from "./middlewares/auth.middleware";
 
 //
 dotenv.config({
   path: `.env.${process.env.NODE_ENV}`.substring(
     0,
-    `.env.${process.env.NODE_ENV}`.length - 1
+    `.env.${process.env.NODE_ENV}`.length - 1,
   ),
 });
 

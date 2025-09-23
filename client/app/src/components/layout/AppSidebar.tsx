@@ -1,4 +1,4 @@
-import { Bot, Computer, Home, Settings } from "lucide-react";
+import { Bot, Computer, Home } from "lucide-react";
 
 import {
   Sidebar,
