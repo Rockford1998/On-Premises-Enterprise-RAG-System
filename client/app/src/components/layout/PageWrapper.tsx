@@ -17,7 +17,7 @@ export const PageWrapper = ({ children, actions, title }: PageWrapProps) => {
         )}
         <div className="flex">{actions ?? null}</div>
       </div>
-      <div>{children}</div>
+      <div className="h-full ">{children}</div>
     </div>
   );
 };

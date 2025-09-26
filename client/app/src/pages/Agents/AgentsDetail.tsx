@@ -3,7 +3,7 @@ import { useParams } from "react-router";
 import { TabAgent } from "./tabs/TabAgent";
 import { createContext, useContext, useEffect, useState } from "react";
 import { mediator } from "@/utils/mediator";
-import { Card, CardContent, CardHeader, CardTitle } from "@/shadcn/ui/card";
+import { Card, CardContent } from "@/shadcn/ui/card";
 
 type AgentContextType = {
   botId: string | undefined;
@@ -54,11 +54,6 @@ export const AgentsDetail = () => {
           <CardContent className="m-0 px-1">
             <strong>Owner:</strong> {bot?.owner?.firstName}{" "}
             {bot?.owner?.lastName}
-          </CardContent>
-        </Card>
-        <Card className="w-max h-10 m-0 p-1 rounded-md">
-          <CardContent className="m-0 px-1">
-            <strong>Description:</strong> {bot?.botDesc}
           </CardContent>
         </Card>
       </div>

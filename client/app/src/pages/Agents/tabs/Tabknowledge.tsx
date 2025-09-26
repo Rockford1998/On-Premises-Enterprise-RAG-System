@@ -38,7 +38,7 @@ export const Tabknowledge = () => {
 
       toast(res.data.message);
     })();
-  }, [count]);
+  }, [botId, count]);
 
   const onDeletConfirm = async ({ fileName }: { fileName: string }) => {
     try {

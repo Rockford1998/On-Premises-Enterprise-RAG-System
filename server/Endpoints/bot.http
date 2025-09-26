@@ -1,15 +1,15 @@
+@token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4YzQwYWQ2MDA3NWUwMTAzYTAxNTZlNiIsImVtYWlsIjoic2h1YmhhbWJhbmthcjY1QGdtYWlsLmNvbSIsInVzZXJOYW1lIjoiTWFyazEiLCJpYXQiOjE3NTg4NjQyOTQsImV4cCI6MTc1ODk1MDY5NH0.txmS9T989AdvYMWRf_cvtDpjjGuWszURGmbqUHGEGnM
 ### get all
 
 
 ### passing paramters for now  page and limit only
 http://localhost:3000/bots
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4YzMxZWZlNDI3M2M2NzBhMTYxNjFhOCIsImVtYWlsIjoic2h1YmhhbWJhbmthcjY1QGdtYWlsLmNvbSIsInVzZXJOYW1lIjoiTWFyazEiLCJpYXQiOjE3NTgzODE0MjcsImV4cCI6MTc1ODQ2NzgyN30.JSDnKJ1jnhm-7Wao8lkpdwb2_a-aN7jErLPFhdOxEQM
+Authorization: Bearer {{token}}
 
 
 ### Get by botId
-http://localhost:3000/bots/bot_mfsfekoi_Z96YMW
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4YzMxZWZlNDI3M2M2NzBhMTYxNjFhOCIsImVtYWlsIjoic2h1YmhhbWJhbmthcjY1QGdtYWlsLmNvbSIsInVzZXJOYW1lIjoiTWFyazEiLCJpYXQiOjE3NTg0NDAyNDYsImV4cCI6MTc1ODUyNjY0Nn0.nAZbO0IqYNAUTr2FZZkj3gxH45QhsnHSDUrMrcAbkVc
-
+http://localhost:3000/bots/bot_mfv2vn5t_ZTPOE4
+Authorization: Bearer {{token}}
 
 ### Get by owner(email address)
 http://localhost:3000/bots/owner/shubhambankar65@gmail.com
