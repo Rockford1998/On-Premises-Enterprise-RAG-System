@@ -20,7 +20,6 @@ import {
 } from "@/shadcn/ui/form";
 import { useForm } from "react-hook-form";
 import z from "zod";
-import axios from "axios";
 import { useStoreAuth } from "@/store/useStoreAuth";
 import { useNavigate } from "react-router";
 import { mediator } from "@/utils/mediator";
@@ -86,7 +85,7 @@ export const Login = () => {
                 </div>
                 <Button
                   type="submit"
-                  className="w-full text-base sm:text-sm py-3 sm:py-2"
+                  className="w-full text-base sm:text-sm py-3 sm:py-2 cursor-pointer"
                 >
                   Login
                 </Button>
@@ -97,7 +96,10 @@ export const Login = () => {
         <CardFooter className="flex-col gap-2">
           <p className="text-xs sm:text-sm text-muted-foreground text-center">
             Don’t have an account?{" "}
-            <Button variant="link" className="px-1 text-xs sm:text-sm">
+            <Button
+              variant="link"
+              className="px-1 text-xs sm:text-sm cursor-pointer"
+            >
               Sign up
             </Button>
           </p>

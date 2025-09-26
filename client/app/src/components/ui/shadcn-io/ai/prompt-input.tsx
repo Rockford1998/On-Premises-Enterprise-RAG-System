@@ -8,8 +8,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/shadcn/ui/select";
-import { Textarea } from "@/shadcn/ui/textarea";
-import { cn } from "@/shadcn/utils";
 import type { ChatStatus } from "ai";
 import { Loader2Icon, SendIcon, SquareIcon, XIcon } from "lucide-react";
 import type {
@@ -18,6 +16,8 @@ import type {
   KeyboardEventHandler,
 } from "react";
 import { Children } from "react";
+import { cn } from "@/shadcn/utils";
+import { Textarea } from "@/shadcn/ui/textarea";
 
 export type PromptInputProps = HTMLAttributes<HTMLFormElement>;
 

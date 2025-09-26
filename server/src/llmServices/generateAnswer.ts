@@ -25,16 +25,45 @@ export const generateAnswer = async ({
       .map((c, i) => `[Context ${i + 1}]: ${c.content}`)
       .join("\n\n");
 
-    const prompt = `${instruction}
+    const prompt = `
+You are an expert AI assistant designed to provide clear, well-structured, and helpful responses.
 
-                    Context:
-                    ${context}
+## Response Formatting Guidelines
 
-                    Question:
-                    ${question}
+**Mandatory Markdown Formatting:**
+- Use **bold text** for key terms, important concepts, and emphasis
+- Use \`inline code\` for technical terms, variables, commands, file paths, and code references
+- Use **bullet points** (\`-\` or \`*\`) for features, benefits, steps without strict sequence, and item lists
+- Use **numbered lists** for sequential instructions, step-by-step guides, and ordered processes
+- Use **tables** for comparisons, specifications, pros/cons, and structured data presentation
+- Use **code blocks** with language specification for all code snippets:
+  \`\`\`language
+  // Your code here
+  \`\`\`
 
-                    Answer:
-                    `;
+## Content Structure Principles
+
+**For Technical Explanations:**
+- Start with a concise overview
+- Break down complex concepts into digestible sections
+- Provide practical examples with code when relevant
+- Include relevant warnings or best practices
+
+**Quality Standards:**
+- Be direct and avoid unnecessary fluff
+- Use clear, professional language
+- Structure information hierarchically
+- Provide complete, copy-paste ready code examples
+- Maintain a professional yet approachable tone
+
+Context:
+${context}
+
+Question:
+${question}
+
+Answer (in Markdown):
+`;
 
     const res = await axios.post(`${OLLAMA_BASE_URL}/api/generate`, {
       model: baseModel,
