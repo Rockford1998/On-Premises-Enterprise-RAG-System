@@ -8,24 +8,19 @@ import { authenticateJWT } from "./middlewares/auth.middleware";
 
 //
 dotenv.config({
-  path: `.env.${process.env.NODE_ENV}`.substring(
-    0,
-    `.env.${process.env.NODE_ENV}`.length - 1,
-  ),
+  path: `.env.${process.env.NODE_ENV}`
 });
 
 const app = express();
 const port = process.env.PORT || 3000;
 
-async function service() {
+app.use(express.json());
+app.use(cors({ origin: "*" }));
+app.use(express.urlencoded({ extended: true }));
+app.use("/", authenticateJWT, router);
+app.listen(port, async () => {
   await init();
-  app.use(express.json());
-  app.use(cors({ origin: "*" }));
-  app.use(express.urlencoded({ extended: true }));
-  app.use("/", authenticateJWT, router);
-  app.listen(port, () => {
-    console.log(`Server is running on http://localhost:${port}`);
-  });
-}
+  console.log(`Environment: [${process.env.NODE_ENV}]`)
+  console.log(`Server is running on http://localhost:${port}`);
+});
 
-service();

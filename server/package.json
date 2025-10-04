@@ -5,7 +5,10 @@
   "scripts": {
     "start": "node dist/index.js",
     "dev": "set NODE_ENV=local && nodemon src/index.ts --legacy-watch",
-    "dep:check": "npx depcheck"
+    "dep:check": "npx depcheck",
+    "dev:start": "set TZ=Asia/Kolkata&& set NODE_ENV=dev&& nodemon src/index.ts --legacy-watch",
+    "test:start": "set TZ=Asia/Kolkata&& set NODE_ENV=test&& nodemon src/index.ts --legacy-watch",
+    "prod:start": "set TZ=Asia/Kolkata&& set NODE_ENV=prod&& nodemon src/index.ts --legacy-watch"
   },
   "author": "",
   "license": "ISC",
