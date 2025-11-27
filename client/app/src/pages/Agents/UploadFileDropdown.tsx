@@ -81,7 +81,7 @@ export const UploadFileDropdown: React.FC<UploadFileDropdownProps> = ({
       {/* Dropdown to select file type */}
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button variant="outline" className="cursor-pointer">
+          <Button variant="default" className="cursor-pointer h-8 px-3 text-xs">
             {selectedType
               ? uploading
                 ? `Uploading ${selectedType.toUpperCase()}...`
@@ -89,13 +89,12 @@ export const UploadFileDropdown: React.FC<UploadFileDropdownProps> = ({
               : "Upload File"}
           </Button>
         </DropdownMenuTrigger>
-
         <DropdownMenuContent>
           {SUPPORTED_FILE_TYPES.map((type) => (
             <DropdownMenuItem
               key={type}
               onClick={() => handleTypeSelect(type)}
-              className="cursor-pointer"
+              className="cursor-pointer text-xs"
             >
               {type.toUpperCase()}
             </DropdownMenuItem>

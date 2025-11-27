@@ -2,8 +2,8 @@ import { Request, Response } from "express";
 import { BotService } from "../services/bot.service";
 import { UserService } from "../services/user.service";
 import { VectorService } from "../services/vectors.service";
-import { send } from "process";
 import { sendResponse } from "../util/sendResponse";
+import { getBotInstructionByBotRequest } from "../util/getBotInstructionByBotRequest";
 
 export class BotController {
     botService = new BotService();
@@ -81,8 +81,8 @@ export class BotController {
     create = async (req: Request, res: Response) => {
         let newBot = null;
         try {
-            const botData = req.body;
-            const owner = await this.userService.findByEmail(botData.owner);
+            const botReq = req.body;
+            const owner = await this.userService.findByEmail(botReq.owner);
             if (!owner) {
                 sendResponse({ res, success: false, message: "Owner not found", status: 404 });
                 return;
@@ -95,13 +95,14 @@ export class BotController {
             // create a new bot profile
             const data = {
                 botId,
-                botName: botData.botName,
-                botDesc: botData.botDesc,
+                botName: botReq.botName,
+                botDesc: botReq.botDesc,
                 isActive: true,
+                botType: botReq.botType,
                 baseModel: process.env.BASE_MODEL || "mistral:latest",
                 embedModel: process.env.EMBED_MODEL || "BASE_EMBEDDING_MODEL",
                 toolModel: process.env.TOOL_MODEL || "mistral:latest",
-                instruction: "You are a helpful assistant. Answer the following question using only the context below. If the context does not contain the answer, say \"I don't know.\"",
+                instruction: getBotInstructionByBotRequest(botReq),
                 kbsearchMethod: "semantic",
                 vectorTable: `vector_table_${botId}`,
                 publicAccess: false,
@@ -109,6 +110,13 @@ export class BotController {
                 botUsers: {
                     users: [owner.email],
                     totalUsersCount: 1,
+                },
+                stats: {
+                    apiTokenCount: 0,
+                    kbDocCount: 0,
+                    kbDocSize: 0,
+                    kbVectorCount: 0,
+                    chatMsgCount: 0,           // message count in 30 days
                 },
             };
 
@@ -138,8 +146,8 @@ export class BotController {
     update = async (req: Request, res: Response) => {
         try {
             const botID = req.params.botId;
-            const botData = req.body;
-            const updatedBotInfo = await this.botService.updateById(botID, botData);
+            const botReq = req.body;
+            const updatedBotInfo = await this.botService.updateById(botID, botReq);
             sendResponse({ res, success: true, message: "Bot updated successfully", data: updatedBotInfo, status: 200 });
         } catch (error: any) {
             console.log(error);

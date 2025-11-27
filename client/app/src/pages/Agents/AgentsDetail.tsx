@@ -48,19 +48,22 @@ export const AgentsDetail = () => {
   }, [botId]);
 
   return (
-    <PageWrapper title={bot?.botName ?? "Agent Details"}>
-      <div className="flex gap-3 flex-wrap mb-3 flex justify-start">
-        <Card className="w-max h-10 m-0 p-1 rounded-md">
-          <CardContent className="m-0 px-1">
-            <strong>Owner:</strong> {bot?.owner?.firstName}{" "}
-            {bot?.owner?.lastName}
-          </CardContent>
-        </Card>
-      </div>
+    <AgentContext.Provider value={{ botId }}>
+      <PageWrapper title={bot?.botName ?? "Agent Details"}>
+        {/* Compact Info Header */}
+        <div className="flex gap-2 flex-wrap mb-3">
+          {bot?.owner && (
+            <Card className="rounded-md border p-0 shadow-sm">
+              <CardContent className="p-2 py-1 text-xs">
+                <span className="font-semibold">Owner:</span>{" "}
+                {bot.owner.firstName} {bot.owner.lastName}
+              </CardContent>
+            </Card>
+          )}
+        </div>
 
-      <AgentContext.Provider value={{ botId }}>
         <TabAgent />
-      </AgentContext.Provider>
-    </PageWrapper>
+      </PageWrapper>
+    </AgentContext.Provider>
   );
 };

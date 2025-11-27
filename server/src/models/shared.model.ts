@@ -22,8 +22,9 @@ userSchema.index({ email: 1 });
 const botProfileSchema = new mongoose.Schema(
   {
     botId: { type: String },
-    botName: { type: String, required: true, trim: true },
+    botName: { type: String, required: true },
     botDesc: { type: String, trim: true },
+    botType: { type: String, trim: true },
     isActive: { type: Boolean, default: true },
     baseModel: { type: String }, // answer model
     embedModel: { type: String }, // embed model
@@ -37,11 +38,18 @@ const botProfileSchema = new mongoose.Schema(
       users: [], // email addresses of users who can access the bot default user will be the owner
       totalUsersCount: { type: Number, default: 0 },
     },
+    stats: {
+      kbDocCount: Number,
+      kbDocSize: Number,
+      kbVectorCount: Number,
+      chatMsgCount: Number,           // message count in 30 days
+    },
   },
   { timestamps: true },
 );
 botProfileSchema.index({ botName: 1 });
 botProfileSchema.index({ owner: 1 });
+botProfileSchema.index({ isActive: 1 });
 
 // This model is used to store the knowledge base entries for each bot
 const knowledgeBaseSchema = new mongoose.Schema(

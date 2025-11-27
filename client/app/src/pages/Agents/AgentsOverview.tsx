@@ -31,7 +31,7 @@ export const AgentsOverview = () => {
       const res = await mediator.get(`bots/owner/${userProfile.email}`);
       setBots(res.data.data);
     })();
-  }, [count]);
+  }, [count, userProfile.email]);
 
   const columns: ColumnDef<Bot>[] = [
     {

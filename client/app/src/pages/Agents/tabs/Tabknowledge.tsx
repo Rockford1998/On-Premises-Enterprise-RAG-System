@@ -112,15 +112,15 @@ export const Tabknowledge = () => {
         return (
           <Dialog>
             <DialogTrigger asChild>
-              <Button variant="outline" size="sm" className="cursor-pointer">
+              <Button variant="outline" size="sm" className="cursor-pointer h-8 px-3 text-xs ">
                 <MessageSquareMore /> Knowledge
               </Button>
             </DialogTrigger>
-            <DialogContent className="w-[28rem] max-h-[32rem] flex flex-col">
-              <DialogHeader>
-                <h3>{kb.fileName} - Content</h3>
+            <DialogContent className="w-[28rem] max-h-[32rem] flex flex-col text-xs">
+              <DialogHeader className="text-xs">
+                <h4>{kb.fileName} - Content</h4>
               </DialogHeader>
-              <div className="flex-1 overflow-auto whitespace-pre-wrap text-sm p-2 border-l ">
+              <div className="flex-1 overflow-auto whitespace-pre-wrap text-xs p-2 border-l ">
                 {kb.content}
               </div>
               {/* Fixed Footer */}
@@ -144,7 +144,7 @@ export const Tabknowledge = () => {
             <Button
               size={"icon"}
               variant={"ghost"}
-              className="cursor-pointer"
+              className="cursor-pointer h-8 px-3 text-xs"
               onClick={() =>
                 handleDownload({ fileId: kb._id, fileName: kb.fileName })
               }
@@ -159,7 +159,7 @@ export const Tabknowledge = () => {
 
   return (
     <div>
-      <div className="flex justify-end mb-3">
+      <div className="flex justify-end mb-3 ">
         <UploadFileDropdown refreshData={refreshData} />
       </div>
       <DataTable columns={columns} data={knowledge} />

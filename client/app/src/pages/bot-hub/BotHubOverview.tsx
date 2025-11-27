@@ -21,7 +21,7 @@ export const BotHubOverview = () => {
   }, [userProfile.email]);
 
   return (
-    <PageWrapper title="Your bots">
+    <PageWrapper title="Your agents">
       <div className="flex flex-wrap gap-4 justify-start">
         {bots.map((bot: any) => (
           <Card key={bot.botId} className="w-56 p-0 flex-shrink-0">

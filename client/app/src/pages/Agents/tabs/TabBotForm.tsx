@@ -20,11 +20,14 @@ import {
   SelectContent,
   SelectItem,
 } from "@/shadcn/ui/select";
-import { mediator } from "@/utils/mediator";
 
+import { mediator } from "@/utils/mediator";
 import { z } from "zod";
 import { useAgentContext } from "../AgentsDetail";
 import { toast } from "sonner";
+import { FormInput } from "@/components/formfields/FormInput";
+import { FormTextArea } from "@/components/formfields/FormTextArea";
+import { FormSelect } from "@/components/formfields/FormSelect";
 
 const botInfoSchema = z.object({
   botName: z.string().min(2, "Bot name must be at least 2 characters"),
@@ -42,9 +45,9 @@ type BotInfoFormValues = z.infer<typeof botInfoSchema>;
 
 export const TabBotForm = () => {
   const { botId } = useAgentContext();
-
   const [loading, setLoading] = useState(true);
-  const [instructionExpanded, setInstructionExpanded] = useState(false);
+  const [expanded, setExpanded] = useState(false);
+
   const form = useForm<BotInfoFormValues>({
     resolver: zodResolver(botInfoSchema),
     defaultValues: {
@@ -64,7 +67,7 @@ export const TabBotForm = () => {
     mediator
       .get(`/bots/${botId}`)
       .then((res) => {
-        form.reset(res.data.data); // Prefill with API data
+        form.reset(res.data.data);
         setLoading(false);
       })
       .catch(() => setLoading(false));
@@ -75,7 +78,6 @@ export const TabBotForm = () => {
       await mediator.put(`/bots/${botId}`, values);
       toast("✅ Bot info updated successfully!");
     } catch (error) {
-      console.error("Failed to update bot info:", error);
       toast("❌ Failed to update bot info.");
     }
   };
@@ -83,165 +85,102 @@ export const TabBotForm = () => {
   if (loading) return <div>Loading...</div>;
 
   return (
-    <div className="h-100">
-      <Form {...form}>
-        <form
-          onSubmit={form.handleSubmit(onSubmit)}
-          className="grid grid-cols-1 md:grid-cols-2 gap-3 max-w-4xl mx-auto p-4"
-        >
-          {/* Bot Name */}
-          <FormField
-            control={form.control}
-            name="botName"
-            render={({ field }) => (
-              <FormItem className="flex flex-col">
-                <FormLabel className="text-sm">Bot Name:</FormLabel>
-                <FormControl>
-                  <Input
-                    placeholder="Bot name"
-                    {...field}
-                    className="text-sm py-1"
-                  />
-                </FormControl>
-                <FormMessage className="text-xs" />
-              </FormItem>
-            )}
-          />
+    <Form {...form}>
+      <form
+        onSubmit={form.handleSubmit(onSubmit)}
+        className="space-y-3 pb-3 text-sm"
+      >
+        {/* Submit */}
+        <div className="flex justify-end">
+          <Button type="submit" className="h-8 px-3 text-xs">
+            Save Changes
+          </Button>
+        </div>
 
-          {/* Base Model */}
-          <FormField
-            control={form.control}
-            name="baseModel"
-            render={({ field }) => (
-              <FormItem className="flex flex-col">
-                <FormLabel className="text-sm">Base Model:</FormLabel>
-                <FormControl>
-                  <Input
-                    placeholder="mistral:latest"
-                    {...field}
-                    className="text-sm py-1"
-                  />
-                </FormControl>
-                <FormMessage className="text-xs" />
-              </FormItem>
-            )}
-          />
+        {/* Bot Name */}
+        <FormInput form={form} name="botName" label="Bot Name" />
 
-          {/* Bot Description */}
-          <FormField
-            control={form.control}
-            name="botDesc"
-            render={({ field }) => (
-              <FormItem className="flex flex-col col-span-full">
-                <FormLabel className="text-sm">Bot Description:</FormLabel>
-                <FormControl>
-                  <Textarea
-                    placeholder="Description"
-                    {...field}
-                    className="text-sm py-1 min-h-[60px]"
-                  />
-                </FormControl>
-                <FormMessage className="text-xs" />
-              </FormItem>
-            )}
-          />
+        {/* Base Model */}
+        <FormInput form={form} name="baseModel" label="Base Model" />
+        {/* Bot Description */}
+        <FormTextArea form={form} name="botDesc" label="Description" />
 
-          {/* Knowledge Search Method */}
-          <FormField
-            control={form.control}
-            name="kbsearchMethod"
-            render={({ field }) => (
-              <FormItem className="flex flex-col">
-                <FormLabel className="text-sm">Search Method:</FormLabel>
-                <FormControl>
-                  <Select value={field.value} onValueChange={field.onChange}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="semantic">Semantic</SelectItem>
-                      <SelectItem value="keyword">Keyword</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </FormControl>
-                <FormMessage className="text-xs" />
-              </FormItem>
-            )}
-          />
-
-          {/* Instruction */}
-          <FormField
-            control={form.control}
-            name="instruction"
-            render={({ field }) => (
-              <FormItem className="flex flex-col col-span-full">
-                <FormLabel className="text-sm">System Instruction:</FormLabel>
+        {/* System Instruction */}
+        <FormField
+          control={form.control}
+          name="instruction"
+          render={({ field }) => (
+            <FormItem className="flex gap-3 items-start">
+              <FormLabel className="text-xs w-32 text-right pt-1">
+                Instruction
+              </FormLabel>
+              <div className="flex-1 space-y-1">
                 <FormControl>
                   <Textarea
                     {...field}
-                    readOnly={!instructionExpanded}
-                    rows={instructionExpanded ? 8 : 4}
-                    className={`text-sm py-1 transition-all resize-none ${
-                      !instructionExpanded ? " cursor-pointer" : ""
-                    }`}
-                    onClick={() => {
-                      if (!instructionExpanded) setInstructionExpanded(true);
-                    }}
-                    onBlur={() => setInstructionExpanded(false)}
-                    autoFocus={instructionExpanded}
-                    placeholder="Click to add instruction"
+                    rows={expanded ? 8 : 3}
+                    className="text-xs px-2 resize-none h-auto min-h-[50px]"
+                    onFocus={() => setExpanded(true)}
+                    onBlur={() => setExpanded(false)}
                   />
                 </FormControl>
-                <FormMessage className="text-xs" />
+                <FormMessage className="text-[10px]" />
+              </div>
+            </FormItem>
+          )}
+        />
+
+        {/* Kb Method */}
+        <FormSelect
+          form={form}
+          name="kbsearchMethod"
+          label="Search Method"
+          selectItems={[
+            {
+              value: "semantic",
+              label: "Semantic",
+            },
+            {
+              value: "keyword",
+              label: "Keyword",
+            },
+          ]}
+        />
+        {/* Switches */}
+        <div className="flex gap-10 mt-1 pl-36">
+          <FormField
+            control={form.control}
+            name="isActive"
+            render={({ field }) => (
+              <FormItem className="flex items-center gap-2">
+                <FormLabel className="text-xs w-24">Active</FormLabel>
+                <FormControl>
+                  <Switch
+                    checked={field.value}
+                    onCheckedChange={field.onChange}
+                  />
+                </FormControl>
               </FormItem>
             )}
           />
 
-          {/* Toggles */}
-          <div className="col-span-full flex gap-4">
-            <FormField
-              control={form.control}
-              name="isActive"
-              render={({ field }) => (
-                <FormItem className="flex items-center gap-2 flex-1">
-                  <FormLabel className="text-sm">Active:</FormLabel>
-                  <FormControl>
-                    <Switch
-                      checked={field.value}
-                      onCheckedChange={field.onChange}
-                    />
-                  </FormControl>
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="publicAccess"
-              render={({ field }) => (
-                <FormItem className="flex items-center gap-2 flex-1">
-                  <FormLabel className="text-sm">Public Access</FormLabel>
-                  <FormControl>
-                    <Switch
-                      checked={field.value}
-                      onCheckedChange={field.onChange}
-                    />
-                  </FormControl>
-                </FormItem>
-              )}
-            />
-          </div>
-
-          {/* Submit Button */}
-          <div className="col-span-full flex justify-end">
-            <Button
-              type="submit"
-              className="w-full md:w-auto py-1 text-sm cursor-pointer"
-            >
-              Save Changes
-            </Button>
-          </div>
-        </form>
-      </Form>
-    </div>
+          <FormField
+            control={form.control}
+            name="publicAccess"
+            render={({ field }) => (
+              <FormItem className="flex items-center gap-2">
+                <FormLabel className="text-xs w-24">Public</FormLabel>
+                <FormControl>
+                  <Switch
+                    checked={field.value}
+                    onCheckedChange={field.onChange}
+                  />
+                </FormControl>
+              </FormItem>
+            )}
+          />
+        </div>
+      </form>
+    </Form>
   );
 };

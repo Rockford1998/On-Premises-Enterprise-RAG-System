@@ -22,7 +22,6 @@ export const generateEmbedding = async (text: string): Promise<number[]> => {
     if (!res.data?.embedding || !Array.isArray(res.data.embedding)) {
       throw new Error("Invalid embedding response from Ollama");
     }
-
     // Post-process embeddings if needed
     return normalizeVector(res.data.embedding);
   } catch (error: any) {

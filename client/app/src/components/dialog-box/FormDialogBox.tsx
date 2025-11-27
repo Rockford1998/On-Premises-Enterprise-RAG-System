@@ -10,6 +10,14 @@ import {
 } from "@/shadcn/ui/dialog";
 import { Button } from "@/shadcn/ui/button";
 
+type DialogMaxWidth =
+  | "sm:max-w-sm"
+  | "sm:max-w-md"
+  | "sm:max-w-lg"
+  | "sm:max-w-xl"
+  | "sm:max-w-2xl"
+  | "sm:max-w-md"
+  | string; // fallback if needed
 interface FormDialogBoxProps {
   title: string;
   triggerLabel: string;
@@ -17,7 +25,7 @@ interface FormDialogBoxProps {
   onSubmit?: () => void;
   submitLabel?: string;
   closeLabel?: string;
-  maxWidth?: string;
+  maxWidth?: DialogMaxWidth;
   open?: boolean;
   onOpenChange?: (open: boolean) => void;
   showFooter?: boolean;
@@ -30,14 +38,13 @@ export const FormDialogBox: React.FC<FormDialogBoxProps> = ({
   onSubmit,
   submitLabel = "Submit",
   closeLabel = "Close",
-  maxWidth = "sm:max-w-md",
+  maxWidth = "max-w-2xl",
   open: controlledOpen,
   onOpenChange,
   showFooter = true,
 }) => {
   const [internalOpen, setInternalOpen] = useState(false);
   const isControlled = controlledOpen !== undefined;
-
   const handleOpenChange = (state: boolean) => {
     if (!isControlled) setInternalOpen(state);
     onOpenChange?.(state);

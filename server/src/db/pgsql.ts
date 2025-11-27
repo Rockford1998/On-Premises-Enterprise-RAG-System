@@ -4,7 +4,7 @@ import { Pool } from "pg";
 const adminPool = new Pool({
   user: "root",
   host: "localhost",
-  database: "postgres", // Connect to default maintenance database first
+  database: "postgres",
   password: "root",
   port: 5432,
 });

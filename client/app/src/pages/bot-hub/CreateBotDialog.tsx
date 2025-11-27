@@ -1,14 +1,5 @@
 import { FormDialogBox } from "@/components/dialog-box/FormDialogBox";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/shadcn/ui/form";
-import { Input } from "@/shadcn/ui/input";
-import { Textarea } from "@/shadcn/ui/textarea";
+import { Form } from "@/shadcn/ui/form";
 import { useStoreAuth } from "@/store/useStoreAuth";
 import { mediator } from "@/utils/mediator";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -16,13 +7,23 @@ import { useForm } from "react-hook-form";
 import { useState } from "react";
 import z from "zod";
 import { toast } from "sonner";
+import { FormInput } from "@/components/formfields/FormInput";
+import { FormTextArea } from "@/components/formfields/FormTextArea";
+import { FormSelect } from "@/components/formfields/FormSelect";
 
 const formSchema = z.object({
-  botName: z.string().min(3, {
-    message: "Bot name must be at least 3 characters.",
-  }),
+  botName: z
+    .string({
+      error: "Bot name is required.",
+    })
+    .min(3, {
+      message: "Bot name must be at least 3 characters.",
+    }),
   botDesc: z.string().min(3, {
     message: "Bot description must be at least 3 characters.",
+  }),
+  botType: z.string({
+    error: "Please select bot type.",
   }),
 });
 
@@ -63,6 +64,7 @@ export const CreateBotDialog = ({
     <FormDialogBox
       title="Create Bot"
       triggerLabel="Create Bot"
+      maxWidth="sm:max-w-xl"
       open={open}
       onOpenChange={(o) => {
         setOpen(o);
@@ -72,36 +74,36 @@ export const CreateBotDialog = ({
     >
       <Form {...form}>
         <form id="dialog-form" onSubmit={handleSubmit} className="space-y-6">
-          <FormField
-            control={form.control}
+          <FormInput
+            form={form}
             name="botName"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Bot name</FormLabel>
-                <FormControl>
-                  <Input placeholder="Bot name" {...field} />
-                </FormControl>
-                <FormMessage className="m-0" />
-              </FormItem>
-            )}
+            label="Bot Name"
+            placeHolder="what is your bot name?"
+            gap={1}
           />
 
-          <FormField
-            control={form.control}
+          <FormTextArea
+            form={form}
             name="botDesc"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Bot description</FormLabel>
-                <FormControl>
-                  <Textarea
-                    placeholder="Bot description"
-                    className="resize-none"
-                    {...field}
-                  />
-                </FormControl>
-                <FormMessage className="m-0" />
-              </FormItem>
-            )}
+            label="Bot description"
+            placeHolder="Tell me about your bot?"
+            gap={1}
+          />
+          <FormSelect
+            gap={1}
+            form={form}
+            label="Select bot type"
+            name="botType"
+            selectItems={[
+              {
+                value: "KB_Bot",
+                label: "KB_Bot- Answer based on KB and General Knowledge",
+              },
+              {
+                value: "Support_Bot",
+                label: "Support_Bot- Answer end user question, 100% based",
+              },
+            ]}
           />
         </form>
       </Form>

@@ -35,6 +35,7 @@ export class BotService {
     botName: string;
     botDesc?: string;
     baseModel: string;
+    botType: string
     embedModel: string;
     toolModel: string;
     instruction: string;
@@ -47,6 +48,13 @@ export class BotService {
       users: Array<String>; // email addresses of users who can access the bot
       totalUsersCount: number;
     };
+    stats: {
+      apiTokenCount: number,
+      kbDocCount: number,
+      kbDocSize: number,
+      kbVectorCount: number,
+      chatMsgCount: number,           // message count in 30 days
+    },
   }) => {
     const newBot = new botProfile(botData);
     return await newBot.save();
