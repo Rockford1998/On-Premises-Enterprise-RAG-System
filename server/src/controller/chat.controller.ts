@@ -45,8 +45,10 @@ export class ChatController {
         }
       }
 
+
       // Proceed with normal vector search flow if no tool was used
       const queryEmbedding = await generateEmbedding(question);
+
       const bot = await this.botService.readByBotId(botId);
 
       if (!bot || typeof bot.vectorTable !== "string") {
@@ -59,7 +61,7 @@ export class ChatController {
         options: {},
       });
 
-      if (contextChunks.length === 0) {
+      if (contextChunks.length === 0 && bot.botType == "KB_Bot") {
         res.status(200).json({
           success: false,
           message:

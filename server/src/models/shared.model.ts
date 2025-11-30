@@ -1,7 +1,8 @@
+
 import mongoose, { Schema } from "mongoose";
-// /////////////////////////////////////////////////////////////////////////// NOTE SYSTEM SETTINGS WILL BE ADDED LATER ///////////////////////////////////////////////////////////////////////////
+import { Index } from "typeorm";
 
-
+const Roles = ["USER", "CONFIG_ADMIN"] as const;
 // This model is used to store the user profiles
 const userSchema = new mongoose.Schema(
   {
@@ -11,14 +12,14 @@ const userSchema = new mongoose.Schema(
     email: { type: String, required: true, unique: true, trim: true },
     password: { type: String, required: true },
     isActive: { type: Boolean, default: true },
+    roles: { type: [String], enum: Roles, default: ["USER"] }
   },
   { timestamps: true },
 );
 userSchema.index({ userName: 1 });
 userSchema.index({ email: 1 });
 
-
-//
+export const botType = ["General_Purpose", "KB_Bot"]
 const botProfileSchema = new mongoose.Schema(
   {
     botId: { type: String },
@@ -26,9 +27,9 @@ const botProfileSchema = new mongoose.Schema(
     botDesc: { type: String, trim: true },
     botType: { type: String, trim: true },
     isActive: { type: Boolean, default: true },
-    baseModel: { type: String }, // answer model
-    embedModel: { type: String }, // embed model
-    toolModel: { type: String }, // tool model
+    baseModel: {}, // answer model
+    embedModel: {}, // embed model
+    toolModel: {}, // tool model
     instruction: { type: String, trim: true }, // instruction for the bot
     kbsearchMethod: { type: String, default: "semantic", trim: true }, // knowledge base search method semantic or hybrid deffault = semantic
     vectorTable: { type: String }, // vector table name for the bot
@@ -113,8 +114,29 @@ const ToolSchema = new mongoose.Schema({
 });
 
 
+const LlmModelSchema = new mongoose.Schema(
+  {
+    name: { type: String, required: true, unique: true, trim: true }, // "gpt-4.1" | "llama-3"
+    provider: { type: String, required: true },           // "openai" | "ollama" | "anthropic"
+    endpoint: { type: String, trim: true, required: false },                            // API endpoint
+    isActive: { type: Boolean, default: true },
+    meta: {
+      contextWindow: { type: String, required: true, trim: true },
+      modelType: { type: String, enum: ["chat", "embedding", "code"], required: true, }, // chat | embedding | code
+      inputPrice: { type: Number, required: false },
+      outputPrice: { type: Number, required: false },
+      inputType: { type: String, enum: ["text", "image", "text|image"], required: true }          // "text" | "image" | "text||image"
+    },
+  },
+  { timestamps: true }
+);
+LlmModelSchema.index({ name: 1 }, { unique: true });
+LlmModelSchema.index({ provider: 1 });
+LlmModelSchema.index({ isActive: 1 });
+
 
 export const user = mongoose.model("user", userSchema);
 export const botProfile = mongoose.model("botProfile", botProfileSchema);
 export const KnowledgeBase = mongoose.model("KnowledgeBase", knowledgeBaseSchema);
 export const Tools = mongoose.model("Tools", ToolSchema);
+export const llmModel = mongoose.model("llmModel", LlmModelSchema);

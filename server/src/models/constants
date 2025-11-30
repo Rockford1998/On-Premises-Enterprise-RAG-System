@@ -1,0 +1,7 @@
+// ROLE BASED ACCESS
+
+export const roleTypes = {
+    user: "user",
+    configAdmin: "configAdmin"
+}
+

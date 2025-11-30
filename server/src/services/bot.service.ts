@@ -1,7 +1,6 @@
 import { botProfile } from "../models/shared.model";
 
 export class BotService {
-
   //
   read = async ({ page = 1, limit = 10, users }: { page: number, limit: number, users?: string }) => {
     const query: any = {};
@@ -34,10 +33,10 @@ export class BotService {
     botId: string;
     botName: string;
     botDesc?: string;
-    baseModel: string;
     botType: string
-    embedModel: string;
-    toolModel: string;
+    baseModel: {};
+    embedModel: {};
+    toolModel: {};
     instruction: string;
     kbsearchMethod: string;
     vectorTable: string;
@@ -67,9 +66,9 @@ export class BotService {
       botId: string;
       botName: string;
       botDesc?: string;
-      baseModel: string;
-      embedModel: string;
-      toolModel: string;
+      baseModel: {};
+      embedModel: {};
+      toolModel: {};
       instruction: string;
       kbsearchMethod: string;
       vectorTable: string;

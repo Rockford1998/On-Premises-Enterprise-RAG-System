@@ -7,6 +7,7 @@ import { BotController } from "../controller/bot.controller";
 import { ChatController } from "../controller/chat.controller";
 import { ToolController } from "../controller/tool.controller";
 import { AuthController } from "../controller/auth.controller";
+import { LlmModelController } from "../controller/llmModel.controller";
 
 
 const router = Router();
@@ -16,6 +17,7 @@ const knowledgeBaseController = new KnowledgeBaseController();
 const chatController = new ChatController();
 const toolController = new ToolController();
 const authController = new AuthController();
+const llmModelController = new LlmModelController();
 
 // User management endpoints
 router.get("/users", userController.readUser);
@@ -32,6 +34,13 @@ router.get("/bots/owner/:owner", botController.readBotByOwner);
 router.post("/bots", botController.create);
 router.put("/bots/:botId", botController.update);
 router.delete("/bots/:botId", botController.delete);
+
+// LLM profile management endpoint
+router.get("/llm", llmModelController.read);
+router.get("/llm/:llmId", llmModelController.readById);
+router.post("/llm", llmModelController.create);
+router.put("/llm/:botId", llmModelController.update);
+router.delete("/llm/:botId", llmModelController.delete);
 
 // KB handling endpoints
 router.get("/kb", knowledgeBaseController.readKnowledgeBase)

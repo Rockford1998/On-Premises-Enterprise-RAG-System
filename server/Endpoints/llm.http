@@ -1,0 +1,71 @@
+@token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4YzQwYWQ2MDA3NWUwMTAzYTAxNTZlNiIsImVtYWlsIjoic2h1YmhhbWJhbmthcjY1QGdtYWlsLmNvbSIsInVzZXJOYW1lIjoiTWFyazEiLCJpYXQiOjE3NjQ1MDIyODEsImV4cCI6MTc2NDU4ODY4MX0.cwHNpqEesjahYwhh_6ktDrXFsEUGK51qQHYeP1ugHP4
+### get all
+
+
+### passing paramters for now  page and limit only
+http://localhost:3000/llm
+Authorization: Bearer {{token}}
+
+
+### Get by botId
+http://localhost:3000/llm/bot_mfv2vn5t_ZTPOE4
+Authorization: Bearer {{token}}
+
+### Get by owner(email address)
+http://localhost:3000/llm/owner/shubhambankar65@gmail.com
+Authorization: Bearer {{token}}
+
+
+### 
+POST http://localhost:3000/llm
+Content-Type:  application/json
+Authorization: Bearer {{token}}
+
+{
+    "name": "gpt-oss:120b-cloud",
+    "provider":"ollama",           
+    "endpoint": "",
+    "isActive": true,
+    "meta": {
+      "contextWindow": "128k",
+      "modelType": "chat", 
+      "inputPrice": 0,
+      "outputPrice": 0,
+      "inputType":"text"
+    }
+}
+
+
+### 
+POST http://localhost:3000/llm
+Content-Type:  application/json
+Authorization: Bearer {{token}}
+
+{
+    "name": "nomic-embed-text",
+    "provider":"ollama",           
+    "endpoint": "",
+    "isActive": true,
+    "meta": {
+      "contextWindow": "128k",
+      "modelType": "embedding", 
+      "inputPrice": 0,
+      "outputPrice": 0,
+      "inputType":"text"
+    }
+}
+
+
+### Update by email`
+PUT http://localhost:3000/llm/bot_mdqa1e6y_MMF8T9
+Content-Type:  application/json
+Authorization: Bearer {{token}}
+
+
+{
+  "botName": "Mark1-updated"
+}
+
+
+### Delete by email
+DELETE http://localhost:3000/llm/bot_mdq9tfo3_1IL1QL

@@ -4,11 +4,12 @@ import { UserService } from "../services/user.service";
 import { VectorService } from "../services/vectors.service";
 import { sendResponse } from "../util/sendResponse";
 import { getBotInstructionByBotRequest } from "../util/getBotInstructionByBotRequest";
+import { LlmModelService } from "../services/llmModel.service";
 
 export class BotController {
     botService = new BotService();
     userService = new UserService();
-
+    llmService = new LlmModelService()
     //
     readBots = async (req: Request, res: Response) => {
         try {
@@ -93,15 +94,27 @@ export class BotController {
             const botId = `bot_${timestamp}_${random}`;
 
             // create a new bot profile
+            const baseModel = await this.llmService.readByName(process.env.BASE_MODEL || "mistral:latest")
+            if (!baseModel) {
+                sendResponse({ res, success: false, message: "Base model not found", status: 400 });
+                return;
+            }
+            const embedModel = await this.llmService.readByName(process.env.EMBED_MODEL || "nomic-embed-text")
+            if (!embedModel) {
+                sendResponse({ res, success: false, message: "Embed model not found", status: 400 });
+                return;
+            }
+            // const toolModel = await this.llmService.readByName(process.env.EMBED_MODEL || "nomic-embed-text")
+            const toolModel = baseModel;
             const data = {
                 botId,
                 botName: botReq.botName,
                 botDesc: botReq.botDesc,
                 isActive: true,
                 botType: botReq.botType,
-                baseModel: process.env.BASE_MODEL || "mistral:latest",
-                embedModel: process.env.EMBED_MODEL || "BASE_EMBEDDING_MODEL",
-                toolModel: process.env.TOOL_MODEL || "mistral:latest",
+                baseModel,
+                embedModel,
+                toolModel,
                 instruction: getBotInstructionByBotRequest(botReq),
                 kbsearchMethod: "semantic",
                 vectorTable: `vector_table_${botId}`,
@@ -142,18 +155,78 @@ export class BotController {
         }
     };
 
-    // update user
     update = async (req: Request, res: Response) => {
         try {
-            const botID = req.params.botId;
+            const botId = req.params.botId;
             const botReq = req.body;
-            const updatedBotInfo = await this.botService.updateById(botID, botReq);
-            sendResponse({ res, success: true, message: "Bot updated successfully", data: updatedBotInfo, status: 200 });
+            const oldBot = await this.botService.readByBotId(botId);
+            if (!oldBot) {
+                sendResponse({
+                    res,
+                    success: false,
+                    message: "Bot profile not found.",
+                    status: 404,
+                });
+                return
+            }
+            const validateModel = async (modelName: string, fieldName: string) => {
+                const model = await this.llmService.readByName(modelName);
+                if (!model) {
+                    throw new Error(`Invalid model for ${fieldName}: ${modelName}`);
+                }
+                return model;
+            };
+
+            if (
+                botReq.baseModel &&
+                oldBot.baseModel?.name !== botReq.baseModel
+            ) {
+                botReq.baseModel = await validateModel(botReq.baseModel, "baseModel");
+            }
+
+            /** -------------------------
+             * Embed Model
+             * ------------------------- */
+            if (
+                botReq.embedModel &&
+                oldBot.embedModel?.name !== botReq.embedModel
+            ) {
+                botReq.embedModel = await validateModel(botReq.embedModel, "embedModel");
+            }
+
+            /** -------------------------
+             * Tool Model
+             * ------------------------- */
+            if (
+                botReq.toolModel &&
+                oldBot.toolModel?.name !== botReq.toolModel
+            ) {
+                botReq.toolModel = await validateModel(botReq.toolModel, "toolModel");
+            }
+
+            /** -------------------------
+             * Update DB
+             * ------------------------- */
+            const updatedBot = await this.botService.updateById(botId, botReq);
+
+            sendResponse({
+                res,
+                success: true,
+                message: "Bot updated successfully",
+                data: updatedBot,
+                status: 200,
+            });
         } catch (error: any) {
-            console.log(error);
-            sendResponse({ res, success: false, message: "Failed to update bot", status: 400 });
+            console.error(error);
+            sendResponse({
+                res,
+                success: false,
+                message: error.message || "Failed to update bot",
+                status: 400, // 400 because user input invalid
+            });
         }
     };
+
 
     delete = async (req: Request, res: Response) => {
         try {
