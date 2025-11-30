@@ -8,6 +8,7 @@ import { ChatController } from "../controller/chat.controller";
 import { ToolController } from "../controller/tool.controller";
 import { AuthController } from "../controller/auth.controller";
 import { LlmModelController } from "../controller/llmModel.controller";
+import { MatadataController } from "../controller/metadata.controller";
 
 
 const router = Router();
@@ -18,6 +19,7 @@ const chatController = new ChatController();
 const toolController = new ToolController();
 const authController = new AuthController();
 const llmModelController = new LlmModelController();
+const matadataController = new MatadataController();
 
 // User management endpoints
 router.get("/users", userController.readUser);
@@ -64,4 +66,9 @@ router.delete("/tools/:id", toolController.deleteTool);
 
 // auth 
 router.post("/auth", authController.login)
+
+//Metadata
+router.get("/metadata/bot-type", matadataController.getBotType)
+router.get("/metadata/models", llmModelController.readAvaibleModelsMetadata);
+
 export default router;

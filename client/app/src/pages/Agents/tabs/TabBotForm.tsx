@@ -39,6 +39,7 @@ export const TabBotForm = () => {
   const { botId } = useAgentContext();
   const [loading, setLoading] = useState(true);
   const [expanded, setExpanded] = useState(false);
+  const [botModels, setBotModels] = useState([]);
 
   const form = useForm<BotInfoFormValues>({
     resolver: zodResolver(botInfoSchema),
@@ -46,8 +47,6 @@ export const TabBotForm = () => {
       botName: "",
       botDesc: "",
       baseModel: "",
-      embedModel: "",
-      toolModel: "",
       instruction: "",
       kbsearchMethod: "semantic",
       publicAccess: false,
@@ -56,13 +55,32 @@ export const TabBotForm = () => {
   });
 
   useEffect(() => {
+    mediator.get(`/bots/${botId}`).then((res) => {
+      const bot = res.data.data;
+      form.reset({
+        botName: bot.botName,
+        botDesc: bot.botDesc,
+        baseModel: bot.baseModel?.name || "",
+        instruction: bot.instruction || "",
+        kbsearchMethod: bot.kbsearchMethod,
+        publicAccess: bot.publicAccess,
+        isActive: bot.isActive,
+      });
+
+      setLoading(false);
+    });
+
     mediator
-      .get(`/bots/${botId}`)
+      .get(`/metadata/models`)
       .then((res) => {
-        form.reset(res.data.data);
-        setLoading(false);
+        const result = res.data.data.map((item: any) => ({
+          value: item.name,
+          label: item.name,
+        }));
+
+        setBotModels(result);
       })
-      .catch(() => setLoading(false));
+      .catch(() => console.log("error loading bot details"));
   }, [botId, form]);
 
   const onSubmit = async (values: BotInfoFormValues) => {
@@ -93,7 +111,14 @@ export const TabBotForm = () => {
         <FormInput form={form} name="botName" label="Bot Name" />
 
         {/* Base Model */}
-        <FormInput form={form} name="baseModel" label="Base Model" />
+        {/* Kb Method */}
+        <FormSelect
+          form={form}
+          name="baseModel"
+          label="Base model"
+          selectItems={botModels}
+        />
+
         {/* Bot Description */}
         <FormTextArea form={form} name="botDesc" label="Description" />
 
@@ -138,6 +163,7 @@ export const TabBotForm = () => {
             },
           ]}
         />
+
         {/* Switches */}
         <div className="flex gap-10 mt-1 pl-36">
           <FormField

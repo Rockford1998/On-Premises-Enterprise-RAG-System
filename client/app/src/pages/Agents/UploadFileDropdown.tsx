@@ -11,6 +11,7 @@ import {
 import { mediator } from "@/utils/mediator";
 import { toast } from "sonner";
 import { useAgentContext } from "./AgentsDetail";
+import { Input } from "@/shadcn/ui/input";
 
 type FileType = "pdf" | "docx" | "doc" | "pptx" | "txt";
 
@@ -71,7 +72,7 @@ export const UploadFileDropdown: React.FC<UploadFileDropdownProps> = ({
   return (
     <div>
       {/* Hidden native file input */}
-      <input
+      <Input
         type="file"
         ref={inputRef}
         className="hidden"

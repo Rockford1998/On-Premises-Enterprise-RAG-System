@@ -46,34 +46,39 @@ export class ChatController {
       }
 
 
-      // Proceed with normal vector search flow if no tool was used
-      const queryEmbedding = await generateEmbedding(question);
 
       const bot = await this.botService.readByBotId(botId);
+      let contextChunks = null
+      if (bot?.botType !== "General_Purpose") {
 
-      if (!bot || typeof bot.vectorTable !== "string") {
-        throw new Error("Bot not found or vectorTable is invalid");
-      }
+        // Proceed with normal vector search flow if no tool was used
+        const queryEmbedding = await generateEmbedding(question);
+        if (!bot || typeof bot.vectorTable !== "string") {
+          throw new Error("Bot not found or vectorTable is invalid");
+        }
 
-      const contextChunks = await VectorService.searchVectors({
-        tableName: bot.vectorTable,
-        queryEmbedding,
-        options: {},
-      });
-
-      if (contextChunks.length === 0 && bot.botType == "KB_Bot") {
-        res.status(200).json({
-          success: false,
-          message:
-            "No relevant information found. Please try a different question.",
+        const contextChunks = await VectorService.searchVectors({
+          tableName: bot.vectorTable,
+          queryEmbedding,
+          options: {},
         });
-        return;
+
+        if (contextChunks.length === 0 && bot.botType == "KB_Bot") {
+          res.status(200).json({
+            success: false,
+            message:
+              "No relevant information found. Please try a different question.",
+          });
+          return;
+        }
       }
+
 
       const answer = await generateAnswer({
         question,
         contextChunks,
         instruction: bot.instruction || "",
+        baseModel: bot.baseModel.name
       });
       res.status(200).json({
         success: true,

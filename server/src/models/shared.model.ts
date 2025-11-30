@@ -1,6 +1,5 @@
 
 import mongoose, { Schema } from "mongoose";
-import { Index } from "typeorm";
 
 const Roles = ["USER", "CONFIG_ADMIN"] as const;
 // This model is used to store the user profiles
@@ -8,7 +7,6 @@ const userSchema = new mongoose.Schema(
   {
     firstName: { type: String, required: true, trim: true },
     lastName: { type: String, required: true, trim: true },
-    userName: { type: String, required: true, unique: true, trim: true },
     email: { type: String, required: true, unique: true, trim: true },
     password: { type: String, required: true },
     isActive: { type: Boolean, default: true },
@@ -16,7 +14,6 @@ const userSchema = new mongoose.Schema(
   },
   { timestamps: true },
 );
-userSchema.index({ userName: 1 });
 userSchema.index({ email: 1 });
 
 export const botType = ["General_Purpose", "KB_Bot"]

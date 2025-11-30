@@ -1,9 +1,11 @@
 import { Request, Response } from "express";
 import { UserService } from "../services/user.service";
 import { sendResponse } from "../util/sendResponse";
+import { AuthService } from "../services/auth.service";
 
 
 export class UserController {
+    AuthService = new AuthService()
     userService = new UserService();
     // Method to handle user-related requests
 
@@ -56,14 +58,48 @@ export class UserController {
 
     createUser = async (req: Request, res: Response) => {
         try {
-            const userData = req.body;
-            const newUser = await this.userService.create(userData);
-            sendResponse({ res, success: true, message: "User created successfully", data: newUser, status: 201 });
-        } catch (error) {
+            const { email, ...restData } = req.body;
+
+            // 1️⃣ Check if user already exists
+            const existingUser = await this.userService.findByEmail(email);
+            if (existingUser) {
+                sendResponse({
+                    res,
+                    success: false,
+                    message: "User with given email already exists.",
+                    status: 409, // Conflict
+                });
+                return
+            }
+
+            // 2️⃣ Create user
+            const newUser = await this.userService.create({ email, ...restData });
+            //if create new user success. create jwt token and pass it to fe
+            const token = this.AuthService.generateJwtToken({
+                id: newUser._id,
+                email: newUser.email
+            })
+            sendResponse({
+                res,
+                success: true,
+                message: "User created successfully",
+                data: {
+                    user: newUser,
+                    token: token
+                },
+                status: 201,
+            });
+        } catch (error: any) {
             console.error("Error creating user:", error);
-            sendResponse({ res, success: false, message: "Failed to create user", status: 500 });
+            sendResponse({
+                res,
+                success: false,
+                message: error?.message || "Failed to create user",
+                status: 500,
+            });
         }
-    }
+    };
+
 
     updateUserByEmail = async (req: Request, res: Response) => {
         try {

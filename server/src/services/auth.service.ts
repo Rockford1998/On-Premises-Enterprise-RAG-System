@@ -1,3 +1,4 @@
+import { ObjectId } from "typeorm";
 import { UserService } from "./user.service";
 import jwt from "jsonwebtoken";
 
@@ -22,11 +23,7 @@ export class AuthService {
             throw new Error("Invalid credentials");
         }
         // Generate JWT
-        const token = jwt.sign({
-            id: user._id,
-            email: user.email,
-            userName: user.userName,
-        }, JWT_SECRET, { expiresIn: "1d" });
+        const token = this.generateJwtToken({ id: user._id, email: user.email })
         return { token, user };
     };
 
@@ -35,4 +32,14 @@ export class AuthService {
         const bcrypt = await import("bcryptjs");
         return bcrypt.compare(plain, hash);
     };
+    generateJwtToken = ({ email, id }: {
+        id: ObjectId,
+        email: string
+    }) => {
+        const token = jwt.sign({
+            id,
+            email,
+        }, JWT_SECRET, { expiresIn: "1d" });
+        return token;
+    }
 }

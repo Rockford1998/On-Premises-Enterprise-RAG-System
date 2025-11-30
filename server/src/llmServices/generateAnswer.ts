@@ -11,52 +11,28 @@ export const generateAnswer = async ({
   question,
   contextChunks,
   instruction,
+  baseModel
 }: {
   question: string;
-  contextChunks: Array<relevantChunks>;
+  contextChunks: Array<relevantChunks> | null;
   instruction: string;
+  baseModel: string
 }): Promise<string> => {
   try {
-    const baseModel = process.env.BASE_MODEL || "gemma3:4b";
-    console.log({ baseModel });
+
     const OLLAMA_BASE_URL =
       process.env.OLLAMA_BASE_URL || "http://localhost:11434";
-    const context = contextChunks
-      .map((c, i) => `[Context ${i + 1}]: ${c.content}`)
-      .join("\n\n");
+    let context = ""
+
+    if (contextChunks) {
+      context = contextChunks
+        .map((c, i) => `[Context ${i + 1}]: ${c.content}`)
+        .join("\n\n");
+    }
 
     const prompt = `
     SystemPrompt=
-    You are an expert AI assistant designed to provide clear, well-structured, and helpful responses.
-
-    ## Response Formatting Guidelines
-
-    **Mandatory Markdown Formatting:**
-    - Use **bold text** for key terms, important concepts, and emphasis
-    - Use \`inline code\` for technical terms, variables, commands, file paths, and code references
-    - Use **bullet points** (\`-\` or \`*\`) for features, benefits, steps without strict sequence, and item lists
-    - Use **numbered lists** for sequential instructions, step-by-step guides, and ordered processes
-    - Use **tables** for comparisons, specifications, pros/cons, and structured data presentation
-    - Use **code blocks** with language specification for all code snippets:
-      \`\`\`language
-      // Your code here
-      \`\`\`
-
-    ## Content Structure Principles
-
-    **For Technical Explanations:**
-    - Start with a concise overview
-    - Break down complex concepts into digestible sections
-    - Provide practical examples with code when relevant
-    - Include relevant warnings or best practices
-
-    **Quality Standards:**
-    - Be direct and avoid unnecessary fluff
-    - Use clear, professional language
-    - Structure information hierarchically
-    - Provide complete, copy-paste ready code examples
-    - Maintain a professional yet approachable tone
-
+    
     Context:
     ${context}
 
@@ -81,7 +57,6 @@ export const generateAnswer = async ({
     console.error("Answer generation failed:", {
       error: error instanceof Error ? error.message : String(error),
       question,
-      contextLength: contextChunks.length,
     });
     throw new Error("Failed to generate answer");
   }

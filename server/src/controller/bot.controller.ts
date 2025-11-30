@@ -115,7 +115,7 @@ export class BotController {
                 baseModel,
                 embedModel,
                 toolModel,
-                instruction: getBotInstructionByBotRequest(botReq),
+                instruction: getBotInstructionByBotRequest({ botReq, owner }),
                 kbsearchMethod: "semantic",
                 vectorTable: `vector_table_${botId}`,
                 publicAccess: false,
@@ -134,18 +134,20 @@ export class BotController {
             };
 
             newBot = await this.botService.create(data);
-            // create a vector table for the bot
-            const vectorTableName = data.vectorTable;
+            if (botReq.botType != "General_Purpose") {
+                // create a vector table for the bot
+                const vectorTableName = data.vectorTable;
+                await VectorService.createTableWithIndex({
+                    tableName: vectorTableName,
+                    dimensions: 768,
+                    indexParams: {
+                        type: "hnsw",
+                        m: 16,
+                        efConstruction: 200,
+                    },
+                });
+            }
 
-            await VectorService.createTableWithIndex({
-                tableName: vectorTableName,
-                dimensions: 768,
-                indexParams: {
-                    type: "hnsw",
-                    m: 16,
-                    efConstruction: 200,
-                },
-            });
             sendResponse({ res, success: true, message: "Bot created successfully", data: newBot, status: 201 });
         } catch (error) {
             if (newBot && newBot.botId)
@@ -176,37 +178,37 @@ export class BotController {
                 }
                 return model;
             };
-
+            console.log("baseModel", botReq.baseModel)
+            console.log("baseModel", oldBot.baseModel?.name)
             if (
                 botReq.baseModel &&
                 oldBot.baseModel?.name !== botReq.baseModel
             ) {
+
                 botReq.baseModel = await validateModel(botReq.baseModel, "baseModel");
+            } else {
+                delete botReq.baseModel
             }
 
-            /** -------------------------
-             * Embed Model
-             * ------------------------- */
             if (
                 botReq.embedModel &&
                 oldBot.embedModel?.name !== botReq.embedModel
             ) {
                 botReq.embedModel = await validateModel(botReq.embedModel, "embedModel");
+            } else {
+                delete botReq.embedModel
             }
 
-            /** -------------------------
-             * Tool Model
-             * ------------------------- */
             if (
                 botReq.toolModel &&
                 oldBot.toolModel?.name !== botReq.toolModel
             ) {
                 botReq.toolModel = await validateModel(botReq.toolModel, "toolModel");
+            } else {
+                delete botReq.toolModel
             }
 
-            /** -------------------------
-             * Update DB
-             * ------------------------- */
+            console.log(botReq.baseModel)
             const updatedBot = await this.botService.updateById(botId, botReq);
 
             sendResponse({

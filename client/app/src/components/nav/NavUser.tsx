@@ -17,15 +17,9 @@ import {
   useSidebar,
 } from "@/shadcn/ui/sidebar";
 import { Avatar, AvatarFallback, AvatarImage } from "@/shadcn/ui/avatar";
-import {
-  Bell,
-  CreditCard,
-  EllipsisVertical,
-  LogOut,
-  UserCircle,
-} from "lucide-react";
+import { EllipsisVertical, LogOut, Sun, Moon } from "lucide-react";
 import { useStoreAuth } from "@/store/useStoreAuth";
-import { Button } from "@/shadcn/ui/button";
+import { useThemeStore } from "@/store/useThemeStore";
 
 export function NavUser({
   user,
@@ -41,6 +35,30 @@ export function NavUser({
 
   const handleLogOut = () => {
     logOut();
+  };
+  const { theme, setLightTheme, setDarkTheme } = useThemeStore();
+
+  const handleToggle = () => {
+    if (theme === "light") setDarkTheme();
+    else setLightTheme();
+  };
+
+  const renderIcon = () => {
+    switch (theme) {
+      case "light":
+        return <Sun className="w-4 h-4" />;
+      case "dark":
+        return <Moon className="w-4 h-4" />;
+    }
+  };
+
+  const renderLabel = () => {
+    switch (theme) {
+      case "light":
+        return "Light";
+      case "dark":
+        return "Dark";
+    }
   };
 
   return (
@@ -91,28 +109,14 @@ export function NavUser({
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
-              <DropdownMenuItem>
-                <UserCircle />
-                Account
-              </DropdownMenuItem>
-              <DropdownMenuItem>
-                <CreditCard />
-                Billing
-              </DropdownMenuItem>
-              <DropdownMenuItem>
-                <Bell />
-                Notifications
-              </DropdownMenuItem>
+              <DropdownMenuItem onClick={handleToggle} className="flex gap-2">
+                {renderIcon()}
+                {renderLabel()}
+              </DropdownMenuItem>{" "}
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>
-              <Button
-                variant={"ghost"}
-                className="cursor-pointer flex"
-                onClick={handleLogOut}
-              >
-                <LogOut /> Log out
-              </Button>
+            <DropdownMenuItem onClick={handleLogOut}>
+              <LogOut /> Log out
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

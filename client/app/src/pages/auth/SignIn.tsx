@@ -24,17 +24,17 @@ import { useStoreAuth } from "@/store/useStoreAuth";
 import { useNavigate } from "react-router";
 import { mediator } from "@/utils/mediator";
 
-export const Login = () => {
-  const { form, onSubmit } = useLogin();
+export const SignIn = () => {
+  const { form, onSubmit, navigate } = useSignIn();
   return (
     <div className="flex items-center justify-center min-h-screen px-4 sm:px-0">
       <Card className="w-full max-w-sm sm:max-w-md shadow-lg rounded-2xl">
         <CardHeader className="space-y-1 text-center sm:text-left">
           <CardTitle className="text-xl sm:text-2xl font-bold">
-            Login to your account
+            SignIn to your account
           </CardTitle>
           <CardDescription className="text-sm sm:text-base">
-            Enter your email below to login to your account
+            Enter your email below to Sign-in to your account
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -87,7 +87,7 @@ export const Login = () => {
                   type="submit"
                   className="w-full text-base sm:text-sm py-3 sm:py-2 cursor-pointer"
                 >
-                  Login
+                  SignIn
                 </Button>
               </div>
             </form>
@@ -99,6 +99,7 @@ export const Login = () => {
             <Button
               variant="link"
               className="px-1 text-xs sm:text-sm cursor-pointer"
+              onClick={() => navigate("/signup")}
             >
               Sign up
             </Button>
@@ -109,7 +110,7 @@ export const Login = () => {
   );
 };
 
-const useLogin = () => {
+const useSignIn = () => {
   const setAccessToken = useStoreAuth((state) => state.setAccessToken);
   const setUserProfile = useStoreAuth((state) => state.setUserProfile);
   const navigate = useNavigate();
@@ -144,6 +145,7 @@ const useLogin = () => {
   return {
     form,
     onSubmit,
+    navigate,
   };
 };
 

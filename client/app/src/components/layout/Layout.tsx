@@ -4,7 +4,6 @@ import { Outlet } from "react-router";
 import { useState } from "react";
 import { useIsMobile } from "@/shadcn/hooks/use-mobile";
 import { MobileHeader } from "./MobileHeader";
-import { WebHeader } from "./WebHeader";
 import { Toaster } from "@/shadcn/ui/sonner";
 
 export const Layout = () => {
@@ -17,11 +16,7 @@ export const Layout = () => {
         <AppSidebar open={open} setOpen={setOpen} />
         <Toaster />
         <SidebarInset>
-          {isMobile ? (
-            <MobileHeader open={open} setOpen={setOpen} />
-          ) : (
-            <WebHeader />
-          )}
+          {isMobile ? <MobileHeader open={open} setOpen={setOpen} /> : null}
           <main className="px-4">
             <Outlet />
           </main>

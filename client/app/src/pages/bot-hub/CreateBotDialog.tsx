@@ -42,7 +42,6 @@ export const CreateBotDialog = ({
       botDesc: "",
     },
   });
-
   const handleSubmit = form.handleSubmit(async (values) => {
     console.log("Submitted:", values);
     try {
@@ -100,8 +99,8 @@ export const CreateBotDialog = ({
                 label: "KB_Bot- Answer based on KB and General Knowledge",
               },
               {
-                value: "Support_Bot",
-                label: "Support_Bot- Answer end user question, 100% based",
+                value: "General_Purpose",
+                label: "Answer questions based on existing knowledge",
               },
             ]}
           />

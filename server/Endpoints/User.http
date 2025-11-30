@@ -1,3 +1,4 @@
+@token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4YzQwYWQ2MDA3NWUwMTAzYTAxNTZlNiIsImVtYWlsIjoic2h1YmhhbWJhbmthcjY1QGdtYWlsLmNvbSIsInVzZXJOYW1lIjoiTWFyazEiLCJpYXQiOjE3NjQ1MDY0NDgsImV4cCI6MTc2NDU5Mjg0OH0.rwmJdQ7vik6U8fqP7Zso48rgktbbwbze4LQVA-89TYc
 ### get all
 
 
@@ -16,12 +17,12 @@ http://localhost:3000/users/username/string
 ### 
 POST http://localhost:3000/users
 Content-Type:  application/json
+Authorization: Bearer {{token}}
 
 {
     "firstName": "shubham",
     "lastName": "Bankar",
-    "userName":"Mark1",
-    "email": "shubhambankar65@gmail.com",
+    "email": "shubhambankar65-1@gmail.com",
     "password": "Testing@123"
 }
 
@@ -43,7 +44,6 @@ Content-Type:  application/json
 {
     "firstName": "string",
     "lastName": "string",
-    "userName": "string",
     "email": "s.b@gmail.com",
     "password": "string"
 }

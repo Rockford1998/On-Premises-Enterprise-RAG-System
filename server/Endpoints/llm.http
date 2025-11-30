@@ -3,12 +3,12 @@
 
 
 ### passing paramters for now  page and limit only
-http://localhost:3000/llm
+http://localhost:3000/metadata/models
 Authorization: Bearer {{token}}
 
 
 ### Get by botId
-http://localhost:3000/llm/bot_mfv2vn5t_ZTPOE4
+http://localhost:3000/model
 Authorization: Bearer {{token}}
 
 ### Get by owner(email address)

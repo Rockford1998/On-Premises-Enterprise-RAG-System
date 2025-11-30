@@ -20,6 +20,17 @@ export class LlmModelService {
         return await llmModel.find().select('name _id').lean().exec();
     };
 
+    readAllModelsMetadata = async () => {
+        return await llmModel
+            .find({
+                "meta.modelType": { $in: ["chat", "code"] },
+            })
+            .select("name _id")
+            .lean()
+            .exec();
+    };
+
+
 
     // Read by  _id
     readById = async (id: string) => {

@@ -18,8 +18,9 @@ export const ProtectedComponent = ({
       try {
         await verifyAccessToken(accessToken);
       } catch (error) {
+        console.log(error);
         logOut();
-        navigate("/login");
+        navigate("/signin");
       }
     })();
   }, [accessToken, logOut, navigate]);

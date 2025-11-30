@@ -18,30 +18,31 @@ export const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
           const payload = await verifyAccessToken(accessToken);
           if (payload) setIsTokenValid(true);
         } catch (error) {
+          console.log(error);
           logout();
           setIsTokenValid(false);
-          nevigate("/login");
+          nevigate("/signin");
         }
       } else {
         logout();
         setIsTokenValid(false);
-        nevigate("/login");
+        nevigate("/signin");
       }
     })();
   }, [accessToken, logout, nevigate, pathname]);
 
   //
   if (isTokenValid) {
-    if (pathname === "/login") {
+    if (pathname === "/signin") {
       return <Navigate replace={true} to="/" />;
     } else {
       // return children;
     }
   } else {
-    if (pathname === "/login") {
+    if (pathname === "/signin") {
       // return children;
     } else {
-      return <Navigate replace={true} to="/login" />;
+      return <Navigate replace={true} to="/signin" />;
     }
   }
 

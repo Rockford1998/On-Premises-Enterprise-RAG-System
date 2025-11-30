@@ -4,11 +4,12 @@ import { RouterProvider } from "react-router/dom";
 import { Layout } from "./components/layout/Layout";
 import { ThemeProvider } from "./components/theme-provider/ThemeProvider";
 import { ProtectedRoute } from "./components/protected-route.tsx/ProtectedRoute";
-import { Login } from "./pages/Login";
-import { AgentsOverview } from "./pages/Agents/AgentsOverview";
-import { AgentsDetail } from "./pages/Agents/AgentsDetail";
+import { SignIn } from "./pages/auth/SignIn";
+import { AgentsOverview } from "./pages/agents/AgentsOverview";
+import { AgentsDetail } from "./pages/agents/AgentsDetail";
 import { BotHubOverview } from "./pages/bot-hub/BotHubOverview";
 import { ChatBox } from "./pages/chat/ChatBox";
+import { SignUp } from "./pages/auth/SignUp";
 
 export const App = () => {
   const route = createBrowserRouter([
@@ -44,12 +45,16 @@ export const App = () => {
       ],
     },
     {
-      path: "/login",
+      path: "/signin",
       element: (
         <ProtectedRoute>
-          <Login />
+          <SignIn />
         </ProtectedRoute>
       ),
+    },
+    {
+      path: "/signup",
+      element: <SignUp />,
     },
   ]);
   return (

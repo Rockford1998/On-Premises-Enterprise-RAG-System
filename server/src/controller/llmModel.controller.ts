@@ -45,6 +45,16 @@ export class LlmModelController {
             sendResponse({ res, success: false, message: "Failed to read LLM models", status: 500 });
         }
     }
+    readAvaibleModelsMetadata = async (req: Request, res: Response) => {
+        try {
+            console.log("call this service")
+            const models = await this.llmModelService.readAllModelsMetadata()
+            sendResponse({ res, success: true, message: "LLM models retrieved successfully", data: models, status: 200 })
+        } catch (error) {
+            console.error("Error reading LLM models:", error);
+            sendResponse({ res, success: false, message: "Failed to read LLM models", status: 500 });
+        }
+    }
     //
     readById = async (req: Request, res: Response) => {
         try {

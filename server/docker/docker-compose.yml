@@ -30,3 +30,4 @@ volumes:
   pgvector-data:
   mongodb_data:
   mongodb_config:
+

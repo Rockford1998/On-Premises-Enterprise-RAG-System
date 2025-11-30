@@ -22,7 +22,6 @@ export class UserService {
     create = async (userData: {
         firstName: string;
         lastName: string;
-        userName: string;
         email: string;
         password?: string;
     }) => {

@@ -19,7 +19,7 @@ export class BotService {
 
   //
   readByBotId = async (botId: string) => {
-    return await botProfile.findOne({ botId }).select('-owner.password').exec();
+    return await botProfile.findOne({ botId }).lean().exec();
   };
   //
 

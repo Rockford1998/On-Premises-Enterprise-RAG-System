@@ -28,7 +28,7 @@ mediator.interceptors.response.use(
         const message = error.response?.data?.message;
         if (status === 401 && message?.includes("Session")) {
             localStorage.removeItem("store-auth");
-            window.location.href = "auth/login";
+            window.location.href = "auth/signin";
             window.alert(error)
             // useStoreNotification.getState().notifyError(message);
         }
