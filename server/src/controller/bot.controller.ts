@@ -233,8 +233,10 @@ export class BotController {
     delete = async (req: Request, res: Response) => {
         try {
             const botId = req.params.botId;
-            await this.botService.deleteById(botId);
-            await VectorService.deleteTable(`vector_table_${botId}`);
+            const data = await this.botService.deleteById(botId);
+            if (data && data.botType !== "General_Purpose") {
+                await VectorService.deleteTable(`vector_table_${botId}`);
+            }
             sendResponse({ res, success: true, message: "Bot deleted successfully", status: 200 });
         } catch (error) {
             console.log(error);
