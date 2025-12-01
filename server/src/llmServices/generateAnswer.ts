@@ -30,19 +30,26 @@ export const generateAnswer = async ({
         .join("\n\n");
     }
 
-    const prompt = `
-    SystemPrompt=
-    
-    Context:
-    ${context}
+    let prompt = `
+        Instructions:
+        ${instruction}
+        `;
 
-    Question:
-    ${question}
-    
-    CserInstructions:
-    ${instruction}
-    Answer (in Markdown):
-`;
+    if (context) {
+      prompt += `
+        Context:
+        ${context}
+        `;
+    }
+
+    prompt += `
+        Question:
+        ${question}
+
+        Answer (in Markdown):
+        `;
+
+    console.log(prompt)
     const res = await axios.post(`${OLLAMA_BASE_URL}/api/generate`, {
       model: baseModel,
       prompt,

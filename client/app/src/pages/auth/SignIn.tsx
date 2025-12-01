@@ -127,6 +127,7 @@ const useSignIn = () => {
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
       const response = await mediator.post("/auth", values);
+      console.log(response.data);
       if (response.status === 201) {
         console.log(response);
         // eslint-disable-next-line @typescript-eslint/no-unused-vars

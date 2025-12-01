@@ -1,7 +1,7 @@
 import axios from "axios";
 
 export const mediator = axios.create({
-    baseURL: "http://localhost:3000",
+    baseURL: "http://192.168.200.147:3000",
 });
 
 mediator.interceptors.request.use(

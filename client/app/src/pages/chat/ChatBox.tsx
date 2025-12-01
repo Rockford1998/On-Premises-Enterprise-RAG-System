@@ -100,7 +100,7 @@ export const ChatBox = () => {
     setIsLoading(true);
 
     try {
-      const res = await mediator.post("http://localhost:3000/chat", {
+      const res = await mediator.post("http://192.168.200.147:3000/chat", {
         botId: param?.botId, // safe access
         question: text,
       });

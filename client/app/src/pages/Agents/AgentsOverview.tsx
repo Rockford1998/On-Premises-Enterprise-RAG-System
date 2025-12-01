@@ -5,12 +5,13 @@ import { DataTable } from "../DataTable";
 import type { ColumnDef } from "@tanstack/react-table";
 
 import { Button } from "@/shadcn/ui/button";
-import { Pen } from "lucide-react";
+import { Pen, Trash } from "lucide-react";
 import { Badge } from "@/shadcn/ui/badge";
 import { PageWrapper } from "@/components/layout/PageWrapper";
 import { useNavigate } from "react-router";
 import { CreateBotDialog } from "../bot-hub/CreateBotDialog";
 import { useRefreshData } from "@/components/hook/useRefreshData";
+import { DeleteConfirmation } from "@/components/dialog-box/DeleteConfirmation";
 
 type Bot = {
   _id: string;
@@ -18,6 +19,7 @@ type Bot = {
   botId: string;
   owner: string;
   isActive: string;
+  botType: string;
 };
 
 export const AgentsOverview = () => {
@@ -45,8 +47,30 @@ export const AgentsOverview = () => {
       size: 300,
     },
     {
+      accessorKey: "botType",
+      header: "Type",
+      size: 300,
+      cell: ({ row }) => {
+        const bot = row.original;
+        return bot.botType === "General_Purpose" ? (
+          <Badge
+            variant="outline"
+            className="bg-teal-600 text-white border-teal-600 dark:bg-teal-500 dark:text-white dark:border-teal-500"
+          >
+            General Purpose
+          </Badge>
+        ) : (
+          <Badge
+            variant="outline"
+            className="bg-amber-500 text-black border-amber-500 dark:bg-amber-400 dark:text-black dark:border-amber-400"
+          >
+            Knowledge
+          </Badge>
+        );
+      },
+    },
+    {
       accessorKey: "isActive",
-
       header: "Is active",
       size: 800,
       cell: ({ row }) => {
@@ -74,6 +98,14 @@ export const AgentsOverview = () => {
             >
               <Pen />
             </Button>
+            <DeleteConfirmation
+              title="Delete Bot"
+              confirmText={`${bot.botId}`}
+              deleteUrl={`/bots/${bot.botId}`}
+              triggerType="icon"
+              triggerIcon={<Trash />}
+              refreshData={refreshData}
+            />
           </>
         );
       },

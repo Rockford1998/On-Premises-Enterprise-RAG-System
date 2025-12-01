@@ -6,12 +6,10 @@ import { mediator } from "@/utils/mediator";
 import { Card, CardContent } from "@/shadcn/ui/card";
 
 type AgentContextType = {
-  botId: string | undefined;
+  botId: string;
 };
 
-const AgentContext = createContext<AgentContextType>({
-  botId: undefined,
-});
+const AgentContext = createContext<AgentContextType>({} as AgentContextType);
 
 export const useAgentContext = () => useContext(AgentContext);
 
@@ -27,12 +25,14 @@ type Bot = {
   botName: string;
   botDesc?: string;
   owner?: Owner;
+  botType: string;
   [key: string]: any;
 };
 
 export const AgentsDetail = () => {
   const { id: botId } = useParams<{ id: string }>();
   const [bot, setBot] = useState<Bot | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     if (!botId) return;
@@ -41,28 +41,47 @@ export const AgentsDetail = () => {
       try {
         const res = await mediator.get(`/bots/${botId}`);
         setBot(res.data.data);
-      } catch (err) {
-        console.error("Failed to fetch bot:", err);
+      } catch {
+        setError("Failed to fetch bot");
       }
     })();
   }, [botId]);
 
+  if (!bot) {
+    return (
+      <PageWrapper title="Loading...">
+        <div className="py-8 text-sm">Loading agent information...</div>
+      </PageWrapper>
+    );
+  }
+
   return (
     <AgentContext.Provider value={{ botId }}>
-      <PageWrapper title={bot?.botName ?? "Agent Details"}>
-        {/* Compact Info Header */}
+      <PageWrapper title={bot.botName}>
         <div className="flex gap-2 flex-wrap mb-3">
-          {bot?.owner && (
-            <Card className="rounded-md border p-0 shadow-sm">
-              <CardContent className="p-2 py-1 text-xs">
-                <span className="font-semibold">Owner:</span>{" "}
-                {bot.owner.firstName} {bot.owner.lastName}
+          {error && (
+            <Card className="border-destructive">
+              <CardContent className="p-2 text-sm text-red-600">
+                {error}
+              </CardContent>
+            </Card>
+          )}
+
+          {bot.owner && (
+            <Card className="rounded-md border shadow-sm">
+              <CardContent className="p-3 text-sm flex flex-col">
+                <span className="font-semibold">
+                  {bot.owner.firstName} {bot.owner.lastName}
+                </span>
+                <span className="text-muted-foreground text-xs">
+                  {bot.owner.email}
+                </span>
               </CardContent>
             </Card>
           )}
         </div>
 
-        <TabAgent />
+        <TabAgent botType={bot.botType} />
       </PageWrapper>
     </AgentContext.Provider>
   );
