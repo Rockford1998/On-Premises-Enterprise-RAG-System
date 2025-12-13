@@ -15,7 +15,6 @@ export const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
     (async () => {
       if (accessToken) {
         try {
-          console.log(accessToken);
           const isVerified = await verifyAccessToken(accessToken);
           if (isVerified) setIsTokenValid(true);
         } catch (error) {

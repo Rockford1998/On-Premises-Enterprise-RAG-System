@@ -8,7 +8,7 @@ import {
   PromptInput,
   PromptInputTextarea,
 } from "@/components/ui/shadcn-io/ai/prompt-input";
-import { mediator } from "@/utils/mediator";
+import { starGate } from "@/utils/starGate";
 import {
   useState,
   type FormEventHandler,
@@ -61,8 +61,8 @@ export const ChatBox = () => {
   const handleCopyCode = useCallback(async (code: string) => {
     try {
       await navigator.clipboard.writeText(code);
-      setCopiedCode(true)
-      setTimeout(() => setCopiedCode(false), 2000)
+      setCopiedCode(true);
+      setTimeout(() => setCopiedCode(false), 2000);
     } catch (err) {
       console.error("Failed to copy code:", err);
     }
@@ -78,7 +78,7 @@ export const ChatBox = () => {
         console.error("Failed to copy message:", err);
       }
     },
-    []
+    [],
   );
 
   /* --------------------------------------------------------------
@@ -100,7 +100,7 @@ export const ChatBox = () => {
     setIsLoading(true);
 
     try {
-      const res = await mediator.post("http://192.168.200.147:3000/chat", {
+      const res = await starGate.post("/chat", {
         botId: param?.botId, // safe access
         question: text,
       });
@@ -119,8 +119,7 @@ export const ChatBox = () => {
       const errorMessage: ChatMessage = {
         id: (Date.now() + 1).toString(),
         from: "assistant",
-        text:
-          "⚠️ Sorry, I encountered an error while processing your request. Please try again.",
+        text: "⚠️ Sorry, I encountered an error while processing your request. Please try again.",
         timestamp: new Date(),
       };
       setMessages((prev) => [...prev, errorMessage]);
@@ -183,12 +182,7 @@ export const ChatBox = () => {
         {children}
       </td>
     ),
-    code: ({
-      inline,
-      className,
-      children,
-      ...props
-    }: any) => {
+    code: ({ inline, className, children, ...props }: any) => {
       const match = /language-(\w+)/.exec(className || "");
       const codeText = String(children).replace(/\n$/, "");
 
@@ -203,15 +197,8 @@ export const ChatBox = () => {
                 onClick={() => handleCopyCode(codeText)}
                 className="flex items-center gap-1 px-2 py-1 text-xs text-gray-600 dark:text-gray-400 hover:bg-none dark:hover:bg-gray-700 rounded transition-colors cursor-pointer"
               >
-                {copiedCode ?
-                  < CheckCheck size={14} />
-                  : < Copy size={14} />
-                }
-                {copiedCode ?
-                  "Copied"
-                  : "Copy code"
-                }
-
+                {copiedCode ? <CheckCheck size={14} /> : <Copy size={14} />}
+                {copiedCode ? "Copied" : "Copy code"}
               </button>
             </div>
             <pre className="hljs bg-gray-900 p-4 overflow-x-auto text-sm">
@@ -261,13 +248,13 @@ export const ChatBox = () => {
                 key={msg.id}
                 className={cn(
                   "flex w-full",
-                  msg.from === "user" ? "justify-end" : "justify-start"
+                  msg.from === "user" ? "justify-end" : "justify-start",
                 )}
               >
                 <div
                   className={cn(
                     "flex gap-3 max-w-[80%]",
-                    msg.from === "user" && "flex-row-reverse"
+                    msg.from === "user" && "flex-row-reverse",
                   )}
                 >
                   {/* Avatar */}
@@ -276,7 +263,7 @@ export const ChatBox = () => {
                       "flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center text-white mt-1",
                       msg.from === "user"
                         ? "bg-gradient-to-br from-gray-500 to-white-700"
-                        : "bg-gradient-to-br from-gray-500 to-white-500"
+                        : "bg-gradient-to-br from-gray-500 to-white-500",
                     )}
                   >
                     {msg.from === "user" ? (
@@ -288,7 +275,6 @@ export const ChatBox = () => {
 
                   {/* Message bubble & copy btn */}
                   <div className="relative group max-w-full">
-
                     {/* Rendered message content */}
                     <div className="group-hover:opacity-100">
                       <ReactMarkdown
@@ -308,10 +294,14 @@ export const ChatBox = () => {
                         className={cn(
                           "absolute bottom--0.5 left-1 opacity-0 group-hover:opacity-100",
                           "transition-opacity p-1.5 rounded bg-white dark:bg-gray-700 shadow-sm",
-                          "border border-gray-200 dark:border-gray-600 cursor-pointer"
+                          "border border-gray-200 dark:border-gray-600 cursor-pointer",
                         )}
                       >
-                        {copiedMessageId === msg.id ? <CheckCheck size={14} /> : <Copy size={14} />}
+                        {copiedMessageId === msg.id ? (
+                          <CheckCheck size={14} />
+                        ) : (
+                          <Copy size={14} />
+                        )}
                       </button>
                     ) : (
                       <button
@@ -319,14 +309,17 @@ export const ChatBox = () => {
                         className={cn(
                           "absolute top-1 right-1 opacity-0 group-hover:opacity-100",
                           "transition-opacity p-1.5 rounded bg-white dark:bg-gray-700 shadow-sm",
-                          "border border-gray-200 dark:border-gray-600 cursor-pointer"
+                          "border border-gray-200 dark:border-gray-600 cursor-pointer",
                         )}
                       >
-                        {copiedMessageId === msg.id ? <CheckCheck size={14} /> : <Copy size={14} />}
+                        {copiedMessageId === msg.id ? (
+                          <CheckCheck size={14} />
+                        ) : (
+                          <Copy size={14} />
+                        )}
                       </button>
                     )}
                   </div>
-
                 </div>
               </div>
             ))}
@@ -359,7 +352,7 @@ export const ChatBox = () => {
       {/* -------------------------------------------------- */}
       {/* Input Area */}
       {/* -------------------------------------------------- */}
-      <div className="border-t  p-4 sticky bottom-0" >
+      <div className="border-t  p-4 sticky bottom-0">
         <div>
           <PromptInput onSubmit={handleSubmit} className="min-h-12">
             <PromptInputTextarea

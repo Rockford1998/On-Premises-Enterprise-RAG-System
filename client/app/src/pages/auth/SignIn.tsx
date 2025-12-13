@@ -22,7 +22,7 @@ import { useForm } from "react-hook-form";
 import z from "zod";
 import { useStoreAuth } from "@/store/useStoreAuth";
 import { useNavigate } from "react-router";
-import { mediator } from "@/utils/mediator";
+import { starGate } from "@/utils/starGate";
 
 export const SignIn = () => {
   const { form, onSubmit, navigate } = useSignIn();
@@ -126,7 +126,7 @@ const useSignIn = () => {
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
-      const response = await mediator.post("/auth", values);
+      const response = await starGate.post("/auth", values);
       console.log(response.data);
       if (response.status === 201) {
         console.log(response);

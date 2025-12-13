@@ -1,5 +1,4 @@
 import { useStoreAuth } from "@/store/useStoreAuth";
-import { mediator } from "@/utils/mediator";
 import { useEffect, useState } from "react";
 import { DataTable } from "../DataTable";
 import type { ColumnDef } from "@tanstack/react-table";
@@ -12,6 +11,7 @@ import { useNavigate } from "react-router";
 import { CreateBotDialog } from "../bot-hub/CreateBotDialog";
 import { useRefreshData } from "@/components/hook/useRefreshData";
 import { DeleteConfirmation } from "@/components/dialog-box/DeleteConfirmation";
+import { starGate } from "@/utils/starGate";
 
 type Bot = {
   _id: string;
@@ -23,17 +23,26 @@ type Bot = {
 };
 
 export const AgentsOverview = () => {
-  const userProfile = useStoreAuth((state) => state.userProfile);
+  const userProfile = useStoreAuth((state) => state.userProfile) || null;
   const navigate = useNavigate();
   const [bots, setBots] = useState<any>([]);
   const { count, refreshData } = useRefreshData();
 
   useEffect(() => {
-    (async () => {
-      const res = await mediator.get(`bots/owner/${userProfile.email}`);
-      setBots(res.data.data);
-    })();
-  }, [count, userProfile.email]);
+    const fetchBots = async () => {
+      // Only fetch if userProfile exists
+      if (!userProfile) return;
+      try {
+        const res = await starGate.get(`bots/owner/${userProfile.email}`);
+        setBots(res.data.data || []);
+      } catch (error) {
+        console.error("Error fetching bots:", error);
+        setBots([]);
+      }
+    };
+
+    fetchBots();
+  }, [count, userProfile]);
 
   const columns: ColumnDef<Bot>[] = [
     {

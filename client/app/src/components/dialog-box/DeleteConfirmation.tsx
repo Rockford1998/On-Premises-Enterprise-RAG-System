@@ -10,7 +10,7 @@ import {
 } from "@/shadcn/ui/dialog";
 import { Input } from "@/shadcn/ui/input";
 import { Label } from "@/shadcn/ui/label";
-import { mediator } from "@/utils/mediator";
+import { starGate } from "@/utils/starGate";
 import React, { useState } from "react";
 
 interface DeleteConfirmationProps {
@@ -51,7 +51,7 @@ export const DeleteConfirmation = ({
     setLoading(true);
 
     try {
-      await mediator.delete(deleteUrl);
+      await starGate.delete(deleteUrl);
       refreshData();
     } catch (err) {
       console.log(err);

@@ -13,7 +13,7 @@ import { Textarea } from "@/shadcn/ui/textarea";
 import { Button } from "@/shadcn/ui/button";
 import { Switch } from "@/shadcn/ui/switch";
 
-import { mediator } from "@/utils/mediator";
+import { starGate } from "@/utils/starGate";
 import { z } from "zod";
 import { useAgentContext } from "../AgentsDetail";
 import { toast } from "sonner";
@@ -55,7 +55,7 @@ export const TabBotForm = () => {
   });
 
   useEffect(() => {
-    mediator.get(`/bots/${botId}`).then((res) => {
+    starGate.get(`/bots/${botId}`).then((res) => {
       const bot = res.data.data;
       form.reset({
         botName: bot.botName,
@@ -70,7 +70,7 @@ export const TabBotForm = () => {
       setLoading(false);
     });
 
-    mediator
+    starGate
       .get(`/metadata/models`)
       .then((res) => {
         const result = res.data.data.map((item: any) => ({
@@ -85,7 +85,7 @@ export const TabBotForm = () => {
 
   const onSubmit = async (values: BotInfoFormValues) => {
     try {
-      await mediator.put(`/bots/${botId}`, values);
+      await starGate.put(`/bots/${botId}`, values);
       toast("✅ Bot info updated successfully!");
     } catch (error) {
       toast("❌ Failed to update bot info.");

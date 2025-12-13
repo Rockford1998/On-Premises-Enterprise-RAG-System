@@ -3,7 +3,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/shadcn/ui/avatar";
 import { Button } from "@/shadcn/ui/button";
 import { Card, CardContent, CardFooter, CardHeader } from "@/shadcn/ui/card";
 import { useStoreAuth } from "@/store/useStoreAuth";
-import { mediator } from "@/utils/mediator";
+import { starGate } from "@/utils/starGate";
 import { MessageSquare, Settings } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
@@ -15,7 +15,7 @@ export const BotHubOverview = () => {
 
   useEffect(() => {
     (async () => {
-      const res = await mediator.get(`bots/owner/${userProfile.email}`);
+      const res = await starGate.get(`bots/owner/${userProfile.email}`);
       setBots(res.data.data);
     })();
   }, [userProfile.email]);

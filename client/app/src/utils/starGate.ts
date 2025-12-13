@@ -1,10 +1,10 @@
 import axios from "axios";
-
-export const mediator = axios.create({
-    baseURL: "http://192.168.200.147:3000",
+const apiUrl = import.meta.env.VITE_BE_URL;
+export const starGate = axios.create({
+    baseURL: apiUrl,
 });
 
-mediator.interceptors.request.use(
+starGate.interceptors.request.use(
     (request) => {
         const state = localStorage.getItem("store-auth");
         if (state) {
@@ -21,7 +21,7 @@ mediator.interceptors.request.use(
 );
 
 // Response Interceptor: Handle 401 errors globally
-mediator.interceptors.response.use(
+starGate.interceptors.response.use(
     (response) => response,
     (error) => {
         const status = error.response?.status;

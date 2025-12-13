@@ -2,7 +2,7 @@ import { PageWrapper } from "@/components/layout/PageWrapper";
 import { useParams } from "react-router";
 import { TabAgent } from "./tabs/TabAgent";
 import { createContext, useContext, useEffect, useState } from "react";
-import { mediator } from "@/utils/mediator";
+import { starGate } from "@/utils/starGate";
 import { Card, CardContent } from "@/shadcn/ui/card";
 
 type AgentContextType = {
@@ -39,7 +39,7 @@ export const AgentsDetail = () => {
 
     (async () => {
       try {
-        const res = await mediator.get(`/bots/${botId}`);
+        const res = await starGate.get(`/bots/${botId}`);
         setBot(res.data.data);
       } catch {
         setError("Failed to fetch bot");

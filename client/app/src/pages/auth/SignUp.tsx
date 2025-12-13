@@ -16,7 +16,7 @@ import {
 } from "@/shadcn/ui/form";
 import { Input } from "@/shadcn/ui/input";
 import { useStoreAuth } from "@/store/useStoreAuth";
-import { mediator } from "@/utils/mediator";
+import { starGate } from "@/utils/starGate";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router";
@@ -151,7 +151,7 @@ const useSignUp = () => {
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
-      const response = await mediator.post("/users", values);
+      const response = await starGate.post("/users", values);
       if (response.status === 201) {
         console.log(response);
         // eslint-disable-next-line @typescript-eslint/no-unused-vars

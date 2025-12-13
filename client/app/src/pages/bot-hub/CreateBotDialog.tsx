@@ -1,7 +1,7 @@
 import { FormDialogBox } from "@/components/dialog-box/FormDialogBox";
 import { Form } from "@/shadcn/ui/form";
 import { useStoreAuth } from "@/store/useStoreAuth";
-import { mediator } from "@/utils/mediator";
+import { starGate } from "@/utils/starGate";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { useState } from "react";
@@ -45,7 +45,7 @@ export const CreateBotDialog = ({
   const handleSubmit = form.handleSubmit(async (values) => {
     console.log("Submitted:", values);
     try {
-      await mediator.post("/bots", {
+      await starGate.post("/bots", {
         owner: userProfile.email,
         ...values,
       });

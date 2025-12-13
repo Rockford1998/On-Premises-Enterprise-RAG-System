@@ -11,6 +11,7 @@ import { BotHubOverview } from "./pages/bot-hub/BotHubOverview";
 import { ChatBox } from "./pages/chat/ChatBox";
 import { SignUp } from "./pages/auth/SignUp";
 
+
 export const App = () => {
   const route = createBrowserRouter([
     {

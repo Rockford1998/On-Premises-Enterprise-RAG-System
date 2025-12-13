@@ -8,7 +8,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/shadcn/ui/dropdown-menu";
-import { mediator } from "@/utils/mediator";
+import { starGate } from "@/utils/starGate";
 import { toast } from "sonner";
 import { useAgentContext } from "./AgentsDetail";
 import { Input } from "@/shadcn/ui/input";
@@ -51,7 +51,7 @@ export const UploadFileDropdown: React.FC<UploadFileDropdownProps> = ({
       const formData = new FormData();
       formData.append("file", file);
       setUploading(true);
-      const response = await mediator.post(`/kb/upload/${botId}`, formData, {
+      const response = await starGate.post(`/kb/upload/${botId}`, formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },

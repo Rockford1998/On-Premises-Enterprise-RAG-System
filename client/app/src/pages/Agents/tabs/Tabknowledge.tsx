@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useAgentContext } from "../AgentsDetail";
-import { mediator } from "@/utils/mediator";
+import { starGate } from "@/utils/starGate";
 import type { ColumnDef } from "@tanstack/react-table";
 import { DataTable } from "@/pages/DataTable";
 import { toast } from "sonner";
@@ -33,7 +33,7 @@ export const Tabknowledge = () => {
   //
   useEffect(() => {
     (async () => {
-      const res = await mediator.get(`/kb/bot-id/${botId}`);
+      const res = await starGate.get(`/kb/bot-id/${botId}`);
       Setknowledge(res.data.data);
 
       toast(res.data.message);
@@ -42,7 +42,7 @@ export const Tabknowledge = () => {
 
   const onDeletConfirm = async ({ fileName }: { fileName: string }) => {
     try {
-      const res = await mediator.post("/kb/delete", {
+      const res = await starGate.post("/kb/delete", {
         fileName,
         botId,
       });
