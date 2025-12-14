@@ -1,6 +1,7 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/shadcn/ui/tabs";
 import { TabBotForm } from "./TabBotForm";
 import { Tabknowledge } from "./Tabknowledge";
+import { TabTools } from "./TabTools";
 
 export function TabAgent({ botType }: { botType: string }) {
   return (
@@ -15,17 +16,17 @@ export function TabAgent({ botType }: { botType: string }) {
             Knowledge
           </TabsTrigger>
         )}
+        <TabsTrigger value="tools" className="px-3 py-1 text-xs">
+          Tools
+        </TabsTrigger>
       </TabsList>
 
-      {/* Details Tab */}
       <TabsContent
         value="details"
         className="flex-1 overflow-y-auto p-1 rounded-md"
       >
         <TabBotForm />
       </TabsContent>
-
-      {/* Knowledge Tab */}
       {botType !== "General_Purpose" && (
         <TabsContent
           value="knowledge"
@@ -34,6 +35,12 @@ export function TabAgent({ botType }: { botType: string }) {
           <Tabknowledge />
         </TabsContent>
       )}
+      <TabsContent
+        value="tools"
+        className="flex-1 overflow-y-auto p-1 rounded-md"
+      >
+        <TabTools />
+      </TabsContent>
     </Tabs>
   );
 }

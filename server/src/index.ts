@@ -4,7 +4,7 @@ import router from "./routes/app.routes";
 import cors from "cors";
 import dotenv from "dotenv";
 import "./db/mongo";
-import { authenticateJWT } from "./middlewares/auth.middleware";
+import { authenticateJWT } from "./middlewares/auth.middleware";1
 
 //
 dotenv.config({
