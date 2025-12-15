@@ -14,8 +14,8 @@ import {
 } from "@/shadcn/ui/sidebar";
 import { NavUser } from "../nav/NavUser";
 import { Separator } from "@/shadcn/ui/separator";
-import { Link } from "react-router";
 import { useIsMobile } from "@/shadcn/hooks/use-mobile";
+import { Link } from "@tanstack/react-router";
 
 const user = {
   name: "shadcn",
@@ -37,7 +37,7 @@ const items = [
   },
   {
     title: "Agents",
-    url: "/agents/overview",
+    url: "/agent",
     icon: Bot,
   },
 ];
