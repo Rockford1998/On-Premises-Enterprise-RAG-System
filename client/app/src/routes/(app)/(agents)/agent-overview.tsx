@@ -1,17 +1,17 @@
 import { useStoreAuth } from "@/store/useStoreAuth";
 import { useEffect, useState } from "react";
-import { DataTable } from "../DataTable";
 import type { ColumnDef } from "@tanstack/react-table";
 
 import { Button } from "@/shadcn/ui/button";
 import { Pen, Trash } from "lucide-react";
 import { Badge } from "@/shadcn/ui/badge";
 import { PageWrapper } from "@/components/layout/PageWrapper";
-import { useNavigate } from "react-router";
-import { CreateBotDialog } from "../bot-hub/CreateBotDialog";
 import { useRefreshData } from "@/components/hook/useRefreshData";
 import { DeleteConfirmation } from "@/components/dialog-box/DeleteConfirmation";
 import { starGate } from "@/utils/starGate";
+import { useNavigate, createFileRoute } from "@tanstack/react-router";
+import { CreateBotDialog } from "../(hub)/-CreateBotDialog";
+import { DataTable } from "@/components/example-components/DataTable";
 
 type Bot = {
   _id: string;
@@ -22,7 +22,11 @@ type Bot = {
   botType: string;
 };
 
-export const AgentsOverview = () => {
+export const Route = createFileRoute("/(app)/(agents)/agent-overview")({
+  component: AgentsOverview,
+});
+
+function AgentsOverview() {
   const userProfile = useStoreAuth((state) => state.userProfile) || null;
   const navigate = useNavigate();
   const [bots, setBots] = useState<any>([]);
@@ -103,7 +107,7 @@ export const AgentsOverview = () => {
               size={"icon"}
               variant={"ghost"}
               className="cursor-pointer"
-              onClick={() => navigate(`/agents/detail/${bot.botId}`)}
+              onClick={() => navigate({ to: `/agent-details/${bot.botId}` })}
             >
               <Pen />
             </Button>
@@ -133,4 +137,4 @@ export const AgentsOverview = () => {
       <DataTable columns={columns} data={bots} />
     </PageWrapper>
   );
-};
+}

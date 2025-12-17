@@ -1,12 +1,16 @@
+import { columns, type Payment } from "@/components/example-components/Columns";
+import { DataTable } from "@/components/example-components/DataTable";
+import { ExampleForm } from "@/components/example-components/ExampleForm";
 import { PageWrapper } from "@/components/layout/PageWrapper";
 import { Button } from "@/shadcn/ui/button";
-import { columns, type Payment } from "./Columns";
-import { DataTable } from "./DataTable";
 import { Separator } from "@/shadcn/ui/separator";
-import { ExampleForm } from "./ExampleForm";
-import z from "zod";
+import { createFileRoute } from "@tanstack/react-router";
 
-export const Home = () => {
+export const Route = createFileRoute("/(app)/")({
+  component: Home,
+});
+
+function Home() {
   const { payments } = useHome();
   return (
     <PageWrapper
@@ -29,7 +33,7 @@ export const Home = () => {
       </div>
     </PageWrapper>
   );
-};
+}
 
 const useHome = () => {
   const payments: Payment[] = [
@@ -61,12 +65,3 @@ const useHome = () => {
   ];
   return { payments };
 };
-
-const formSchema = z.object({
-  botName: z.string().min(3, {
-    message: "Bot name must be at least 3 characters.",
-  }),
-  botDesc: z.string().min(3, {
-    message: "Bot description must be at least 3 characters.",
-  }),
-});

@@ -16,6 +16,7 @@ import { NavUser } from "../nav/NavUser";
 import { Separator } from "@/shadcn/ui/separator";
 import { useIsMobile } from "@/shadcn/hooks/use-mobile";
 import { Link } from "@tanstack/react-router";
+import type { RoutePaths } from "@/App";
 
 const user = {
   name: "shadcn",
@@ -23,23 +24,16 @@ const user = {
   avatar: "/avatars/shadcn.jpg",
 };
 
-// Menu items.
-const items = [
-  {
-    title: "Home",
-    url: "/",
-    icon: Home,
-  },
-  {
-    title: "Hub",
-    url: "/hub",
-    icon: Computer,
-  },
-  {
-    title: "Agents",
-    url: "/agent",
-    icon: Bot,
-  },
+type NavItem = {
+  title: string;
+  to: RoutePaths;
+  icon: React.ComponentType;
+};
+
+const items: NavItem[] = [
+  { title: "Home", to: "/", icon: Home },
+  { title: "Hub", to: "/hub-overview", icon: Computer },
+  { title: "Agents", to: "/agent-overview", icon: Bot },
 ];
 
 export function AppSidebar({
@@ -76,7 +70,7 @@ export function AppSidebar({
               {items.map((item) => (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton asChild>
-                    <Link to={item.url}>
+                    <Link to={item.to}>
                       <item.icon />
                       <span>{item.title}</span>
                     </Link>

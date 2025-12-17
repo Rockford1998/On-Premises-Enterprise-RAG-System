@@ -1,3 +1,4 @@
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { PageWrapper } from "@/components/layout/PageWrapper";
 import { Avatar, AvatarFallback, AvatarImage } from "@/shadcn/ui/avatar";
 import { Button } from "@/shadcn/ui/button";
@@ -6,9 +7,12 @@ import { useStoreAuth } from "@/store/useStoreAuth";
 import { starGate } from "@/utils/starGate";
 import { MessageSquare, Settings } from "lucide-react";
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router";
 
-export const BotHubOverview = () => {
+export const Route = createFileRoute("/(app)/(hub)/hub-overview")({
+  component: RouteComponent,
+});
+
+function RouteComponent() {
   const userProfile = useStoreAuth((state) => state.userProfile);
   const [bots, setBots] = useState<any>([]);
   const navigate = useNavigate();
@@ -37,7 +41,7 @@ export const BotHubOverview = () => {
                 size="icon"
                 variant="ghost"
                 className="absolute top-2 right-2 h-6 w-6 cursor-pointer"
-                onClick={() => navigate(`/agents/detail/${bot.botId}`)}
+                onClick={() => navigate({ to: `/agent-details/${bot.botId}` })}
               >
                 <Settings className="h-4 w-4" />
               </Button>
@@ -53,7 +57,7 @@ export const BotHubOverview = () => {
                 variant="outline"
                 size="sm"
                 className="mt-1 h-6 text-[11px] px-2 gap-1 rounded cursor-pointer"
-                onClick={() => navigate(`/agents/chat/${bot.botId}`)}
+                onClick={() => navigate({ to: `/chatbox/${bot.botId}` })}
               >
                 <MessageSquare className="h-3 w-3" />
                 Chat
@@ -68,4 +72,4 @@ export const BotHubOverview = () => {
       </div>
     </PageWrapper>
   );
-};
+}

@@ -1,17 +1,8 @@
-// import { createBrowserRouter } from "react-router";
-// import { Home } from "./pages/Home";
-// import { RouterProvider } from "react-router/dom";
-// import { Layout } from "./components/layout/Layout";
-// import { ThemeProvider } from "./components/theme-provider/ThemeProvider";
-// import { ProtectedRoute } from "./components/protected-route.tsx/ProtectedRoute";
-// import { SignIn } from "./pages/auth/SignIn";
-// import { BotHubOverview } from "./pages/bot-hub/BotHubOverview";
-// import { ChatBox } from "./pages/chat/ChatBox";
-// import { SignUp } from "./pages/auth/SignUp";
-// import { AgentsOverview } from "./pages/Agents/AgentsOverview";
-// import { AgentsDetail } from "./pages/Agents/AgentsDetail";
-
-import { createRouter, RouterProvider } from "@tanstack/react-router";
+import {
+  createRouter,
+  RouterProvider,
+  type RegisteredRouter,
+} from "@tanstack/react-router";
 import { routeTree } from "./routeTree.gen";
 
 const router = createRouter({
@@ -27,5 +18,5 @@ declare module "@tanstack/react-router" {
 const App = () => {
   return <RouterProvider router={router} />;
 };
-
+export type RoutePaths = keyof RegisteredRouter["routesByPath"];
 export default App;

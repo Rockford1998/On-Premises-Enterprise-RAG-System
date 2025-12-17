@@ -10,8 +10,8 @@ import {
 } from "@/shadcn/ui/dropdown-menu";
 import { starGate } from "@/utils/starGate";
 import { toast } from "sonner";
-import { useAgentContext } from "./AgentsDetail";
 import { Input } from "@/shadcn/ui/input";
+import { useAgentContext } from "./agent-details.$botId";
 
 type FileType = "pdf" | "docx" | "doc" | "pptx" | "txt";
 
@@ -25,6 +25,7 @@ export const UploadFileDropdown: React.FC<UploadFileDropdownProps> = ({
   refreshData,
 }) => {
   const { botId } = useAgentContext();
+  console.log({ botId });
   const [selectedType, setSelectedType] = useState<FileType | null>(null);
   const [uploading, setUploading] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);

@@ -1,16 +1,19 @@
+import { createFileRoute } from "@tanstack/react-router";
 import { PageWrapper } from "@/components/layout/PageWrapper";
-import { useParams } from "react-router";
-import { TabAgent } from "./tabs/TabAgent";
 import { createContext, useContext, useEffect, useState } from "react";
 import { starGate } from "@/utils/starGate";
 import { Card, CardContent } from "@/shadcn/ui/card";
+import { TabAgent } from "./-tabs/TabAgent";
 
 type AgentContextType = {
   botId: string;
 };
 
-const AgentContext = createContext<AgentContextType>({} as AgentContextType);
+export const Route = createFileRoute("/(app)/(agents)/agent-details/$botId")({
+  component: AgentsDetail,
+});
 
+const AgentContext = createContext<AgentContextType>({} as AgentContextType);
 export const useAgentContext = () => useContext(AgentContext);
 
 type Owner = {
@@ -29,11 +32,11 @@ type Bot = {
   [key: string]: any;
 };
 
-export const AgentsDetail = () => {
-  const { id: botId } = useParams<{ id: string }>();
+function AgentsDetail() {
+  const { botId } = Route.useParams();
   const [bot, setBot] = useState<Bot | null>(null);
   const [error, setError] = useState<string | null>(null);
-
+  console.log({ botId });
   useEffect(() => {
     if (!botId) return;
 
@@ -85,4 +88,4 @@ export const AgentsDetail = () => {
       </PageWrapper>
     </AgentContext.Provider>
   );
-};
+}

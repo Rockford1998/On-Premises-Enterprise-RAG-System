@@ -1,3 +1,4 @@
+import { createFileRoute } from "@tanstack/react-router";
 import {
   Conversation,
   ConversationContent,
@@ -23,7 +24,6 @@ import { Loader2, Copy, CheckCheck, Bot, User } from "lucide-react";
 import { cn } from "@/shadcn/utils";
 import "highlight.js/styles/github-dark.css";
 import "highlight.js/styles/github.css";
-import { useParams } from "react-router";
 
 type ChatMessage = {
   id: string;
@@ -33,14 +33,18 @@ type ChatMessage = {
   isStreaming?: boolean;
 };
 
-export const ChatBox = () => {
+export const Route = createFileRoute("/(app)/(chat)/chatbox/$botId")({
+  component: ChatBox,
+});
+
+function ChatBox() {
   const [text, setText] = useState<string>("");
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [copiedMessageId, setCopiedMessageId] = useState<string | null>(null);
   const [copiedCode, setCopiedCode] = useState<boolean>(false);
 
-  const param = useParams<{ botId?: string }>();
+  const { botId } = Route.useParams();
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
@@ -78,7 +82,7 @@ export const ChatBox = () => {
         console.error("Failed to copy message:", err);
       }
     },
-    [],
+    []
   );
 
   /* --------------------------------------------------------------
@@ -101,7 +105,7 @@ export const ChatBox = () => {
 
     try {
       const res = await starGate.post("/chat", {
-        botId: param?.botId, // safe access
+        botId: botId, // safe access
         question: text,
       });
 
@@ -248,13 +252,13 @@ export const ChatBox = () => {
                 key={msg.id}
                 className={cn(
                   "flex w-full",
-                  msg.from === "user" ? "justify-end" : "justify-start",
+                  msg.from === "user" ? "justify-end" : "justify-start"
                 )}
               >
                 <div
                   className={cn(
                     "flex gap-3 max-w-[80%]",
-                    msg.from === "user" && "flex-row-reverse",
+                    msg.from === "user" && "flex-row-reverse"
                   )}
                 >
                   {/* Avatar */}
@@ -263,7 +267,7 @@ export const ChatBox = () => {
                       "flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center text-white mt-1",
                       msg.from === "user"
                         ? "bg-gradient-to-br from-gray-500 to-white-700"
-                        : "bg-gradient-to-br from-gray-500 to-white-500",
+                        : "bg-gradient-to-br from-gray-500 to-white-500"
                     )}
                   >
                     {msg.from === "user" ? (
@@ -294,7 +298,7 @@ export const ChatBox = () => {
                         className={cn(
                           "absolute bottom--0.5 left-1 opacity-0 group-hover:opacity-100",
                           "transition-opacity p-1.5 rounded bg-white dark:bg-gray-700 shadow-sm",
-                          "border border-gray-200 dark:border-gray-600 cursor-pointer",
+                          "border border-gray-200 dark:border-gray-600 cursor-pointer"
                         )}
                       >
                         {copiedMessageId === msg.id ? (
@@ -309,7 +313,7 @@ export const ChatBox = () => {
                         className={cn(
                           "absolute top-1 right-1 opacity-0 group-hover:opacity-100",
                           "transition-opacity p-1.5 rounded bg-white dark:bg-gray-700 shadow-sm",
-                          "border border-gray-200 dark:border-gray-600 cursor-pointer",
+                          "border border-gray-200 dark:border-gray-600 cursor-pointer"
                         )}
                       >
                         {copiedMessageId === msg.id ? (
@@ -375,4 +379,4 @@ export const ChatBox = () => {
       </div>
     </div>
   );
-};
+}

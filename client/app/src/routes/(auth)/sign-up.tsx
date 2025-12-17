@@ -1,3 +1,4 @@
+import { createFileRoute, redirect, useNavigate } from "@tanstack/react-router";
 import { Button } from "@/shadcn/ui/button";
 import {
   Card,
@@ -19,10 +20,20 @@ import { useStoreAuth } from "@/store/useStoreAuth";
 import { starGate } from "@/utils/starGate";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { useNavigate } from "react-router";
 import z from "zod";
 
-export const SignUp = () => {
+export const Route = createFileRoute("/(auth)/sign-up")({
+  component: SignUp,
+  beforeLoad: () => {
+    const { accessToken } = useStoreAuth.getState();
+
+    if (accessToken) {
+      throw redirect({ to: "/" });
+    }
+  },
+});
+
+function SignUp() {
   const { form, navigate, onSubmit } = useSignUp();
 
   return (
@@ -122,7 +133,7 @@ export const SignUp = () => {
             <Button
               variant="link"
               className="px-1 text-xs sm:text-sm cursor-pointer"
-              onClick={() => navigate("/signin")}
+              onClick={() => navigate({ to: "/sign-in" })}
             >
               Sign In
             </Button>
@@ -131,7 +142,7 @@ export const SignUp = () => {
       </Card>
     </div>
   );
-};
+}
 
 const useSignUp = () => {
   const setAccessToken = useStoreAuth((state) => state.setAccessToken);
@@ -157,7 +168,7 @@ const useSignUp = () => {
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         setAccessToken(response.data.data.token);
         setUserProfile(response.data.data.user);
-        navigate("/");
+        navigate({ to: "/" });
       }
 
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -196,6 +207,6 @@ const formSchema = z.object({
     .max(64, "Password cannot exceed 64 characters.")
     .regex(
       /^(?=.*[A-Za-z])(?=.*\d).+$/,
-      "Password must contain at least 1 letter and 1 number.",
+      "Password must contain at least 1 letter and 1 number."
     ),
 });

@@ -1,12 +1,9 @@
 import { useEffect, useState } from "react";
-import { useAgentContext } from "../AgentsDetail";
 import { starGate } from "@/utils/starGate";
 import type { ColumnDef } from "@tanstack/react-table";
-import { DataTable } from "@/pages/DataTable";
 import { toast } from "sonner";
 import { DeleteAlertDialogBox } from "@/components/alert-dialog-box/DeleteAlertDialogBox";
 import { useRefreshData } from "@/components/hook/useRefreshData";
-import { UploadFileDropdown } from "../UploadFileDropdown";
 import {
   Dialog,
   DialogContent,
@@ -15,6 +12,9 @@ import {
 } from "@/shadcn/ui/dialog";
 import { Button } from "@/shadcn/ui/button";
 import { Download, MessageSquareMore } from "lucide-react";
+import { UploadFileDropdown } from "../-UploadFileDropdown";
+import { Route } from "../agent-details.$botId";
+import { DataTable } from "@/components/example-components/DataTable";
 //
 type Bot = {
   _id: string;
@@ -27,7 +27,7 @@ type Bot = {
 
 //
 export const Tabknowledge = () => {
-  const { botId } = useAgentContext();
+  const { botId } = Route.useParams();
   const [knowledge, Setknowledge] = useState<any>([]);
   const { count, refreshData } = useRefreshData();
   //
@@ -112,7 +112,11 @@ export const Tabknowledge = () => {
         return (
           <Dialog>
             <DialogTrigger asChild>
-              <Button variant="outline" size="sm" className="cursor-pointer h-8 px-3 text-xs ">
+              <Button
+                variant="outline"
+                size="sm"
+                className="cursor-pointer h-8 px-3 text-xs "
+              >
                 <MessageSquareMore /> Knowledge
               </Button>
             </DialogTrigger>

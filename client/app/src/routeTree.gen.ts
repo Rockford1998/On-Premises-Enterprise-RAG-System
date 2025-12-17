@@ -9,104 +9,207 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as HubRouteImport } from './routes/Hub'
-import { Route as HomeRouteImport } from './routes/Home'
-import { Route as AgentRouteImport } from './routes/Agent'
-import { Route as IndexRouteImport } from './routes/index'
+import { Route as appRouteRouteImport } from './routes/(app)/route'
+import { Route as appIndexRouteImport } from './routes/(app)/index'
+import { Route as authSignUpRouteImport } from './routes/(auth)/sign-up'
+import { Route as authSignInRouteImport } from './routes/(auth)/sign-in'
+import { Route as apphubHubOverviewRouteImport } from './routes/(app)/(hub)/hub-overview'
+import { Route as appagentsAgentOverviewRouteImport } from './routes/(app)/(agents)/agent-overview'
+import { Route as appchatChatboxBotIdRouteImport } from './routes/(app)/(chat)/chatbox.$botId'
+import { Route as appagentsAgentDetailsBotIdRouteImport } from './routes/(app)/(agents)/agent-details.$botId'
 
-const HubRoute = HubRouteImport.update({
-  id: '/Hub',
-  path: '/Hub',
+const appRouteRoute = appRouteRouteImport.update({
+  id: '/(app)',
   getParentRoute: () => rootRouteImport,
 } as any)
-const HomeRoute = HomeRouteImport.update({
-  id: '/Home',
-  path: '/Home',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AgentRoute = AgentRouteImport.update({
-  id: '/Agent',
-  path: '/Agent',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const IndexRoute = IndexRouteImport.update({
+const appIndexRoute = appIndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => appRouteRoute,
+} as any)
+const authSignUpRoute = authSignUpRouteImport.update({
+  id: '/(auth)/sign-up',
+  path: '/sign-up',
   getParentRoute: () => rootRouteImport,
 } as any)
+const authSignInRoute = authSignInRouteImport.update({
+  id: '/(auth)/sign-in',
+  path: '/sign-in',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const apphubHubOverviewRoute = apphubHubOverviewRouteImport.update({
+  id: '/(hub)/hub-overview',
+  path: '/hub-overview',
+  getParentRoute: () => appRouteRoute,
+} as any)
+const appagentsAgentOverviewRoute = appagentsAgentOverviewRouteImport.update({
+  id: '/(agents)/agent-overview',
+  path: '/agent-overview',
+  getParentRoute: () => appRouteRoute,
+} as any)
+const appchatChatboxBotIdRoute = appchatChatboxBotIdRouteImport.update({
+  id: '/(chat)/chatbox/$botId',
+  path: '/chatbox/$botId',
+  getParentRoute: () => appRouteRoute,
+} as any)
+const appagentsAgentDetailsBotIdRoute =
+  appagentsAgentDetailsBotIdRouteImport.update({
+    id: '/(agents)/agent-details/$botId',
+    path: '/agent-details/$botId',
+    getParentRoute: () => appRouteRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
-  '/': typeof IndexRoute
-  '/Agent': typeof AgentRoute
-  '/Home': typeof HomeRoute
-  '/Hub': typeof HubRoute
+  '/sign-in': typeof authSignInRoute
+  '/sign-up': typeof authSignUpRoute
+  '/': typeof appIndexRoute
+  '/agent-overview': typeof appagentsAgentOverviewRoute
+  '/hub-overview': typeof apphubHubOverviewRoute
+  '/agent-details/$botId': typeof appagentsAgentDetailsBotIdRoute
+  '/chatbox/$botId': typeof appchatChatboxBotIdRoute
 }
 export interface FileRoutesByTo {
-  '/': typeof IndexRoute
-  '/Agent': typeof AgentRoute
-  '/Home': typeof HomeRoute
-  '/Hub': typeof HubRoute
+  '/sign-in': typeof authSignInRoute
+  '/sign-up': typeof authSignUpRoute
+  '/': typeof appIndexRoute
+  '/agent-overview': typeof appagentsAgentOverviewRoute
+  '/hub-overview': typeof apphubHubOverviewRoute
+  '/agent-details/$botId': typeof appagentsAgentDetailsBotIdRoute
+  '/chatbox/$botId': typeof appchatChatboxBotIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
-  '/': typeof IndexRoute
-  '/Agent': typeof AgentRoute
-  '/Home': typeof HomeRoute
-  '/Hub': typeof HubRoute
+  '/(app)': typeof appRouteRouteWithChildren
+  '/(auth)/sign-in': typeof authSignInRoute
+  '/(auth)/sign-up': typeof authSignUpRoute
+  '/(app)/': typeof appIndexRoute
+  '/(app)/(agents)/agent-overview': typeof appagentsAgentOverviewRoute
+  '/(app)/(hub)/hub-overview': typeof apphubHubOverviewRoute
+  '/(app)/(agents)/agent-details/$botId': typeof appagentsAgentDetailsBotIdRoute
+  '/(app)/(chat)/chatbox/$botId': typeof appchatChatboxBotIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/Agent' | '/Home' | '/Hub'
+  fullPaths:
+    | '/sign-in'
+    | '/sign-up'
+    | '/'
+    | '/agent-overview'
+    | '/hub-overview'
+    | '/agent-details/$botId'
+    | '/chatbox/$botId'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/Agent' | '/Home' | '/Hub'
-  id: '__root__' | '/' | '/Agent' | '/Home' | '/Hub'
+  to:
+    | '/sign-in'
+    | '/sign-up'
+    | '/'
+    | '/agent-overview'
+    | '/hub-overview'
+    | '/agent-details/$botId'
+    | '/chatbox/$botId'
+  id:
+    | '__root__'
+    | '/(app)'
+    | '/(auth)/sign-in'
+    | '/(auth)/sign-up'
+    | '/(app)/'
+    | '/(app)/(agents)/agent-overview'
+    | '/(app)/(hub)/hub-overview'
+    | '/(app)/(agents)/agent-details/$botId'
+    | '/(app)/(chat)/chatbox/$botId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
-  IndexRoute: typeof IndexRoute
-  AgentRoute: typeof AgentRoute
-  HomeRoute: typeof HomeRoute
-  HubRoute: typeof HubRoute
+  appRouteRoute: typeof appRouteRouteWithChildren
+  authSignInRoute: typeof authSignInRoute
+  authSignUpRoute: typeof authSignUpRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/Hub': {
-      id: '/Hub'
-      path: '/Hub'
-      fullPath: '/Hub'
-      preLoaderRoute: typeof HubRouteImport
+    '/(app)': {
+      id: '/(app)'
+      path: ''
+      fullPath: ''
+      preLoaderRoute: typeof appRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/Home': {
-      id: '/Home'
-      path: '/Home'
-      fullPath: '/Home'
-      preLoaderRoute: typeof HomeRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/Agent': {
-      id: '/Agent'
-      path: '/Agent'
-      fullPath: '/Agent'
-      preLoaderRoute: typeof AgentRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/': {
-      id: '/'
+    '/(app)/': {
+      id: '/(app)/'
       path: '/'
       fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
+      preLoaderRoute: typeof appIndexRouteImport
+      parentRoute: typeof appRouteRoute
+    }
+    '/(auth)/sign-up': {
+      id: '/(auth)/sign-up'
+      path: '/sign-up'
+      fullPath: '/sign-up'
+      preLoaderRoute: typeof authSignUpRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/(auth)/sign-in': {
+      id: '/(auth)/sign-in'
+      path: '/sign-in'
+      fullPath: '/sign-in'
+      preLoaderRoute: typeof authSignInRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/(app)/(hub)/hub-overview': {
+      id: '/(app)/(hub)/hub-overview'
+      path: '/hub-overview'
+      fullPath: '/hub-overview'
+      preLoaderRoute: typeof apphubHubOverviewRouteImport
+      parentRoute: typeof appRouteRoute
+    }
+    '/(app)/(agents)/agent-overview': {
+      id: '/(app)/(agents)/agent-overview'
+      path: '/agent-overview'
+      fullPath: '/agent-overview'
+      preLoaderRoute: typeof appagentsAgentOverviewRouteImport
+      parentRoute: typeof appRouteRoute
+    }
+    '/(app)/(chat)/chatbox/$botId': {
+      id: '/(app)/(chat)/chatbox/$botId'
+      path: '/chatbox/$botId'
+      fullPath: '/chatbox/$botId'
+      preLoaderRoute: typeof appchatChatboxBotIdRouteImport
+      parentRoute: typeof appRouteRoute
+    }
+    '/(app)/(agents)/agent-details/$botId': {
+      id: '/(app)/(agents)/agent-details/$botId'
+      path: '/agent-details/$botId'
+      fullPath: '/agent-details/$botId'
+      preLoaderRoute: typeof appagentsAgentDetailsBotIdRouteImport
+      parentRoute: typeof appRouteRoute
     }
   }
 }
 
+interface appRouteRouteChildren {
+  appIndexRoute: typeof appIndexRoute
+  appagentsAgentOverviewRoute: typeof appagentsAgentOverviewRoute
+  apphubHubOverviewRoute: typeof apphubHubOverviewRoute
+  appagentsAgentDetailsBotIdRoute: typeof appagentsAgentDetailsBotIdRoute
+  appchatChatboxBotIdRoute: typeof appchatChatboxBotIdRoute
+}
+
+const appRouteRouteChildren: appRouteRouteChildren = {
+  appIndexRoute: appIndexRoute,
+  appagentsAgentOverviewRoute: appagentsAgentOverviewRoute,
+  apphubHubOverviewRoute: apphubHubOverviewRoute,
+  appagentsAgentDetailsBotIdRoute: appagentsAgentDetailsBotIdRoute,
+  appchatChatboxBotIdRoute: appchatChatboxBotIdRoute,
+}
+
+const appRouteRouteWithChildren = appRouteRoute._addFileChildren(
+  appRouteRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
-  IndexRoute: IndexRoute,
-  AgentRoute: AgentRoute,
-  HomeRoute: HomeRoute,
-  HubRoute: HubRoute,
+  appRouteRoute: appRouteRouteWithChildren,
+  authSignInRoute: authSignInRoute,
+  authSignUpRoute: authSignUpRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

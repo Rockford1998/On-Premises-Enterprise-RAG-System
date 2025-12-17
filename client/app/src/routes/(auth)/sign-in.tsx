@@ -1,3 +1,4 @@
+import { createFileRoute, redirect, useNavigate } from "@tanstack/react-router";
 import { Button } from "@/shadcn/ui/button";
 import {
   Card,
@@ -21,10 +22,20 @@ import {
 import { useForm } from "react-hook-form";
 import z from "zod";
 import { useStoreAuth } from "@/store/useStoreAuth";
-import { useNavigate } from "react-router";
 import { starGate } from "@/utils/starGate";
 
-export const SignIn = () => {
+export const Route = createFileRoute("/(auth)/sign-in")({
+  component: SignIn,
+  beforeLoad: () => {
+    const { accessToken } = useStoreAuth.getState();
+
+    if (accessToken) {
+      throw redirect({ to: "/" });
+    }
+  },
+});
+
+function SignIn() {
   const { form, onSubmit, navigate } = useSignIn();
   return (
     <div className="flex items-center justify-center min-h-screen px-4 sm:px-0">
@@ -99,7 +110,7 @@ export const SignIn = () => {
             <Button
               variant="link"
               className="px-1 text-xs sm:text-sm cursor-pointer"
-              onClick={() => navigate("/signup")}
+              onClick={() => navigate({ to: "/sign-up" })}
             >
               Sign up
             </Button>
@@ -108,7 +119,7 @@ export const SignIn = () => {
       </Card>
     </div>
   );
-};
+}
 
 const useSignIn = () => {
   const setAccessToken = useStoreAuth((state) => state.setAccessToken);
@@ -133,7 +144,7 @@ const useSignIn = () => {
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         setAccessToken(response.data.data.token);
         setUserProfile(response.data.data.user);
-        navigate("/");
+        navigate({ to: "/" });
       }
 
       // eslint-disable-next-line @typescript-eslint/no-explicit-any

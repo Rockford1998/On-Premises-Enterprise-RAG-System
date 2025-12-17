@@ -15,11 +15,11 @@ import { Switch } from "@/shadcn/ui/switch";
 
 import { starGate } from "@/utils/starGate";
 import { z } from "zod";
-import { useAgentContext } from "../AgentsDetail";
 import { toast } from "sonner";
 import { FormInput } from "@/components/formfields/FormInput";
 import { FormTextArea } from "@/components/formfields/FormTextArea";
 import { FormSelect } from "@/components/formfields/FormSelect";
+import { Route } from "../agent-details.$botId";
 
 const botInfoSchema = z.object({
   botName: z.string().min(2, "Bot name must be at least 2 characters"),
@@ -36,7 +36,7 @@ const botInfoSchema = z.object({
 type BotInfoFormValues = z.infer<typeof botInfoSchema>;
 
 export const TabBotForm = () => {
-  const { botId } = useAgentContext();
+  const { botId } = Route.useParams();
   const [loading, setLoading] = useState(true);
   const [expanded, setExpanded] = useState(false);
   const [botModels, setBotModels] = useState([]);

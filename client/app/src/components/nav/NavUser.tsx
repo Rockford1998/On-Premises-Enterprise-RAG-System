@@ -20,6 +20,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/shadcn/ui/avatar";
 import { EllipsisVertical, LogOut, Sun, Moon } from "lucide-react";
 import { useStoreAuth } from "@/store/useStoreAuth";
 import { useThemeStore } from "@/store/useThemeStore";
+import { useNavigate } from "@tanstack/react-router";
 
 export function NavUser({
   user,
@@ -32,9 +33,13 @@ export function NavUser({
 }) {
   const { isMobile } = useSidebar();
   const logOut = useStoreAuth((state) => state.logOut);
-
+  const navigate = useNavigate();
   const handleLogOut = () => {
     logOut();
+    navigate({
+      to: "/sign-in",
+      replace: true,
+    });
   };
   const { theme, setLightTheme, setDarkTheme } = useThemeStore();
 
