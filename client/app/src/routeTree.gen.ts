@@ -17,6 +17,7 @@ import { Route as apphubHubOverviewRouteImport } from './routes/(app)/(hub)/hub-
 import { Route as appagentsAgentOverviewRouteImport } from './routes/(app)/(agents)/agent-overview'
 import { Route as appchatChatboxBotIdRouteImport } from './routes/(app)/(chat)/chatbox.$botId'
 import { Route as appagentsAgentDetailsBotIdRouteImport } from './routes/(app)/(agents)/agent-details.$botId'
+import { Route as appagentsAgentToolsToolIdRouteImport } from './routes/(app)/(agents)/agent.tools.$toolId'
 
 const appRouteRoute = appRouteRouteImport.update({
   id: '/(app)',
@@ -58,6 +59,12 @@ const appagentsAgentDetailsBotIdRoute =
     path: '/agent-details/$botId',
     getParentRoute: () => appRouteRoute,
   } as any)
+const appagentsAgentToolsToolIdRoute =
+  appagentsAgentToolsToolIdRouteImport.update({
+    id: '/(agents)/agent/tools/$toolId',
+    path: '/agent/tools/$toolId',
+    getParentRoute: () => appRouteRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/sign-in': typeof authSignInRoute
@@ -67,6 +74,7 @@ export interface FileRoutesByFullPath {
   '/hub-overview': typeof apphubHubOverviewRoute
   '/agent-details/$botId': typeof appagentsAgentDetailsBotIdRoute
   '/chatbox/$botId': typeof appchatChatboxBotIdRoute
+  '/agent/tools/$toolId': typeof appagentsAgentToolsToolIdRoute
 }
 export interface FileRoutesByTo {
   '/sign-in': typeof authSignInRoute
@@ -76,6 +84,7 @@ export interface FileRoutesByTo {
   '/hub-overview': typeof apphubHubOverviewRoute
   '/agent-details/$botId': typeof appagentsAgentDetailsBotIdRoute
   '/chatbox/$botId': typeof appchatChatboxBotIdRoute
+  '/agent/tools/$toolId': typeof appagentsAgentToolsToolIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -87,6 +96,7 @@ export interface FileRoutesById {
   '/(app)/(hub)/hub-overview': typeof apphubHubOverviewRoute
   '/(app)/(agents)/agent-details/$botId': typeof appagentsAgentDetailsBotIdRoute
   '/(app)/(chat)/chatbox/$botId': typeof appchatChatboxBotIdRoute
+  '/(app)/(agents)/agent/tools/$toolId': typeof appagentsAgentToolsToolIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -98,6 +108,7 @@ export interface FileRouteTypes {
     | '/hub-overview'
     | '/agent-details/$botId'
     | '/chatbox/$botId'
+    | '/agent/tools/$toolId'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/sign-in'
@@ -107,6 +118,7 @@ export interface FileRouteTypes {
     | '/hub-overview'
     | '/agent-details/$botId'
     | '/chatbox/$botId'
+    | '/agent/tools/$toolId'
   id:
     | '__root__'
     | '/(app)'
@@ -117,6 +129,7 @@ export interface FileRouteTypes {
     | '/(app)/(hub)/hub-overview'
     | '/(app)/(agents)/agent-details/$botId'
     | '/(app)/(chat)/chatbox/$botId'
+    | '/(app)/(agents)/agent/tools/$toolId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -183,6 +196,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof appagentsAgentDetailsBotIdRouteImport
       parentRoute: typeof appRouteRoute
     }
+    '/(app)/(agents)/agent/tools/$toolId': {
+      id: '/(app)/(agents)/agent/tools/$toolId'
+      path: '/agent/tools/$toolId'
+      fullPath: '/agent/tools/$toolId'
+      preLoaderRoute: typeof appagentsAgentToolsToolIdRouteImport
+      parentRoute: typeof appRouteRoute
+    }
   }
 }
 
@@ -192,6 +212,7 @@ interface appRouteRouteChildren {
   apphubHubOverviewRoute: typeof apphubHubOverviewRoute
   appagentsAgentDetailsBotIdRoute: typeof appagentsAgentDetailsBotIdRoute
   appchatChatboxBotIdRoute: typeof appchatChatboxBotIdRoute
+  appagentsAgentToolsToolIdRoute: typeof appagentsAgentToolsToolIdRoute
 }
 
 const appRouteRouteChildren: appRouteRouteChildren = {
@@ -200,6 +221,7 @@ const appRouteRouteChildren: appRouteRouteChildren = {
   apphubHubOverviewRoute: apphubHubOverviewRoute,
   appagentsAgentDetailsBotIdRoute: appagentsAgentDetailsBotIdRoute,
   appchatChatboxBotIdRoute: appchatChatboxBotIdRoute,
+  appagentsAgentToolsToolIdRoute: appagentsAgentToolsToolIdRoute,
 }
 
 const appRouteRouteWithChildren = appRouteRoute._addFileChildren(

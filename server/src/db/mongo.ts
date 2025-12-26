@@ -5,7 +5,7 @@ mongoose.connection.on('connected', () => {
 });
 
 mongoose.connection.on('error', (err) => {
-    console.error("Mongoose connection error:", err);
+    console.error("Mongoose connection error:", err); 
 });
 
 mongoCnnection().catch(err => {

@@ -15,21 +15,31 @@ export const improveTheToolAnswer = async (
         systemPrompt: string
     }
 ): Promise<string> => {
+    const formattedContext =
+        typeof context === "string"
+            ? context
+            : JSON.stringify(context, null, 2);
+
     try {
         const baseModel = process.env.BASE_MODEL || "gemma3:4b";
         const OLLAMA_BASE_URL = process.env.OLLAMA_BASE_URL || "http://localhost:11434";
-        const prompt = `Answer the following question using only the context below. If the context does not contain the answer, say "I don't know."
-        
-                    ${systemPrompt}
+        const prompt = `
+                        SYSTEM INSTRUCTIONS:
+                        ${systemPrompt}
 
-                    Context:
-                    ${context}
+                        RULES:
+                        - Use ONLY the provided context
+                        - If a value is missing, say "I don't know"
 
-                    Question:
-                    ${query}
+                        Context:
+                        ${formattedContext}
 
-                    Answer:
-                    `;
+                        Question:
+                        ${query}
+
+                        Answer:
+                        `;
+
 
         const res = await axios.post(`${OLLAMA_BASE_URL}/api/generate`, {
             model: baseModel,

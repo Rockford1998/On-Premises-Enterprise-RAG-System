@@ -1,22 +1,29 @@
 # https://www.weatherapi.com/my/
 
 
+
 ### get tools by bot id not by _id
 GET http://localhost:3000/tools/bot/bot_mdqa1e6y_MMF8T9
 Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4YzMxZWZlNDI3M2M2NzBhMTYxNjFhOCIsImVtYWlsIjoic2h1YmhhbWJhbmthcjY1QGdtYWlsLmNvbSIsImlhdCI6MTc2Njc3NDI5NywiZXhwIjoxNzY2ODYwNjk3fQ.RAKIw-pguOhS4JN43ZR19hCNpE9KWE3iksLNVi1aFOE
 
-
-### get 
+### get all
 GET http://localhost:3000/tools/
 Content-Type: application/json
+
+### by id
+GET http://localhost:3000/tools/694edcea65a86a7ae2eb9149
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4YzMxZWZlNDI3M2M2NzBhMTYxNjFhOCIsImVtYWlsIjoic2h1YmhhbWJhbmthcjY1QGdtYWlsLmNvbSIsImlhdCI6MTc2Njc3NDI5NywiZXhwIjoxNzY2ODYwNjk3fQ.RAKIw-pguOhS4JN43ZR19hCNpE9KWE3iksLNVi1aFOE
 
 
 ###
 POST http://localhost:3000/tools
 Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4YzMxZWZlNDI3M2M2NzBhMTYxNjFhOCIsImVtYWlsIjoic2h1YmhhbWJhbmthcjY1QGdtYWlsLmNvbSIsImlhdCI6MTc2Njc3NDI5NywiZXhwIjoxNzY2ODYwNjk3fQ.RAKIw-pguOhS4JN43ZR19hCNpE9KWE3iksLNVi1aFOE
 
 {
-  "botId": "bot_mdqa1e6y_MMF8T9",
+  "botId": "bot_mfsfekoi_Z96YMW",
   "name": "get_weather",
   "description": "Fetches the currennt weather for a given city.",
   "category": "weather",
@@ -42,6 +49,8 @@ Content-Type: application/json
   "systemPrompt": "You are a helpful assistant that explains weather information in a clear, conversational way.\nYou will be given raw weather API JSON data.\nYour job:\n- Summarize the weather conditions in a natural sentence.\n- Include location, temperature (in °C), condition (sunny, cloudy, rainy, etc.), wind speed & direction, and humidity.\n- Mention \"feels like\" temperature if it is different from actual.\n- If available, add air quality index in simple terms (e.g., \"Good\", \"Moderate\", \"Unhealthy\").\n- Do not show raw JSON or technical details.\n- Keep the response concise and friendly.",
   "enabled": true
 }
+
+
 
 
 ###

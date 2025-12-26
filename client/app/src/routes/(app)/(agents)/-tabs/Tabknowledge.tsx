@@ -16,14 +16,7 @@ import { UploadFileDropdown } from "../-UploadFileDropdown";
 import { Route } from "../agent-details.$botId";
 import { DataTable } from "@/routes/-components/example-components/DataTable";
 //
-type Bot = {
-  _id: string;
-  fileName: string;
-  fileSize: number;
-  type: string;
-  content: string;
-  downloadUrl: string;
-};
+
 
 //
 export const Tabknowledge = () => {
