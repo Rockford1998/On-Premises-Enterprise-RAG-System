@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { PageWrapper } from "@/components/layout/PageWrapper";
+import { PageWrapper } from "@/routes/-components/layout/PageWrapper";
 import { createContext, useContext, useEffect, useState } from "react";
 import { starGate } from "@/utils/starGate";
 import { Card, CardContent } from "@/shadcn/ui/card";

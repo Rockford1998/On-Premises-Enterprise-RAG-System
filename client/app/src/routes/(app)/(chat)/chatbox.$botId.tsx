@@ -3,12 +3,15 @@ import {
   Conversation,
   ConversationContent,
   ConversationScrollButton,
-} from "@/components/ui/shadcn-io/ai/conversation";
-import { Message, MessageContent } from "@/components/ui/shadcn-io/ai/message";
+} from "@/routes/-components/ui/shadcn-io/ai/conversation";
+import {
+  Message,
+  MessageContent,
+} from "@/routes/-components/ui/shadcn-io/ai/message";
 import {
   PromptInput,
   PromptInputTextarea,
-} from "@/components/ui/shadcn-io/ai/prompt-input";
+} from "@/routes/-components/ui/shadcn-io/ai/prompt-input";
 import { starGate } from "@/utils/starGate";
 import {
   useState,
@@ -82,7 +85,7 @@ function ChatBox() {
         console.error("Failed to copy message:", err);
       }
     },
-    []
+    [],
   );
 
   /* --------------------------------------------------------------
@@ -252,13 +255,13 @@ function ChatBox() {
                 key={msg.id}
                 className={cn(
                   "flex w-full",
-                  msg.from === "user" ? "justify-end" : "justify-start"
+                  msg.from === "user" ? "justify-end" : "justify-start",
                 )}
               >
                 <div
                   className={cn(
                     "flex gap-3 max-w-[80%]",
-                    msg.from === "user" && "flex-row-reverse"
+                    msg.from === "user" && "flex-row-reverse",
                   )}
                 >
                   {/* Avatar */}
@@ -267,7 +270,7 @@ function ChatBox() {
                       "flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center text-white mt-1",
                       msg.from === "user"
                         ? "bg-gradient-to-br from-gray-500 to-white-700"
-                        : "bg-gradient-to-br from-gray-500 to-white-500"
+                        : "bg-gradient-to-br from-gray-500 to-white-500",
                     )}
                   >
                     {msg.from === "user" ? (
@@ -298,7 +301,7 @@ function ChatBox() {
                         className={cn(
                           "absolute bottom--0.5 left-1 opacity-0 group-hover:opacity-100",
                           "transition-opacity p-1.5 rounded bg-white dark:bg-gray-700 shadow-sm",
-                          "border border-gray-200 dark:border-gray-600 cursor-pointer"
+                          "border border-gray-200 dark:border-gray-600 cursor-pointer",
                         )}
                       >
                         {copiedMessageId === msg.id ? (
@@ -313,7 +316,7 @@ function ChatBox() {
                         className={cn(
                           "absolute top-1 right-1 opacity-0 group-hover:opacity-100",
                           "transition-opacity p-1.5 rounded bg-white dark:bg-gray-700 shadow-sm",
-                          "border border-gray-200 dark:border-gray-600 cursor-pointer"
+                          "border border-gray-200 dark:border-gray-600 cursor-pointer",
                         )}
                       >
                         {copiedMessageId === msg.id ? (

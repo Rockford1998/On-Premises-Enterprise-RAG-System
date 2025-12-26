@@ -1,11 +1,11 @@
-import { AppSidebar } from "@/components/layout/AppSidebar";
-import { MobileHeader } from "@/components/layout/MobileHeader";
 import { useIsMobile } from "@/shadcn/hooks/use-mobile";
 import { SidebarInset, SidebarProvider } from "@/shadcn/ui/sidebar";
 import { createFileRoute, Outlet } from "@tanstack/react-router";
 import { useState } from "react";
 import { Toaster } from "sonner";
 import { ProtectedRoute } from "./-component/ProtectedRoute";
+import { AppSidebar } from "../-components/layout/AppSidebar";
+import { MobileHeader } from "../-components/layout/MobileHeader";
 
 export const Route = createFileRoute("/(app)")({
   component: RouteComponent,

@@ -2,8 +2,8 @@ import { useEffect, useState } from "react";
 import { starGate } from "@/utils/starGate";
 import type { ColumnDef } from "@tanstack/react-table";
 import { toast } from "sonner";
-import { DeleteAlertDialogBox } from "@/components/alert-dialog-box/DeleteAlertDialogBox";
-import { useRefreshData } from "@/components/hook/useRefreshData";
+import { DeleteAlertDialogBox } from "@/routes/-components/alert-dialog-box/DeleteAlertDialogBox";
+import { useRefreshData } from "@/routes/-components/hook/useRefreshData";
 import {
   Dialog,
   DialogContent,
@@ -14,7 +14,7 @@ import { Button } from "@/shadcn/ui/button";
 import { Download, MessageSquareMore } from "lucide-react";
 import { UploadFileDropdown } from "../-UploadFileDropdown";
 import { Route } from "../agent-details.$botId";
-import { DataTable } from "@/components/example-components/DataTable";
+import { DataTable } from "@/routes/-components/example-components/DataTable";
 //
 type Bot = {
   _id: string;

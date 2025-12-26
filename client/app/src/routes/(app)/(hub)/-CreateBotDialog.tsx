@@ -1,4 +1,3 @@
-import { FormDialogBox } from "@/components/dialog-box/FormDialogBox";
 import { Form } from "@/shadcn/ui/form";
 import { useStoreAuth } from "@/store/useStoreAuth";
 import { starGate } from "@/utils/starGate";
@@ -7,9 +6,10 @@ import { useForm } from "react-hook-form";
 import { useState } from "react";
 import z from "zod";
 import { toast } from "sonner";
-import { FormInput } from "@/components/formfields/FormInput";
-import { FormTextArea } from "@/components/formfields/FormTextArea";
-import { FormSelect } from "@/components/formfields/FormSelect";
+import { FormDialogBox } from "@/routes/-components/dialog-box/FormDialogBox";
+import { FormInput } from "@/routes/-components/formfields/FormInput";
+import { FormTextArea } from "@/routes/-components/formfields/FormTextArea";
+import { FormSelect } from "@/routes/-components/formfields/FormSelect";
 
 const formSchema = z.object({
   botName: z

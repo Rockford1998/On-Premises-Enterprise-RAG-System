@@ -5,13 +5,13 @@ import type { ColumnDef } from "@tanstack/react-table";
 import { Button } from "@/shadcn/ui/button";
 import { Pen, Trash } from "lucide-react";
 import { Badge } from "@/shadcn/ui/badge";
-import { PageWrapper } from "@/components/layout/PageWrapper";
-import { useRefreshData } from "@/components/hook/useRefreshData";
-import { DeleteConfirmation } from "@/components/dialog-box/DeleteConfirmation";
+import { PageWrapper } from "@/routes/-components/layout/PageWrapper";
+import { useRefreshData } from "@/routes/-components/hook/useRefreshData";
+import { DeleteConfirmation } from "@/routes/-components/dialog-box/DeleteConfirmation";
 import { starGate } from "@/utils/starGate";
 import { useNavigate, createFileRoute } from "@tanstack/react-router";
 import { CreateBotDialog } from "../(hub)/-CreateBotDialog";
-import { DataTable } from "@/components/example-components/DataTable";
+import { DataTable } from "@/routes/-components/example-components/DataTable";
 
 type Bot = {
   _id: string;

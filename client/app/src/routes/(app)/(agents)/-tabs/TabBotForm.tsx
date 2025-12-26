@@ -16,9 +16,9 @@ import { Switch } from "@/shadcn/ui/switch";
 import { starGate } from "@/utils/starGate";
 import { z } from "zod";
 import { toast } from "sonner";
-import { FormInput } from "@/components/formfields/FormInput";
-import { FormTextArea } from "@/components/formfields/FormTextArea";
-import { FormSelect } from "@/components/formfields/FormSelect";
+import { FormInput } from "@/routes/-components/formfields/FormInput";
+import { FormTextArea } from "@/routes/-components/formfields/FormTextArea";
+import { FormSelect } from "@/routes/-components/formfields/FormSelect";
 import { Route } from "../agent-details.$botId";
 
 const botInfoSchema = z.object({

@@ -1,5 +1,5 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { PageWrapper } from "@/components/layout/PageWrapper";
+import { PageWrapper } from "@/routes/-components/layout/PageWrapper";
 import { Avatar, AvatarFallback, AvatarImage } from "@/shadcn/ui/avatar";
 import { Button } from "@/shadcn/ui/button";
 import { Card, CardContent, CardFooter, CardHeader } from "@/shadcn/ui/card";

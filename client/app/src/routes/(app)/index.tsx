@@ -1,10 +1,10 @@
-import { columns, type Payment } from "@/components/example-components/Columns";
-import { DataTable } from "@/components/example-components/DataTable";
-import { ExampleForm } from "@/components/example-components/ExampleForm";
-import { PageWrapper } from "@/components/layout/PageWrapper";
 import { Button } from "@/shadcn/ui/button";
 import { Separator } from "@/shadcn/ui/separator";
 import { createFileRoute } from "@tanstack/react-router";
+import { PageWrapper } from "../-components/layout/PageWrapper";
+import { DataTable } from "../-components/example-components/DataTable";
+import { ExampleForm } from "../-components/example-components/ExampleForm";
+import { columns, type Payment } from "../-components/example-components/Columns";
 
 export const Route = createFileRoute("/(app)/")({
   component: Home,
