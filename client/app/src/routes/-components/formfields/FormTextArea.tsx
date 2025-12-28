@@ -17,6 +17,7 @@ export function FormTextArea<T extends Record<string, any>>({
   labelWidth = "w-32",
   inputClassName,
   gap = 12,
+  rows = 5, // Added rows prop with default value
 }: {
   form: UseFormReturn<T>;
   label: string;
@@ -25,6 +26,7 @@ export function FormTextArea<T extends Record<string, any>>({
   placeHolder?: string;
   inputClassName?: string;
   gap?: number;
+  rows?: number; // Added rows prop
 }) {
   return (
     <FormField
@@ -41,8 +43,13 @@ export function FormTextArea<T extends Record<string, any>>({
               <Textarea
                 {...field}
                 value={String(field.value ?? "")}
+                rows={rows} // Use the rows prop
                 placeholder={placeHolder}
-                className={clsx("h-8 text-xs px-2", inputClassName)}
+                className={clsx(
+                  "px-2 text-xs", // Removed h-12 from here
+                  "resize-none overflow-y-auto", // Added overflow control
+                  inputClassName
+                )}
               />
             </FormControl>
             <FormMessage className="text-xs" />

@@ -46,7 +46,7 @@ export const FormSelect = <T extends Record<string, any>>({
           <div className="flex-1 space-y-1">
             <FormControl>
               <Select value={field.value} onValueChange={field.onChange}>
-                <SelectTrigger className="h-8 text-xs px-2 w-full">
+                <SelectTrigger className="h-8 text-sm px-2 w-full">
                   <SelectValue placeholder={placeholder} />
                 </SelectTrigger>
                 <SelectContent>

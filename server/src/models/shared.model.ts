@@ -67,30 +67,54 @@ knowledgeBaseSchema.index({ botId: 1 });
 knowledgeBaseSchema.index({ fileName: 1 });
 
 
+// New interface matching the updated schema
 export interface ITool extends Document {
   botId: string;
   name: string;
   description: string;
-  category?: string;
-  parameters: Record<string, any>;
-  type: "http" | "database" | "local-function" | "rag";
+  type: "http" | "database";
   endpoint?: string;
-  method?: string;
+  httpMethod: "GET" | "POST" | "PUT" | "DELETE" | "PATCH";
   headers?: Record<string, any>;
+  auth: {
+    type: "basic" | "bearer" | "apiKey" | "none";
+    username?: string;
+    password?: string;
+    apiKey?: string;
+    apiKeyLocation: "header" | "query";
+    apiKeyName?: string;
+  };
+  pathVariable?: [{
+    name: string;
+    description: string;
+    type: "string" | "number" | "integer" | "boolean";
+    required: boolean;
+  }];
+  queryParam?: [{
+    name: string;
+    description: string;
+    type: "string" | "number" | "integer" | "boolean" | "array";
+    required: boolean;
+    defaultValue?: any;
+  }];
+  requestBody?: {
+    contentType: "application/json" | "application/x-www-form-urlencoded" | "multipart/form-data";
+    schema?: Record<string, any>;
+    example?: any;
+  };
   enabled: boolean;
-  systemPrompt: String
+  systemPrompt?: string;
+  createdAt?: Date;
+  updatedAt?: Date;
 }
 
 const ToolSchema = new mongoose.Schema({
   botId: { type: String, required: true },
   name: { type: String, required: true, },
   description: { type: String, required: true },
-  category: { type: String },
-  parameters: { type: Object, required: true },
-  type: { type: String, enum: ["http", "database", "local-function"], required: true },
+  type: { type: String, enum: ["http", "database"], required: true },
   endpoint: { type: String },
-  method: { type: String },
-  headers: { type: Object },
+  httpMethod: { type: String, enum: ["GET", "POST", "PUT", "DELETE", "PATCH"], default: "GET", }, headers: { type: Object },
   auth: {
     type: { type: String, enum: ["basic", "bearer", "apiKey", "none"], default: "none" },
     username: { type: String },  // used if basic
@@ -102,14 +126,46 @@ const ToolSchema = new mongoose.Schema({
       default: "header"
     },
     apiKeyName: { type: String }, // e.g., "x-api-key" or "Authorization"
+  },
 
+  pathVariable: [{
+    name: { type: String },
+    description: { type: String, },
+    type: { type: String, enum: ["string", "number", "integer", "boolean"], default: "string" },
+    required: { type: Boolean, default: true, },
+  }],
+
+  queryParam: [{
+    name: { type: String, },
+    description: { type: String },
+    type: { type: String, enum: ["string", "number", "integer", "boolean", "array"], default: "string" },
+    required: { type: Boolean, default: false },
+    defaultValue: { type: mongoose.Schema.Types.Mixed, },
+  }],
+  requestBody: {
+    contentType: {
+      type: String,
+      enum: [
+        "application/json",
+        "application/x-www-form-urlencoded",
+        "multipart/form-data",
+      ],
+      default: "application/json",
+    },
+    schema: {
+      type: mongoose.Schema.Types.Mixed, // JSON Schema
+      required: false,
+    },
+    example: {
+      type: mongoose.Schema.Types.Mixed,
+      required: false,
+    },
   },
   enabled: { type: Boolean, default: true },
   systemPrompt: { type: String }
 }, {
   timestamps: true,
 });
-
 
 const LlmModelSchema = new mongoose.Schema(
   {

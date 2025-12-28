@@ -102,7 +102,7 @@ export const TabBotForm = () => {
       >
         {/* Submit */}
         <div className="flex justify-end">
-          <Button type="submit" className="h-8 px-3 text-xs">
+          <Button type="submit" className="h-8 px-3 text-xs cursor-pointer">
             Save Changes
           </Button>
         </div>
@@ -121,82 +121,82 @@ export const TabBotForm = () => {
 
         {/* Bot Description */}
         <FormTextArea form={form} name="botDesc" label="Description" />
-
-        {/* System Instruction */}
-        <FormField
-          control={form.control}
-          name="instruction"
-          render={({ field }) => (
-            <FormItem className="flex gap-3 items-start">
-              <FormLabel className="text-xs w-32 text-right pt-1">
-                Instruction
-              </FormLabel>
-              <div className="flex-1 space-y-1">
-                <FormControl>
-                  <Textarea
-                    {...field}
-                    rows={expanded ? 8 : 3}
-                    className="text-xs px-2 resize-none h-auto min-h-[50px]"
-                    onFocus={() => setExpanded(true)}
-                    onBlur={() => setExpanded(false)}
-                  />
-                </FormControl>
-                <FormMessage className="text-[10px]" />
-              </div>
-            </FormItem>
-          )}
-        />
-
-        {/* Kb Method */}
-        <FormSelect
-          form={form}
-          name="kbsearchMethod"
-          label="Search Method"
-          selectItems={[
-            {
-              value: "semantic",
-              label: "Semantic",
-            },
-            {
-              value: "keyword",
-              label: "Keyword",
-            },
-          ]}
-        />
-
-        {/* Switches */}
-        <div className="flex gap-10 mt-1 pl-36">
+        <div className="grid grid-cols-2 gap-4">
           <FormField
             control={form.control}
-            name="isActive"
+            name="instruction"
             render={({ field }) => (
-              <FormItem className="flex items-center gap-2">
-                <FormLabel className="text-xs w-24">Active</FormLabel>
-                <FormControl>
-                  <Switch
-                    checked={field.value}
-                    onCheckedChange={field.onChange}
-                  />
-                </FormControl>
+              <FormItem className="flex gap-4 items-start">
+                <FormLabel className="w-32 pt-1 text-sm">Instruction</FormLabel>
+                <div className="flex-1 max-w-[700px] space-y-1">
+                  <FormControl>
+                    <Textarea
+                      {...field}
+                      rows={5}
+                      className="text-xs px-2 resize-none w-full"
+                    />
+                  </FormControl>
+
+                  <FormMessage className="text-xs" />
+                </div>
               </FormItem>
             )}
           />
+          <div className="space-y-3 pb-3 text-sm">
+            {/* Kb Method */}
+            <FormSelect
+              form={form}
+              name="kbsearchMethod"
+              label="Search Method"
+              selectItems={[
+                {
+                  value: "semantic",
+                  label: "Semantic",
+                },
+                {
+                  value: "keyword",
+                  label: "Keyword",
+                },
+              ]}
+            />
 
-          <FormField
-            control={form.control}
-            name="publicAccess"
-            render={({ field }) => (
-              <FormItem className="flex items-center gap-2">
-                <FormLabel className="text-xs w-24">Public</FormLabel>
-                <FormControl>
-                  <Switch
-                    checked={field.value}
-                    onCheckedChange={field.onChange}
-                  />
-                </FormControl>
-              </FormItem>
-            )}
-          />
+            {/* Switches */}
+            <div className="flex gap-10 mt-1 pl-36">
+              <FormField
+                control={form.control}
+                name="isActive"
+                render={({ field }) => (
+                  <FormItem className="flex items-center gap-2">
+                    <FormLabel className="text-sm w-24">Active</FormLabel>
+                    <FormControl>
+                      <Switch
+                        className="cursor-pointer"
+                        checked={field.value}
+                        onCheckedChange={field.onChange}
+                      />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="publicAccess"
+                render={({ field }) => (
+                  <FormItem className="flex items-center gap-2">
+                    <FormLabel className="text-sm w-24">Public</FormLabel>
+                    <FormControl>
+                      <Switch
+                        className="cursor-pointer"
+                        checked={field.value}
+                        onCheckedChange={field.onChange}
+                      />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+            </div>
+          </div>
         </div>
       </form>
     </Form>

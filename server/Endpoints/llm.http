@@ -1,5 +1,14 @@
-@token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4YzQwYWQ2MDA3NWUwMTAzYTAxNTZlNiIsImVtYWlsIjoic2h1YmhhbWJhbmthcjY1QGdtYWlsLmNvbSIsInVzZXJOYW1lIjoiTWFyazEiLCJpYXQiOjE3NjQ1MDIyODEsImV4cCI6MTc2NDU4ODY4MX0.cwHNpqEesjahYwhh_6ktDrXFsEUGK51qQHYeP1ugHP4
+@token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4YzMxZWZlNDI3M2M2NzBhMTYxNjFhOCIsImVtYWlsIjoic2h1YmhhbWJhbmthcjY1QGdtYWlsLmNvbSIsImlhdCI6MTc2Njg0NjQ0NSwiZXhwIjoxNzY2OTMyODQ1fQ.cQlJJaW89KDK6-uctUUFaQFfpr2jXbmqoYqNrSYD4rY
 ### get all
+
+
+POST http://localhost:3000/auth
+Content-Type:  application/json
+
+{
+    "email": "shubhambankar65@gmail.com",
+    "password": "Testing@123"
+}
 
 
 ### passing paramters for now  page and limit only

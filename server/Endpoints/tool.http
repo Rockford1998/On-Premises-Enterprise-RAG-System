@@ -1,15 +1,23 @@
 # https://www.weatherapi.com/my/
 
+POST http://localhost:3000/auth
+Content-Type:  application/json
 
+{
+    "email": "shubhambankar65@gmail.com",
+    "password": "Testing@123"
+}
 
 ### get tools by bot id not by _id
-GET http://localhost:3000/tools/bot/bot_mdqa1e6y_MMF8T9
+GET http://localhost:3000/tools/bot/bot_mfsfekoi_Z96YMW
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4YzMxZWZlNDI3M2M2NzBhMTYxNjFhOCIsImVtYWlsIjoic2h1YmhhbWJhbmthcjY1QGdtYWlsLmNvbSIsImlhdCI6MTc2Njc3NDI5NywiZXhwIjoxNzY2ODYwNjk3fQ.RAKIw-pguOhS4JN43ZR19hCNpE9KWE3iksLNVi1aFOE
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4YzMxZWZlNDI3M2M2NzBhMTYxNjFhOCIsImVtYWlsIjoic2h1YmhhbWJhbmthcjY1QGdtYWlsLmNvbSIsImlhdCI6MTc2Njk0ODE0MSwiZXhwIjoxNzY3MDM0NTQxfQ.M6A0BdyloRsUI5pNJjMxBXKofl9FFg0puqpSfSD0SZc
 
 ### get all
-GET http://localhost:3000/tools/
+GET http://localhost:3000/tools
 Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4YzMxZWZlNDI3M2M2NzBhMTYxNjFhOCIsImVtYWlsIjoic2h1YmhhbWJhbmthcjY1QGdtYWlsLmNvbSIsImlhdCI6MTc2Njk0ODE0MSwiZXhwIjoxNzY3MDM0NTQxfQ.M6A0BdyloRsUI5pNJjMxBXKofl9FFg0puqpSfSD0SZc
+
 
 ### by id
 GET http://localhost:3000/tools/694edcea65a86a7ae2eb9149
@@ -20,37 +28,32 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4YzMxZWZlN
 ###
 POST http://localhost:3000/tools
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4YzMxZWZlNDI3M2M2NzBhMTYxNjFhOCIsImVtYWlsIjoic2h1YmhhbWJhbmthcjY1QGdtYWlsLmNvbSIsImlhdCI6MTc2Njc3NDI5NywiZXhwIjoxNzY2ODYwNjk3fQ.RAKIw-pguOhS4JN43ZR19hCNpE9KWE3iksLNVi1aFOE
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4YzMxZWZlNDI3M2M2NzBhMTYxNjFhOCIsImVtYWlsIjoic2h1YmhhbWJhbmthcjY1QGdtYWlsLmNvbSIsImlhdCI6MTc2Njk0ODE0MSwiZXhwIjoxNzY3MDM0NTQxfQ.M6A0BdyloRsUI5pNJjMxBXKofl9FFg0puqpSfSD0SZc
 
 {
   "botId": "bot_mfsfekoi_Z96YMW",
   "name": "get_weather",
-  "description": "Fetches the currennt weather for a given city.",
-  "category": "weather",
-  "parameters": {
-    "location": {
-      "type": "string",
-      "description": "The city name to get weather for.",
-      "required": true,
-      "in": "query",
-      "mapTo": "q"
-    }
-  },
+  "description": "Fetches the current weather for a given city.",
   "type": "http",
   "endpoint": "http://api.weatherapi.com/v1/current.json",
-  "method": "GET",
+  "httpMethod": "GET",
   "headers": {},
   "auth": {
     "type": "apiKey",
-    "apiKey": "",
+    "apiKey": "9dcc878a11b44fd7987194020252612",
     "apiKeyLocation": "query",
     "apiKeyName": "key"
   },
-  "systemPrompt": "You are a helpful assistant that explains weather information in a clear, conversational way.\nYou will be given raw weather API JSON data.\nYour job:\n- Summarize the weather conditions in a natural sentence.\n- Include location, temperature (in °C), condition (sunny, cloudy, rainy, etc.), wind speed & direction, and humidity.\n- Mention \"feels like\" temperature if it is different from actual.\n- If available, add air quality index in simple terms (e.g., \"Good\", \"Moderate\", \"Unhealthy\").\n- Do not show raw JSON or technical details.\n- Keep the response concise and friendly.",
-  "enabled": true
+  "queryParam": {
+    "name": "q",
+    "description": "The city name to get weather for.",
+    "type": "string",
+    "required": true,
+    "defaultValue": ""
+  },
+  "enabled": true,
+  "systemPrompt": "You are a helpful assistant that explains weather information in a clear, conversational way.\nYou will be given raw weather API JSON data.\nYour job:\n- Summarize the weather conditions in a natural sentence.\n- Include location, temperature (in °C), condition (sunny, cloudy, rainy, etc.), wind speed & direction, and humidity.\n- Mention \"feels like\" temperature if it is different from actual.\n- If available, add air quality index in simple terms (e.g., \"Good\", \"Moderate\", \"Unhealthy\").\n- Do not show raw JSON or technical details.\n- Keep the response concise and friendly."
 }
-
-
 
 
 ###

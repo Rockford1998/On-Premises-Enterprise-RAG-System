@@ -1,9 +1,9 @@
 import axios from "axios";
 import { ITool, Tools } from "../models/shared.model";
 
-
 export class ToolService {
     OLLAMA_BASE_URL = process.env.OLLAMA_BASE_URL || "http://localhost:11434";
+
     readToolsByBotId = async ({ botId }: { botId: string }) => {
         const tools = await Tools.find({ botId });
         return tools;
@@ -19,7 +19,7 @@ export class ToolService {
         return tool;
     }
 
-    create = async (toolData: ITool) => {
+    create = async (toolData: any) => {
         const tool = new Tools(toolData);
         await tool.save();
         return tool;
@@ -34,38 +34,87 @@ export class ToolService {
         await Tools.findByIdAndDelete(id);
     }
 
+    // Helper method to construct parameters object from schema
+    private constructParametersFromSchema(tool: ITool) {
+        const parameters: Record<string, any> = {};
+
+        // Add path variable if exists
+        if (tool.pathVariable?.[0]?.name) {
+            const pathVar = tool.pathVariable[0];
+            parameters[pathVar.name] = {
+                type: pathVar.type,
+                description: pathVar.description,
+                required: pathVar.required,
+                in: "path"
+            };
+        }
+
+        // Add query parameter if exists
+        if (tool.queryParam?.[0]?.name) {
+            const queryParam = tool.queryParam[0];
+            parameters[queryParam.name] = {
+                type: queryParam.type,
+                description: queryParam.description,
+                required: queryParam.required,
+                default: queryParam.defaultValue,
+                in: "query"
+            };
+        }
+
+        // Add request body schema if exists
+        if (tool.requestBody?.schema) {
+            // For request body, we'll create a special parameter
+            parameters["requestBody"] = {
+                type: "object",
+                description: "Request body data",
+                required: true,
+                in: "body",
+                schema: tool.requestBody.schema,
+                contentType: tool.requestBody.contentType
+            };
+        }
+
+        return parameters;
+    }
 
     // Detect if a tool should be used using LLM
-    detectToolUse = async ({ botId, query }: { botId: string; query: string }): Promise<{ tool: string, params: any } | null> => {
+    detectToolUse = async ({ botId, query }: { botId: string; query: string }): Promise<{ tool: string, params: any, systemPrompt?: string } | null> => {
         const availableTools = await this.readToolsByBotId({ botId });
-        console.log("availableTools============================")
-        console.log(availableTools)
+
         if (availableTools.length === 0) {
             return null;
         }
-        const toolsList = availableTools.map(t => ({
-            id: t._id,
-            name: t.name,
-            description: t.description,
-            parameters: {
-                type: "object",
-                properties: t.parameters,
-                required: Object.keys(t.parameters).filter(
-                    key => t.parameters[key].required
-                )
-            }
-        }));
+
+        // Construct tool list with proper parameters
+        const toolsList = availableTools.map((t: any) => {
+            const parameters = this.constructParametersFromSchema(t);
+
+            return {
+                id: t._id,
+                name: t.name,
+                description: t.description,
+                type: t.type,
+                parameters: {
+                    type: "object",
+                    properties: parameters,
+                    required: Object.keys(parameters).filter(
+                        key => parameters[key]?.required
+                    )
+                }
+            };
+        });
 
         const prompt = `Analyze the following user query and determine if it requires using one of the available tools.
                         If yes, respond with a JSON object containing "id" (the tool ID), "tool" (the tool name) and "params" (the parameters for the tool).
                         If no tool is needed, respond with null.
-    
+
                         Available tools:
                         ${JSON.stringify(toolsList, null, 2)}
                         
                         User query: "${query}"
                         
                         Respond ONLY with valid JSON (either null or a tool object):`;
+
         try {
             const res = await axios.post(`${this.OLLAMA_BASE_URL}/api/generate`, {
                 model: process.env.TOOL_MODEL || "llama3.2:latest",
@@ -76,7 +125,6 @@ export class ToolService {
 
             const responseText = res.data?.response?.trim();
             if (!responseText) return null;
-
 
             const result = JSON.parse(responseText);
 
@@ -95,49 +143,66 @@ export class ToolService {
         }
     };
 
-
     toolExecution = async ({ toolId, args }: { toolId: string, args: any }) => {
         const tool = await this.readEnabledToolById({ id: toolId });
         if (!tool) throw new Error("Tool not found");
 
         if (tool.type === "http") {
-
             let url = tool.endpoint ?? "";
-
             if (!url) throw new Error("Tool endpoint is missing");
 
-            // Collect path variables and query params
-            const pathVars = [];
-            const queryPairs = [];
-            for (const [key, defRaw] of Object.entries(tool.parameters)) {
-                const def = defRaw as { default?: any; required?: boolean; in?: string; mapTo?: string };
-                const value = args[key] ?? def.default;
-                if (value === undefined) {
-                    if (def.required) throw new Error(`Missing required param: ${key}`);
-                    continue;
+            const method = tool.httpMethod || "GET";
+            const headers: Record<string, any> = { ...(tool.headers || {}) };
+
+            // Prepare body data for POST/PUT/PATCH requests
+            let requestBody: any = null;
+
+            // Collect path variables, query params, and request body
+            const pathVariables: string[] = [];
+            const queryPairs: string[] = [];
+
+            // Handle path variable
+            if (tool.pathVariable?.[0]?.name && args[tool.pathVariable[0].name] !== undefined) {
+                const pathValue = args[tool.pathVariable[0].name];
+                pathVariables.push(encodeURIComponent(pathValue));
+            }
+
+            // Handle query parameter
+            if (tool.queryParam?.[0]?.name && args[tool.queryParam[0].name] !== undefined) {
+                const queryValue = args[tool.queryParam[0].name];
+                const paramName = encodeURIComponent(tool.queryParam[0].name);
+                queryPairs.push(`${paramName}=${encodeURIComponent(queryValue)}`);
+            }
+
+            // Handle request body
+            if (tool.requestBody?.schema && (method === "POST" || method === "PUT" || method === "PATCH")) {
+                if (tool.requestBody.contentType === "application/json") {
+                    requestBody = args.requestBody || args;
+                    headers["Content-Type"] = "application/json";
+                } else if (tool.requestBody.contentType === "application/x-www-form-urlencoded") {
+                    requestBody = new URLSearchParams();
+                    if (args.requestBody && typeof args.requestBody === "object") {
+                        Object.entries(args.requestBody).forEach(([key, value]) => {
+                            requestBody.append(key, String(value));
+                        });
+                    }
+                    headers["Content-Type"] = "application/x-www-form-urlencoded";
                 }
-                if (def.in === "path") {
-                    pathVars.push(encodeURIComponent(value));
-                } else if (def.in === "query") {
-                    const qpKey = def.mapTo || key;
-                    queryPairs.push(`${encodeURIComponent(qpKey)}=${encodeURIComponent(value)}`);
-                }
+                // Note: multipart/form-data would require FormData and different handling
             }
 
             // Append path variables to the endpoint
-            if (pathVars.length > 0) {
+            if (pathVariables.length > 0) {
                 url = url.replace(/\/$/, "");
-                url += "/" + pathVars.join("/");
+                url += "/" + pathVariables.join("/");
             }
+
             // Append query parameters to the endpoint
             if (queryPairs.length > 0) {
                 url += (url.includes("?") ? "&" : "?") + queryPairs.join("&");
             }
 
-            // Prepare headers
-            let headers: Record<string, any> = { ...(tool.headers || {}) };
-
-            // Handle auth
+            // Handle authentication
             if (tool.auth && tool.auth.type && tool.auth.type !== "none") {
                 if (tool.auth.type === "basic" && tool.auth.username && tool.auth.password) {
                     const basicToken = Buffer.from(`${tool.auth.username}:${tool.auth.password}`).toString("base64");
@@ -147,7 +212,8 @@ export class ToolService {
                 } else if (tool.auth.type === "apiKey" && tool.auth.apiKey && tool.auth.apiKeyName) {
                     if (tool.auth.apiKeyLocation === "query") {
                         // Add API key to query string
-                        url += (url.includes("?") ? "&" : "?") + `${encodeURIComponent(tool.auth.apiKeyName)}=${encodeURIComponent(tool.auth.apiKey)}`;
+                        url += (url.includes("?") ? "&" : "?") +
+                            `${encodeURIComponent(tool.auth.apiKeyName)}=${encodeURIComponent(tool.auth.apiKey)}`;
                     } else {
                         // Default to header
                         headers[tool.auth.apiKeyName] = tool.auth.apiKey;
@@ -156,19 +222,30 @@ export class ToolService {
             }
 
             try {
-                const res = await axios({
-                    method: tool.method || "GET",
+                const config: any = {
+                    method,
                     url,
                     headers
-                });
+                };
+
+                // Add request body if present
+                if (requestBody) {
+                    config.data = requestBody;
+                }
+
+                const res = await axios(config);
                 return res.data;
             } catch (err: any) {
                 return { error: err?.response?.data || err.message || "Tool execution failed" };
             }
         }
 
-        // Future: handle other tool types (database, local-function)
+        // Future: handle database tool type
+        if (tool.type === "database") {
+            // Database tool implementation would go here
+            return { error: "Database tools not yet implemented" };
+        }
+
         return { error: "Unsupported tool type" };
     };
-
 }
