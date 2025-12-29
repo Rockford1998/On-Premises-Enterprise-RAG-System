@@ -31,7 +31,7 @@ Content-Type: application/json
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4YzMxZWZlNDI3M2M2NzBhMTYxNjFhOCIsImVtYWlsIjoic2h1YmhhbWJhbmthcjY1QGdtYWlsLmNvbSIsImlhdCI6MTc2Njk0ODE0MSwiZXhwIjoxNzY3MDM0NTQxfQ.M6A0BdyloRsUI5pNJjMxBXKofl9FFg0puqpSfSD0SZc
 
 {
-  "botId": "bot_mfsfekoi_Z96YMW",
+  "botId": "bot_mfv2vn5t_ZTPOE4",
   "name": "get_weather",
   "description": "Fetches the current weather for a given city.",
   "type": "http",

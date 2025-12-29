@@ -22,19 +22,23 @@ function RouteComponent() {
   const [loading, setLoading] = useState(true);
 
   const form = useForm<ToolFormValues>({
-    resolver: zodResolver(toolSchema),
+    resolver: zodResolver(toolSchema) as any,
     defaultValues: {
       name: "",
       description: "",
-      category: "",
       type: "http",
-      parameters: {},
       endpoint: "",
-      method: "GET",
-      headers: {},
+      httpMethod: "GET",
       auth: { type: "none" },
       enabled: true,
       systemPrompt: "",
+      pathVariable: [],
+      queryParam: [],
+      requestBody: {
+        contentType: "application/json",
+        schema: {},
+        example: {},
+      },
     },
   });
 
@@ -80,7 +84,6 @@ function RouteComponent() {
           <CardContent className="grid grid-cols-2 gap-4">
             <FormInput form={form} name="name" label="Tool Name" />
             <FormSwitch form={form} name="enabled" label="Enabled" />
-            <FormInput form={form} name="category" label="Category" />
             <FormSelect
               form={form}
               name="type"
@@ -103,7 +106,7 @@ function RouteComponent() {
               <FormInput form={form} name="endpoint" label="Endpoint URL" />
               <FormSelect
                 form={form}
-                name="method"
+                name="httpMethod"
                 label="HTTP Method"
                 selectItems={[
                   { value: "GET", label: "GET" },
@@ -112,16 +115,9 @@ function RouteComponent() {
                   { value: "DELETE", label: "DELETE" },
                 ]}
               />
-              <FormTextArea form={form} name="headers" label="Headers (JSON)" />
-              <FormTextArea
-                form={form}
-                name="parameters"
-                label="parameters (JSON)"
-              />
             </CardContent>
           </Card>
         )}
-
         {/* Authentication */}
         {toolType === "http" && (
           <Card>
@@ -195,16 +191,9 @@ function RouteComponent() {
 const toolSchema = z.object({
   name: z.string().min(2),
   description: z.string().min(5),
-  category: z.string().optional(),
-
-  type: z.enum(["http", "database", "local-function"]),
-
-  parameters: z.record(z.string(), z.any()),
-
+  type: z.enum(["http"]),
   endpoint: z.string().optional(),
-  method: z.string().optional(),
-  headers: z.record(z.string(), z.any()).optional(),
-
+  httpMethod: z.string().optional(),
   auth: z.object({
     type: z.enum(["basic", "bearer", "apiKey", "none"]),
     username: z.string().optional(),
@@ -213,9 +202,46 @@ const toolSchema = z.object({
     apiKeyLocation: z.enum(["header", "query"]).optional(),
     apiKeyName: z.string().optional(),
   }),
-
   enabled: z.boolean(),
   systemPrompt: z.string().optional(),
+  pathVariable: z
+    .array(
+      z.object({
+        name: z.string(),
+        description: z.string().optional(),
+        type: z
+          .enum(["string", "number", "integer", "boolean"])
+          .default("string"),
+        required: z.boolean().default(true),
+      }),
+    )
+    .optional(),
+
+  queryParam: z
+    .array(
+      z.object({
+        name: z.string(),
+        description: z.string().optional(),
+        type: z
+          .enum(["string", "number", "integer", "boolean", "array"])
+          .default("string"),
+        required: z.boolean().default(false),
+        defaultValue: z.any().optional(),
+      }),
+    )
+    .optional(),
+
+  requestBody: z
+    .object({
+      contentType: z.enum([
+        "application/json",
+        "application/x-www-form-urlencoded",
+        "multipart/form-data",
+      ]),
+      schema: z.any().optional(),
+      example: z.any().optional(),
+    })
+    .optional(),
 });
 
 type ToolFormValues = z.infer<typeof toolSchema>;
