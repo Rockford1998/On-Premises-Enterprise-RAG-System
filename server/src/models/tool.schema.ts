@@ -19,7 +19,7 @@ const ToolSchema = new mongoose.Schema({
             basicUser: { type: String },  // used if basic
             basicPass: { type: String },  // used if basic
             bearerToken: { type: String },
-            fixedParams: {},
+            fixedParams: {}, // may be api keys
             fixedParamsStr: String,
             apiHeaders: {},
             apiHeadersStr: String
