@@ -67,27 +67,18 @@ knowledgeBaseSchema.index({ botId: 1 });
 knowledgeBaseSchema.index({ fileName: 1 });
 
 
-export interface ITool extends Document {
-  botId: string;
-  name: string;
-  description: string;
-  category?: string;
-  parameters: Record<string, any>;
-  type: "http" | "database" | "local-function" | "rag";
-  endpoint?: string;
-  method?: string;
-  headers?: Record<string, any>;
-  enabled: boolean;
-  systemPrompt: String
-}
 
 const ToolSchema = new mongoose.Schema({
   botId: { type: String, required: true },
   name: { type: String, required: true, },
   description: { type: String, required: true },
   category: { type: String },
-  parameters: { type: Object, required: true },
-  type: { type: String, enum: ["http", "database", "local-function"], required: true },
+  parameters: {
+    type: { type: String, default: 'object' },
+    properties: {},
+    required: [String]
+  },
+  type: { type: String, enum: ["API", "database"], required: true },
   endpoint: { type: String },
   method: { type: String },
   headers: { type: Object },
@@ -101,6 +92,7 @@ const ToolSchema = new mongoose.Schema({
       enum: ["header", "query"], // where to put apiKey
       default: "header"
     },
+    fixedParams: { type: Object }, // for any fixed params that should always be sent with the tool request
     apiKeyName: { type: String }, // e.g., "x-api-key" or "Authorization"
 
   },

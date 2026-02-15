@@ -1,5 +1,13 @@
-@token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4YzQwYWQ2MDA3NWUwMTAzYTAxNTZlNiIsImVtYWlsIjoic2h1YmhhbWJhbmthcjY1QGdtYWlsLmNvbSIsInVzZXJOYW1lIjoiTWFyazEiLCJpYXQiOjE3NjQ1MDY0NDgsImV4cCI6MTc2NDU5Mjg0OH0.rwmJdQ7vik6U8fqP7Zso48rgktbbwbze4LQVA-89TYc
+@token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4YzQwYWQ2MDA3NWUwMTAzYTAxNTZlNiIsImVtYWlsIjoic2h1YmhhbWJhbmthcjY1QGdtYWlsLmNvbSIsImlhdCI6MTc3MTE2NjE3NSwiZXhwIjoxNzcxMjUyNTc1fQ.Bw8yNx1LOPGBCiWNEudeH_cPDS-_X458Al6kaJojLU8
 ### get all
+
+POST http://localhost:3000/auth
+Content-Type:  application/json
+
+{
+    "email": "shubhambankar65@gmail.com",
+    "password": "Testing@123"
+}
 
 
 ### passing paramters for now  page and limit only
@@ -8,7 +16,7 @@ Authorization: Bearer {{token}}
 
 
 ### Get by botId
-http://localhost:3000/bots/bot_mfv2vn5t_ZTPOE4
+http://localhost:3000/bots/bot_milpmq1o_21MODR
 Authorization: Bearer {{token}}
 
 ### Get by owner(email address)

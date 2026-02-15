@@ -1,3 +1,15 @@
+@token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4YzQwYWQ2MDA3NWUwMTAzYTAxNTZlNiIsImVtYWlsIjoic2h1YmhhbWJhbmthcjY1QGdtYWlsLmNvbSIsImlhdCI6MTc3MTE2NjE3NSwiZXhwIjoxNzcxMjUyNTc1fQ.Bw8yNx1LOPGBCiWNEudeH_cPDS-_X458Al6kaJojLU8
+### get all
+
+POST http://localhost:3000/auth
+Content-Type:  application/json
+
+{
+    "email": "shubhambankar65@gmail.com",
+    "password": "Testing@123"
+}
+
+###
 http://localhost:3000/bots/
 
 
@@ -13,10 +25,11 @@ Content-Type:  application/json
 ### 
 POST http://localhost:3000/chat
 Content-Type:  application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4YzQwYWQ2MDA3NWUwMTAzYTAxNTZlNiIsImVtYWlsIjoic2h1YmhhbWJhbmthcjY1QGdtYWlsLmNvbSIsInVzZXJOYW1lIjoiTWFyazEiLCJpYXQiOjE3NTg2NTE1MTQsImV4cCI6MTc1ODczNzkxNH0.kGWjHkD0d8Lro5JST7zqBzwbYKgv5XOApzJJdIt-5ws
-
+Authorization: Bearer {{token}}
 
 {
-   "botId":"bot_mfv2vn5t_ZTPOE4", 
-   "question":"Tell me about angular"
+   "botId":"bot_milpmq1o_21MODR", 
+   "question":"what is weather in Pune"
 }
+
+

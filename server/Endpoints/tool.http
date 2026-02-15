@@ -1,9 +1,20 @@
 # https://www.weatherapi.com/my/
+@token =eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4YzQwYWQ2MDA3NWUwMTAzYTAxNTZlNiIsImVtYWlsIjoic2h1YmhhbWJhbmthcjY1QGdtYWlsLmNvbSIsImlhdCI6MTc3MTE2NTg4MywiZXhwIjoxNzcxMjUyMjgzfQ.xaAnsOzWB-zbK1Wbeit0K6VCd6lPvyPemeW3_QMUa60
+POST http://localhost:3000/auth
+Content-Type:  application/json
+
+{
+    "email": "shubhambankar65@gmail.com",
+    "password": "Testing@123"
+}
+
 
 
 ### get tools by bot id not by _id
-GET http://localhost:3000/tools/bot/bot_mdqa1e6y_MMF8T9
+GET http://localhost:3000/tools/bot/bot_milpmq1o_21MODR
 Content-Type: application/json
+Authorization: Bearer {{token}}
+
 
 
 ### get 
@@ -14,76 +25,76 @@ Content-Type: application/json
 ###
 POST http://localhost:3000/tools
 Content-Type: application/json
+Authorization: Bearer {{token}}
 
 {
-  "botId": "bot_mdqa1e6y_MMF8T9",
+  "botId": "bot_milpmq1o_21MODR",
   "name": "get_weather",
   "description": "Fetches the currennt weather for a given city.",
   "category": "weather",
   "parameters": {
+    "type":"object",
+    "properties": {
     "location": {
       "type": "string",
       "description": "The city name to get weather for.",
-      "required": true,
-      "in": "query",
-      "mapTo": "q"
+      "required": true
+    }
     }
   },
-  "type": "http",
+  "type": "API",
   "endpoint": "http://api.weatherapi.com/v1/current.json",
   "method": "GET",
-  "headers": {},
+  "headers": {
+    "Content-Type": "application/json",
+    
+  },
   "auth": {
     "type": "apiKey",
-    "apiKey": "",
+    "apiKey": "bcf47efb2cc04878ae7172836261502",
     "apiKeyLocation": "query",
     "apiKeyName": "key"
   },
+  "fixedParams":{},
   "systemPrompt": "You are a helpful assistant that explains weather information in a clear, conversational way.\nYou will be given raw weather API JSON data.\nYour job:\n- Summarize the weather conditions in a natural sentence.\n- Include location, temperature (in °C), condition (sunny, cloudy, rainy, etc.), wind speed & direction, and humidity.\n- Mention \"feels like\" temperature if it is different from actual.\n- If available, add air quality index in simple terms (e.g., \"Good\", \"Moderate\", \"Unhealthy\").\n- Do not show raw JSON or technical details.\n- Keep the response concise and friendly.",
   "enabled": true
 }
 
 
 ###
-PUT http://localhost:3000/tools/68a06a77eb99e340c9250ba3
+PUT http://localhost:3000/tools/6991f8f06c96cadbf51c8473
 Content-Type: application/json
+Authorization: Bearer {{token}}
 
 {
-"botId": "bot_mdqa1e6y_MMF8T9",
-"name": "get_weather",
-"description": "Fetches the current weather for a given city.",
-"category": "weather",
-"parameters": {
-"location": {
-"type": "string",
-"description": "The city name to get weather for.",
-"required": true,
-"in": "query",
-"mapTo": "q"
-}
-},
-  "type": "http",
-  "endpoint": "http://api.weatherapi.com/v1/current.json?aqi=no",
+  "botId": "bot_milpmq1o_21MODR",
+  "name": "get_weather",
+  "description": "Fetches the currennt weather for a given city.",
+  "category": "weather",
+  "parameters": {
+    "type":"object",
+    "properties": {
+    "q": {
+      "type": "string",
+      "description": "The city name to get weather for.",
+      "required": true
+    }
+    }
+  },
+  "type": "API",
+  "endpoint": "http://api.weatherapi.com/v1/current.json",
   "method": "GET",
   "headers": {
     "Content-Type": "application/json"
-  }, 
+  },
   "auth": {
-    "type": "apiKey", // basic or bearer or none
-    "apiKey": "4e7797131c1d4bc9b69143952251608",
+    "type": "apiKey",
+    "apiKey": "9abfc37ecc634309a88183118261502",
     "apiKeyLocation": "query",
     "apiKeyName": "key"
   },
-  "systemPrompt":"You are a helpful assistant that explains weather information in a clear, conversational way.
-You will be given raw weather API JSON data.
-Your job:
-- Summarize the weather conditions in a natural sentence.
-- Include location, temperature (in °C), condition (sunny, cloudy, rainy, etc.), wind speed & direction, and humidity.
-- Mention "feels like" temperature if it is different from actual.
-- If available, add air quality index in simple terms (e.g., "Good", "Moderate", "Unhealthy").
-- Do not show raw JSON or technical details.
-- Keep the response concise and friendly.
-",
+  "fixedParams":{},
+  "systemPrompt": "You are a helpful assistant that explains weather information in a clear, conversational way.\nYou will be given raw weather API JSON data.\nYour job:\n- Summarize the weather conditions in a natural sentence.\n- Include location, temperature (in °C), condition (sunny, cloudy, rainy, etc.), wind speed & direction, and humidity.\n- Mention \"feels like\" temperature if it is different from actual.\n- If available, add air quality index in simple terms (e.g., \"Good\", \"Moderate\", \"Unhealthy\").\n- Do not show raw JSON or technical details.\n- Keep the response concise and friendly.",
   "enabled": true
 }
 
@@ -91,3 +102,7 @@ Your job:
 ###
 DELETE http://localhost:3000/tools/68a16a5c513f9ec57abcf664
 Content-Type: application/json
+
+
+###GEt
+GET http://api.weatherapi.com/v1/current.json?key=9abfc37ecc634309a88183118261502&q=PUNE&aqi=no
