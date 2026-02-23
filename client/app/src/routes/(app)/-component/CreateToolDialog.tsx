@@ -1,38 +1,21 @@
+import { FormDialogBox } from "@/routes/-components/dialog-box/FormDialogBox";
+import { FormInput } from "@/routes/-components/formfields/FormInput";
+import { FormSelect } from "@/routes/-components/formfields/FormSelect";
+import { FormTextArea } from "@/routes/-components/formfields/FormTextArea";
 import { Form } from "@/shadcn/ui/form";
 import { useStoreAuth } from "@/store/useStoreAuth";
 import { starGate } from "@/utils/starGate";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
 import { useState } from "react";
-import z from "zod";
+import { useForm } from "react-hook-form";
 import { toast } from "sonner";
-import { FormDialogBox } from "@/routes/-components/dialog-box/FormDialogBox";
-import { FormInput } from "@/routes/-components/formfields/FormInput";
-import { FormTextArea } from "@/routes/-components/formfields/FormTextArea";
-import { FormSelect } from "@/routes/-components/formfields/FormSelect";
+import z from "zod";
 
-const formSchema = z.object({
-  botName: z
-    .string({
-      error: "Bot name is required.",
-    })
-    .min(3, {
-      message: "Bot name must be at least 3 characters.",
-    }),
-  botDesc: z.string().min(3, {
-    message: "Bot description must be at least 3 characters.",
-  }),
-  botType: z.string({
-    error: "Please select bot type.",
-  }),
-});
-
-export const CreateBotDialog = ({
+export const CreateToolDialog = ({
   refreshData,
 }: {
   refreshData: () => void;
 }) => {
-
   const userProfile = useStoreAuth((state) => state.userProfile);
   const [open, setOpen] = useState(false);
   const form = useForm<z.infer<typeof formSchema>>({
@@ -51,7 +34,7 @@ export const CreateBotDialog = ({
       });
       form.reset();
       setOpen(false); // ✅ close dialog on success
-      toast("Bot created successfully.");
+      toast("Tool created successfully.");
       refreshData();
     } catch (error: any) {
       console.error(error);
@@ -109,3 +92,19 @@ export const CreateBotDialog = ({
     </FormDialogBox>
   );
 };
+
+const formSchema = z.object({
+  botName: z
+    .string({
+      error: "Bot name is required.",
+    })
+    .min(3, {
+      message: "Bot name must be at least 3 characters.",
+    }),
+  botDesc: z.string().min(3, {
+    message: "Bot description must be at least 3 characters.",
+  }),
+  botType: z.string({
+    error: "Please select bot type.",
+  }),
+});

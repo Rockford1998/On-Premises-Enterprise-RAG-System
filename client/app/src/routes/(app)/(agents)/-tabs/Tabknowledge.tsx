@@ -152,7 +152,7 @@ export const Tabknowledge = () => {
         );
       },
     },
-  ];
+  ]; 
 
   return (
     <div>

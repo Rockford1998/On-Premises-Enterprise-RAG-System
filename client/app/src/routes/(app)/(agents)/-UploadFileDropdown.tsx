@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import { useRef, useState } from "react";
@@ -25,7 +26,6 @@ export const UploadFileDropdown: React.FC<UploadFileDropdownProps> = ({
   refreshData,
 }) => {
   const { botId } = useAgentContext();
-  console.log({ botId });
   const [selectedType, setSelectedType] = useState<FileType | null>(null);
   const [uploading, setUploading] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);

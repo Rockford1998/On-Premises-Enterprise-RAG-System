@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useStoreAuth } from "@/store/useStoreAuth";
 import { useEffect, useState } from "react";
 import type { ColumnDef } from "@tanstack/react-table";

@@ -1,3 +1,4 @@
+/* eslint-disable react-refresh/only-export-components */
 import { createFileRoute } from "@tanstack/react-router";
 import { PageWrapper } from "@/routes/-components/layout/PageWrapper";
 import { createContext, useContext, useEffect, useState } from "react";

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { FormInput } from "@/routes/-components/formfields/FormInput";
 import { FormSelect } from "@/routes/-components/formfields/FormSelect";
 import { FormTextArea } from "@/routes/-components/formfields/FormTextArea";

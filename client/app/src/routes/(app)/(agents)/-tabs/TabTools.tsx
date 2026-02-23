@@ -9,11 +9,15 @@ import { Pen } from "lucide-react";
 import { Button } from "@/shadcn/ui/button";
 import { useRefreshData } from "@/routes/-components/hook/useRefreshData";
 import { useNavigate } from "@tanstack/react-router";
+import { CreateToolDialog } from "../../-component/CreateToolDialog";
 
 export const TabTools = () => {
-  const { tools, columns } = useTabTools();
+  const { tools, columns, refreshData } = useTabTools();
   return (
     <div>
+      <div className="flex justify-end mb-3 ">
+        <CreateToolDialog refreshData={refreshData} />
+      </div>
       <DataTable columns={columns} data={tools} />
     </div>
   );
@@ -94,7 +98,8 @@ const useTabTools = () => {
   ];
 
   return {
-    tools,
     columns,
+    tools,
+    refreshData,
   };
 };
