@@ -3,7 +3,6 @@ import { FormInput } from "@/routes/-components/formfields/FormInput";
 import { FormSelect } from "@/routes/-components/formfields/FormSelect";
 import { FormTextArea } from "@/routes/-components/formfields/FormTextArea";
 import { Form } from "@/shadcn/ui/form";
-import { useStoreAuth } from "@/store/useStoreAuth";
 import { starGate } from "@/utils/starGate";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
@@ -13,39 +12,45 @@ import z from "zod";
 
 export const CreateToolDialog = ({
   refreshData,
+  botId,
 }: {
   refreshData: () => void;
+  botId: string;
 }) => {
-  const userProfile = useStoreAuth((state) => state.userProfile);
   const [open, setOpen] = useState(false);
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      botName: "",
-      botDesc: "",
+      name: "",
+      description: "",
+      type: "API",
     },
   });
 
   const handleSubmit = form.handleSubmit(async (values) => {
     try {
-      await starGate.post("/bots", {
-        owner: userProfile.email,
+      const payload = {
+        botId: botId,
         ...values,
-      });
+      };
+      console.log(payload);
+      await starGate.post("/tools", payload);
+
       form.reset();
-      setOpen(false); // ✅ close dialog on success
+      setOpen(false);
       toast("Tool created successfully.");
       refreshData();
-    } catch (error: any) {
+    } catch (error) {
       console.error(error);
-      toast("Bot created successfully.");
+      toast("Failed to create tool.");
     }
   });
 
   return (
     <FormDialogBox
-      title="Create Bot"
-      triggerLabel="Create Bot"
+      title="Create Tool"
+      triggerLabel="Create Tool"
       maxWidth="sm:max-w-xl"
       open={open}
       onOpenChange={(o) => {
@@ -58,32 +63,33 @@ export const CreateToolDialog = ({
         <form id="dialog-form" onSubmit={handleSubmit} className="space-y-6">
           <FormInput
             form={form}
-            name="botName"
-            label="Bot Name"
-            placeHolder="what is your bot name?"
+            name="name"
+            label="Tool Name"
+            placeHolder="Enter tool name"
             gap={1}
           />
 
           <FormTextArea
             form={form}
-            name="botDesc"
-            label="Bot description"
-            placeHolder="Tell me about your bot?"
+            name="description"
+            label="Tool Description"
+            placeHolder="Describe the tool"
             gap={1}
           />
+
           <FormSelect
             gap={1}
             form={form}
-            label="Select bot type"
-            name="botType"
+            label="Tool Type"
+            name="type"
             selectItems={[
               {
-                value: "KB_Bot",
-                label: "KB_Bot- Answer based on KB and General Knowledge",
+                value: "API",
+                label: "API",
               },
               {
-                value: "General_Purpose",
-                label: "Answer questions based on existing knowledge",
+                value: "DATABASE",
+                label: "DATABASE",
               },
             ]}
           />
@@ -94,17 +100,19 @@ export const CreateToolDialog = ({
 };
 
 const formSchema = z.object({
-  botName: z
+  name: z
     .string({
-      error: "Bot name is required.",
+      error: "Name is required.",
     })
     .min(3, {
-      message: "Bot name must be at least 3 characters.",
+      message: "Name must be at least 3 characters.",
     }),
-  botDesc: z.string().min(3, {
-    message: "Bot description must be at least 3 characters.",
+
+  description: z.string().min(3, {
+    message: "Description must be at least 3 characters.",
   }),
-  botType: z.string({
-    error: "Please select bot type.",
+
+  type: z.enum(["API", "DATABASE"], {
+    error: "Please select tool type.",
   }),
 });

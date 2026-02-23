@@ -27,7 +27,7 @@ function RouteComponent() {
     defaultValues: {
       name: "",
       description: "",
-      type: "http",
+      type: "API",
       endpoint: "",
       httpMethod: "GET",
       auth: { type: "none" },
@@ -89,7 +89,7 @@ function RouteComponent() {
               form={form}
               name="type"
               label="Tool Type"
-              selectItems={[{ value: "http", label: "HTTP API" }]}
+              selectItems={[{ value: "API", label: "API" }]}
             />
             <FormTextArea form={form} name="description" label="Description" />
             <FormTextArea form={form} name="systemPrompt" label="tool prompt" />
@@ -97,10 +97,10 @@ function RouteComponent() {
         </Card>
 
         {/* HTTP Configuration */}
-        {toolType === "http" && (
+        {toolType === "API" && (
           <Card>
             <CardHeader>
-              <CardTitle className="text-sm">HTTP Configuration</CardTitle>
+              <CardTitle className="text-sm">API Configuration</CardTitle>
             </CardHeader>
 
             <CardContent className="grid grid-cols-2 gap-4">
@@ -120,7 +120,7 @@ function RouteComponent() {
           </Card>
         )}
         {/* Authentication */}
-        {toolType === "http" && (
+        {toolType === "API" && (
           <Card>
             <CardHeader>
               <CardTitle className="text-sm">Authentication</CardTitle>
@@ -192,7 +192,7 @@ function RouteComponent() {
 const toolSchema = z.object({
   name: z.string().min(2),
   description: z.string().min(5),
-  type: z.enum(["http"]),
+  type: z.enum(["API", "DATABASE"]),
   endpoint: z.string().optional(),
   httpMethod: z.string().optional(),
   auth: z.object({

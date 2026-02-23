@@ -72,7 +72,7 @@ export interface ITool extends Document {
   botId: string;
   name: string;
   description: string;
-  type: "http" | "database";
+  type: "API" | "DATABASE";
   endpoint?: string;
   httpMethod: "GET" | "POST" | "PUT" | "DELETE" | "PATCH";
   headers?: Record<string, any>;
@@ -112,7 +112,7 @@ const ToolSchema = new mongoose.Schema({
   botId: { type: String, required: true },
   name: { type: String, required: true, },
   description: { type: String, required: true },
-  type: { type: String, enum: ["http", "database"], required: true },
+  type: { type: String, enum: ["API", "DATABASE"], required: true },
   endpoint: { type: String },
   httpMethod: { type: String, enum: ["GET", "POST", "PUT", "DELETE", "PATCH"], default: "GET", }, headers: { type: Object },
   auth: {
