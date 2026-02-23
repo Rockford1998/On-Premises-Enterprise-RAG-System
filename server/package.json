@@ -1,11 +1,9 @@
-
 {
   "name": "implementation-of-the-rag",
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
     "start": "node dist/index.js",
-    "dev": "set NODE_ENV=local && nodemon src/index.ts --legacy-watch",
     "dep:check": "npx depcheck",
     "dev:start": "set TZ=Asia/Kolkata&& set NODE_ENV=dev&& nodemon src/index.ts --legacy-watch",
     "test:start": "set TZ=Asia/Kolkata&& set NODE_ENV=test&& nodemon src/index.ts --legacy-watch",

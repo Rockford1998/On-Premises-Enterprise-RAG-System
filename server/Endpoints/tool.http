@@ -43,10 +43,8 @@ Authorization: Bearer {{token}}
 POST http://localhost:3000/tools
 Content-Type: application/json
 Authorization: Bearer {{token}}
-Authorization: Bearer {{token}}
 
 {
-  "botId": "bot_mfv2vn5t_ZTPOE4",
   "botId": "bot_milpmq1o_21MODR",
   "name": "get_weather",
   "description": "Fetches the currennt weather for a given city.",
@@ -63,25 +61,20 @@ Authorization: Bearer {{token}}
   },
   "type": "API",
   "endpoint": "http://api.weatherapi.com/v1/current.json",
-  "httpMethod": "GET",
-  "headers": {},
+  "method": "GET",
+  "headers": {
+    "Content-Type": "application/json",
+    
+  },
   "auth": {
     "type": "apiKey",
     "apiKey": "bcf47efb2cc04878ae7172836261502",
-    "apiKey": "9dcc878a11b44fd7987194020252612",
     "apiKeyLocation": "query",
     "apiKeyName": "key"
   },
   "fixedParams":{},
-  "queryParam": {
-    "name": "q",
-    "description": "The city name to get weather for.",
-    "type": "string",
-    "required": true,
-    "defaultValue": ""
-  },
-  "enabled": true,
-  "systemPrompt": "You are a helpful assistant that explains weather information in a clear, conversational way.\nYou will be given raw weather API JSON data.\nYour job:\n- Summarize the weather conditions in a natural sentence.\n- Include location, temperature (in °C), condition (sunny, cloudy, rainy, etc.), wind speed & direction, and humidity.\n- Mention \"feels like\" temperature if it is different from actual.\n- If available, add air quality index in simple terms (e.g., \"Good\", \"Moderate\", \"Unhealthy\").\n- Do not show raw JSON or technical details.\n- Keep the response concise and friendly."
+  "systemPrompt": "You are a helpful assistant that explains weather information in a clear, conversational way.\nYou will be given raw weather API JSON data.\nYour job:\n- Summarize the weather conditions in a natural sentence.\n- Include location, temperature (in °C), condition (sunny, cloudy, rainy, etc.), wind speed & direction, and humidity.\n- Mention \"feels like\" temperature if it is different from actual.\n- If available, add air quality index in simple terms (e.g., \"Good\", \"Moderate\", \"Unhealthy\").\n- Do not show raw JSON or technical details.\n- Keep the response concise and friendly.",
+  "enabled": true
 }
 
 

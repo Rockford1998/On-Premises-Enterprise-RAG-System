@@ -73,7 +73,7 @@
   "description": "Fetches the current weather for a given city.",
   "type": "http",
   "endpoint": "http://api.weatherapi.com/v1/current.json",
-  "httpMethod": "GET",
+  "method": "GET",
   "headers": {},
   "auth": {
     "type": "apiKey",

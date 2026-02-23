@@ -78,10 +78,9 @@ const ToolSchema = new mongoose.Schema({
     properties: {},
     required: [String]
   },
-  type: { type: String, enum: ["API", "database"], required: true },
   type: { type: String, enum: ["API", "DATABASE"], required: true },
   endpoint: { type: String },
-  httpMethod: { type: String, enum: ["GET", "POST", "PUT", "DELETE", "PATCH"], default: "GET", }, headers: { type: Object },
+  method: { type: String, enum: ["GET", "POST", "PUT", "DELETE", "PATCH"], default: "GET", }, headers: { type: Object },
   auth: {
     type: { type: String, enum: ["basic", "bearer", "apiKey", "none"], default: "none" },
     username: { type: String },  // used if basic

@@ -1,7 +1,7 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/shadcn/ui/tabs";
 import { TabBotForm } from "./TabBotForm";
 import { Tabknowledge } from "./Tabknowledge";
-import { TabTools } from "../../-component/TabTools";
+import { TabTools } from "./TabTools";
 
 export function TabAgent({ botType }: { botType: string }) {
   return (

@@ -73,6 +73,7 @@ export class ToolService {
             const result = JSON.parse(responseText);
             if (result && result.tool) {
                 const toolData = availableTools.find(tool => tool.name === result.tool);
+                console.log("Detected tool:", toolData);
                 if (toolData) {
                     result.toolData = toolData;
                     return result;
@@ -308,6 +309,7 @@ export class ToolService {
             }
             const renderParams = this.renderTemplateByData(tool.fixedParams, args)
             const renderUrl = this.renderTemplateByData(tool.endpoint, args)
+            console.log("Executing tool with method:", tool.method, "url:", renderUrl, "params:", renderParams, "headers:", headers);
             let ret = await this.httpCall(tool.method, renderUrl, renderParams, headers)
             let strRet = JSON.stringify(ret)
             const toolReturnLengthLimit = 28000
