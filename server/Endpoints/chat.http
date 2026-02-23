@@ -1,6 +1,5 @@
-@token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4YzQwYWQ2MDA3NWUwMTAzYTAxNTZlNiIsImVtYWlsIjoic2h1YmhhbWJhbmthcjY1QGdtYWlsLmNvbSIsImlhdCI6MTc3MTE2NjE3NSwiZXhwIjoxNzcxMjUyNTc1fQ.Bw8yNx1LOPGBCiWNEudeH_cPDS-_X458Al6kaJojLU8
-### get all
 
+###
 POST http://localhost:3000/auth
 Content-Type:  application/json
 
@@ -9,17 +8,14 @@ Content-Type:  application/json
     "password": "Testing@123"
 }
 
-###
-http://localhost:3000/bots/
-
-
 ### Example tool calling a weather API  (in testing phase)
 POST http://localhost:3000/chat
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4YzMxZWZlNDI3M2M2NzBhMTYxNjFhOCIsImVtYWlsIjoic2h1YmhhbWJhbmthcjY1QGdtYWlsLmNvbSIsImlhdCI6MTc2Njk0OTA3NSwiZXhwIjoxNzY3MDM1NDc1fQ.cvH7ss4CJqZgbUPnyMTvRysBIe1GXvBIrjDEE8er5Tw
 Content-Type:  application/json
 
 {
-   "botId":"bot_mdqa1e6y_MMF8T9", 
-   "question":"what is weather in Pune"
+   "botId":"bot_mfsfekoi_Z96YMW", 
+   "question":"what is weather in mumbai"
 }
 
 ### 

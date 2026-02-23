@@ -178,8 +178,6 @@ export class BotController {
                 }
                 return model;
             };
-            console.log("baseModel", botReq.baseModel)
-            console.log("baseModel", oldBot.baseModel?.name)
             if (
                 botReq.baseModel &&
                 oldBot.baseModel?.name !== botReq.baseModel

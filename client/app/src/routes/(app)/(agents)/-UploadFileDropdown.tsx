@@ -1,0 +1,108 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+"use client";
+
+import { useRef, useState } from "react";
+import { Button } from "@/shadcn/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/shadcn/ui/dropdown-menu";
+import { starGate } from "@/utils/starGate";
+import { toast } from "sonner";
+import { Input } from "@/shadcn/ui/input";
+import { useAgentContext } from "./agent-details.$botId";
+
+type FileType = "pdf" | "docx" | "doc" | "pptx" | "txt";
+
+const SUPPORTED_FILE_TYPES: FileType[] = ["pdf", "docx", "doc", "pptx", "txt"];
+
+type UploadFileDropdownProps = {
+  refreshData: () => void;
+};
+
+export const UploadFileDropdown: React.FC<UploadFileDropdownProps> = ({
+  refreshData,
+}) => {
+  const { botId } = useAgentContext();
+  const [selectedType, setSelectedType] = useState<FileType | null>(null);
+  const [uploading, setUploading] = useState(false);
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  const handleTypeSelect = (type: FileType) => {
+    setSelectedType(type);
+
+    // Dynamically set accept attribute before opening file picker
+    if (inputRef.current) {
+      inputRef.current.accept = `.${type}`;
+      inputRef.current.value = ""; // reset previous selection
+      inputRef.current.click(); // open native file picker
+    }
+  };
+
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    await uploadFileToServer(file);
+  };
+
+  const uploadFileToServer = async (file: File) => {
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+      setUploading(true);
+      const response = await starGate.post(`/kb/upload/${botId}`, formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+
+      setUploading(false);
+      toast(response.data.message);
+      refreshData();
+    } catch (error: any) {
+      console.log(error);
+      if (error.response.data.message) {
+        toast(error.response.data.message);
+      }
+      setUploading(false);
+    }
+  };
+
+  return (
+    <div>
+      {/* Hidden native file input */}
+      <Input
+        type="file"
+        ref={inputRef}
+        className="hidden"
+        onChange={handleFileChange}
+      />
+
+      {/* Dropdown to select file type */}
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button variant="default" className="cursor-pointer h-8 px-3 text-xs">
+            {selectedType
+              ? uploading
+                ? `Uploading ${selectedType.toUpperCase()}...`
+                : `Upload File`
+              : "Upload File"}
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent>
+          {SUPPORTED_FILE_TYPES.map((type) => (
+            <DropdownMenuItem
+              key={type}
+              onClick={() => handleTypeSelect(type)}
+              className="cursor-pointer text-xs"
+            >
+              {type.toUpperCase()}
+            </DropdownMenuItem>
+          ))}
+        </DropdownMenuContent>
+      </DropdownMenu>
+    </div>
+  );
+};

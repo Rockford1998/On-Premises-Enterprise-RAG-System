@@ -68,32 +68,27 @@
 
 ```json
 {
+  "botId": "bot_mfv2vn5t_ZTPOE4",
   "name": "get_weather",
   "description": "Fetches the current weather for a given city.",
-  "category": "weather",
-  "parameters": {
-    "location": {
-      "type": "string",
-      "description": "The city name to get weather for.",
-      "required": true,
-      "in": "query",
-      "mapTo": "q"
-    },
-    "userId": {
-      "type": "string",
-      "description": "User ID for fetching user-specific weather preferences.",
-      "required": true,
-      "in": "path",
-      "mapTo": "id"
-    }
-  },
   "type": "http",
-  "endpoint": "http://api.example.com/users/{id}/weather",
-  "method": "GET",
-  "headers": {
-    "Content-Type": "application/json"
+  "endpoint": "http://api.weatherapi.com/v1/current.json",
+  "httpMethod": "GET",
+  "headers": {},
+  "auth": {
+    "type": "apiKey",
+    "apiKey": "9dcc878a11b44fd7987194020252612",
+    "apiKeyLocation": "query",
+    "apiKeyName": "key"
   },
-  "auth": "weather_api_key",
-  "enabled": true
+  "queryParam": {
+    "name": "q",
+    "description": "The city name to get weather for.",
+    "type": "string",
+    "required": true,
+    "defaultValue": ""
+  },
+  "enabled": true,
+  "systemPrompt": "You are a helpful assistant that explains weather information in a clear, conversational way.\nYou will be given raw weather API JSON data.\nYour job:\n- Summarize the weather conditions in a natural sentence.\n- Include location, temperature (in °C), condition (sunny, cloudy, rainy, etc.), wind speed & direction, and humidity.\n- Mention \"feels like\" temperature if it is different from actual.\n- If available, add air quality index in simple terms (e.g., \"Good\", \"Moderate\", \"Unhealthy\").\n- Do not show raw JSON or technical details.\n- Keep the response concise and friendly."
 }
 ```

@@ -1,4 +1,14 @@
+@token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4YzQwYWQ2MDA3NWUwMTAzYTAxNTZlNiIsImVtYWlsIjoic2h1YmhhbWJhbmthcjY1QGdtYWlsLmNvbSIsImlhdCI6MTc3MTg1MzUwOCwiZXhwIjoxNzcxOTM5OTA4fQ.oNU-RKooWkVHJlHD80hM_SOUwp2vw8hmR7GCtW7cZGE
+
 # https://www.weatherapi.com/my/
+
+POST http://localhost:3000/auth
+Content-Type:  application/json
+
+{
+    "email": "shubhambankar65@gmail.com",
+    "password": "Testing@123"
+}
 @token =eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4YzQwYWQ2MDA3NWUwMTAzYTAxNTZlNiIsImVtYWlsIjoic2h1YmhhbWJhbmthcjY1QGdtYWlsLmNvbSIsImlhdCI6MTc3MTE2NTg4MywiZXhwIjoxNzcxMjUyMjgzfQ.xaAnsOzWB-zbK1Wbeit0K6VCd6lPvyPemeW3_QMUa60
 POST http://localhost:3000/auth
 Content-Type:  application/json
@@ -11,23 +21,32 @@ Content-Type:  application/json
 
 
 ### get tools by bot id not by _id
-GET http://localhost:3000/tools/bot/bot_milpmq1o_21MODR
+GET http://localhost:3000/tools/bot/bot_mfv2vn5t_ZTPOE4
 Content-Type: application/json
+Authorization: Bearer {{token}}
+
+### get all
+GET http://localhost:3000/tools
+Content-Type: application/json
+Authorization: Bearer {{token}}
 Authorization: Bearer {{token}}
 
 
 
-### get 
-GET http://localhost:3000/tools/
+### by id
+GET http://localhost:3000/tools/694edcea65a86a7ae2eb9149
 Content-Type: application/json
+Authorization: Bearer {{token}}
 
 
 ###
 POST http://localhost:3000/tools
 Content-Type: application/json
 Authorization: Bearer {{token}}
+Authorization: Bearer {{token}}
 
 {
+  "botId": "bot_mfv2vn5t_ZTPOE4",
   "botId": "bot_milpmq1o_21MODR",
   "name": "get_weather",
   "description": "Fetches the currennt weather for a given city.",
@@ -44,26 +63,32 @@ Authorization: Bearer {{token}}
   },
   "type": "API",
   "endpoint": "http://api.weatherapi.com/v1/current.json",
-  "method": "GET",
-  "headers": {
-    "Content-Type": "application/json",
-    
-  },
+  "httpMethod": "GET",
+  "headers": {},
   "auth": {
     "type": "apiKey",
     "apiKey": "bcf47efb2cc04878ae7172836261502",
+    "apiKey": "9dcc878a11b44fd7987194020252612",
     "apiKeyLocation": "query",
     "apiKeyName": "key"
   },
   "fixedParams":{},
-  "systemPrompt": "You are a helpful assistant that explains weather information in a clear, conversational way.\nYou will be given raw weather API JSON data.\nYour job:\n- Summarize the weather conditions in a natural sentence.\n- Include location, temperature (in °C), condition (sunny, cloudy, rainy, etc.), wind speed & direction, and humidity.\n- Mention \"feels like\" temperature if it is different from actual.\n- If available, add air quality index in simple terms (e.g., \"Good\", \"Moderate\", \"Unhealthy\").\n- Do not show raw JSON or technical details.\n- Keep the response concise and friendly.",
-  "enabled": true
+  "queryParam": {
+    "name": "q",
+    "description": "The city name to get weather for.",
+    "type": "string",
+    "required": true,
+    "defaultValue": ""
+  },
+  "enabled": true,
+  "systemPrompt": "You are a helpful assistant that explains weather information in a clear, conversational way.\nYou will be given raw weather API JSON data.\nYour job:\n- Summarize the weather conditions in a natural sentence.\n- Include location, temperature (in °C), condition (sunny, cloudy, rainy, etc.), wind speed & direction, and humidity.\n- Mention \"feels like\" temperature if it is different from actual.\n- If available, add air quality index in simple terms (e.g., \"Good\", \"Moderate\", \"Unhealthy\").\n- Do not show raw JSON or technical details.\n- Keep the response concise and friendly."
 }
 
 
 ###
 PUT http://localhost:3000/tools/6991f8f06c96cadbf51c8473
 Content-Type: application/json
+Authorization: Bearer {{token}}
 Authorization: Bearer {{token}}
 
 {
@@ -106,3 +131,57 @@ Content-Type: application/json
 
 ###GEt
 GET http://api.weatherapi.com/v1/current.json?key=9abfc37ecc634309a88183118261502&q=PUNE&aqi=no
+
+Authorization: Bearer {{token}}
+
+# await Tool.create({
+#   botId: "travel_bot",
+#   name: "getWeather",
+#   description: "Get current weather for a city",
+#   Parameters: {
+#     type: "object",
+#     properties: {
+#       city: { type: "string", description: "City name" },
+#       unit: { type: "string", enum: ["c", "f"] }
+#     },
+#     required: ["city"]
+#   },
+#   toolExe: {
+#     type: "http",
+#     method: "GET",
+#     url: "https://api.weatherapi.com/v1/current.json",
+#     auth: {
+#       type: "bearer",
+#       bearerToken: "WEATHER_API_KEY",
+#       fixedParams: {
+#         lang: "en"
+#       }
+#     }
+#   }
+# });
+
+
+
+# await Tool.create({
+#   botId: "weather_bot",
+#   name: "getCurrentWeather",
+#   description: "Get current weather for a city",
+#   Parameters: {
+#     type: "object",
+#     properties: {
+#       q: { type: "string", description: "The city name to get weather for." }
+#     },
+#     required: ["q"]
+#   },
+#   toolExe: {
+#     type: "http",
+#     method: "GET",
+#     url: "http://api.weatherapi.com/v1/current.json",
+#     auth: {
+#       type: "none",               // Not bearer
+#       fixedParams: {
+#         key: "WEATHER_API_KEY"     // 👈 API key here
+#       }
+#     }
+#   }
+# });

@@ -1,0 +1,3 @@
+// add handling to manage available models
+// improve the llm tool calling and its schema 
+// implement error handling for API calls

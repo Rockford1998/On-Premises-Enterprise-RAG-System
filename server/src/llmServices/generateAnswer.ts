@@ -19,7 +19,6 @@ export const generateAnswer = async ({
   baseModel: string
 }): Promise<string> => {
   try {
-
     const OLLAMA_BASE_URL =
       process.env.OLLAMA_BASE_URL || "http://localhost:11434";
     let context = ""
@@ -49,13 +48,11 @@ export const generateAnswer = async ({
         Answer (in Markdown):
         `;
 
-    console.log(prompt)
     const res = await axios.post(`${OLLAMA_BASE_URL}/api/generate`, {
       model: baseModel,
       prompt,
       stream: false,
     });
-
     if (!res.data?.response) {
       throw new Error("Invalid response format from Ollama");
     }

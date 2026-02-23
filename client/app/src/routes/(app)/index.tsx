@@ -1,0 +1,67 @@
+import { Button } from "@/shadcn/ui/button";
+import { Separator } from "@/shadcn/ui/separator";
+import { createFileRoute } from "@tanstack/react-router";
+import { PageWrapper } from "../-components/layout/PageWrapper";
+import { DataTable } from "../-components/example-components/DataTable";
+import { ExampleForm } from "../-components/example-components/ExampleForm";
+import { columns, type Payment } from "../-components/example-components/Columns";
+
+export const Route = createFileRoute("/(app)/")({
+  component: Home,
+});
+
+function Home() {
+  const { payments } = useHome();
+  return (
+    <PageWrapper
+      title="Home"
+      actions={
+        <Button variant={"outline"} size={"sm"} className="cursor-pointer">
+          Action button
+        </Button>
+      }
+    >
+      <Separator />
+      <h4>Table</h4>
+      <div>
+        <DataTable columns={columns} data={payments} />
+      </div>
+      <Separator />
+      <div className="space-y-4">
+        <h4>form</h4>
+        <ExampleForm />
+      </div>
+    </PageWrapper>
+  );
+}
+
+const useHome = () => {
+  const payments: Payment[] = [
+    {
+      id: "728ed52f",
+      amount: 100,
+      status: "pending",
+      email: "m@example.com",
+    },
+    {
+      id: "489e1d42",
+      amount: 125,
+      status: "processing",
+      email: "example@gmail.com",
+    },
+    {
+      id: "a3b9c8e1",
+      amount: 200,
+      status: "success",
+      email: "a@example.com",
+    },
+    {
+      id: "f4d5e6b7",
+      amount: 50,
+      status: "failed",
+      email: "b@example.com",
+    },
+    // ...
+  ];
+  return { payments };
+};

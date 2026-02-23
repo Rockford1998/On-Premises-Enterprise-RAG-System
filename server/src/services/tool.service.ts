@@ -4,6 +4,7 @@ import https from "https";
 
 export class ToolService {
     OLLAMA_BASE_URL = process.env.OLLAMA_BASE_URL || "http://localhost:11434";
+
     readToolsByBotId = async ({ botId }: { botId: string }) => {
         const tools = await Tools.find({ botId });
         return tools;
@@ -50,13 +51,14 @@ export class ToolService {
         const prompt = `Analyze the following user query and determine if it requires using one of the available tools.
                         If yes, respond with a JSON object containing "id" (the tool ID), "tool" (the tool name) and "params" (the parameters for the tool).
                         If no tool is needed, respond with null.
-    
+
                         Available tools:
                         ${JSON.stringify(toolsList, null, 2)}
                         
                         User query: "${query}"
                         
                         Respond ONLY with valid JSON (either null or a tool object):`;
+
         try {
             const res = await axios.post(`${this.OLLAMA_BASE_URL}/api/generate`, {
                 model: process.env.TOOL_MODEL || "llama3.2:latest",
@@ -319,5 +321,4 @@ export class ToolService {
         // Future: handle other tool types (database)
         return { error: "Unsupported tool type" };
     };
-
 }

@@ -79,9 +79,9 @@ const ToolSchema = new mongoose.Schema({
     required: [String]
   },
   type: { type: String, enum: ["API", "database"], required: true },
+  type: { type: String, enum: ["API", "DATABASE"], required: true },
   endpoint: { type: String },
-  method: { type: String },
-  headers: { type: Object },
+  httpMethod: { type: String, enum: ["GET", "POST", "PUT", "DELETE", "PATCH"], default: "GET", }, headers: { type: Object },
   auth: {
     type: { type: String, enum: ["basic", "bearer", "apiKey", "none"], default: "none" },
     username: { type: String },  // used if basic
@@ -94,14 +94,46 @@ const ToolSchema = new mongoose.Schema({
     },
     fixedParams: { type: Object }, // for any fixed params that should always be sent with the tool request
     apiKeyName: { type: String }, // e.g., "x-api-key" or "Authorization"
+  },
 
+  pathVariable: [{
+    name: { type: String },
+    description: { type: String, },
+    type: { type: String, enum: ["string", "number", "integer", "boolean"], default: "string" },
+    required: { type: Boolean, default: true, },
+  }],
+
+  queryParam: [{
+    name: { type: String, },
+    description: { type: String },
+    type: { type: String, enum: ["string", "number", "integer", "boolean", "array"], default: "string" },
+    required: { type: Boolean, default: false },
+    defaultValue: { type: mongoose.Schema.Types.Mixed, },
+  }],
+  requestBody: {
+    contentType: {
+      type: String,
+      enum: [
+        "application/json",
+        "application/x-www-form-urlencoded",
+        "multipart/form-data",
+      ],
+      default: "application/json",
+    },
+    schema: {
+      type: mongoose.Schema.Types.Mixed, // JSON Schema
+      required: false,
+    },
+    example: {
+      type: mongoose.Schema.Types.Mixed,
+      required: false,
+    },
   },
   enabled: { type: Boolean, default: true },
   systemPrompt: { type: String }
 }, {
   timestamps: true,
 });
-
 
 const LlmModelSchema = new mongoose.Schema(
   {
