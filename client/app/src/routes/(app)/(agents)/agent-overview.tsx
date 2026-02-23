@@ -19,7 +19,7 @@ type Bot = {
   botName: string;
   botId: string;
   owner: string;
-  isActive: string;
+  isActive: boolean;
   botType: string;
 };
 

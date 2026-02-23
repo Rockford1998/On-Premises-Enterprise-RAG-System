@@ -67,51 +67,18 @@ knowledgeBaseSchema.index({ botId: 1 });
 knowledgeBaseSchema.index({ fileName: 1 });
 
 
-// New interface matching the updated schema
-export interface ITool extends Document {
-  botId: string;
-  name: string;
-  description: string;
-  type: "API" | "DATABASE";
-  endpoint?: string;
-  httpMethod: "GET" | "POST" | "PUT" | "DELETE" | "PATCH";
-  headers?: Record<string, any>;
-  auth: {
-    type: "basic" | "bearer" | "apiKey" | "none";
-    username?: string;
-    password?: string;
-    apiKey?: string;
-    apiKeyLocation: "header" | "query";
-    apiKeyName?: string;
-  };
-  pathVariable?: [{
-    name: string;
-    description: string;
-    type: "string" | "number" | "integer" | "boolean";
-    required: boolean;
-  }];
-  queryParam?: [{
-    name: string;
-    description: string;
-    type: "string" | "number" | "integer" | "boolean" | "array";
-    required: boolean;
-    defaultValue?: any;
-  }];
-  requestBody?: {
-    contentType: "application/json" | "application/x-www-form-urlencoded" | "multipart/form-data";
-    schema?: Record<string, any>;
-    example?: any;
-  };
-  enabled: boolean;
-  systemPrompt?: string;
-  createdAt?: Date;
-  updatedAt?: Date;
-}
 
 const ToolSchema = new mongoose.Schema({
   botId: { type: String, required: true },
   name: { type: String, required: true, },
   description: { type: String, required: true },
+  category: { type: String },
+  parameters: {
+    type: { type: String, default: 'object' },
+    properties: {},
+    required: [String]
+  },
+  type: { type: String, enum: ["API", "database"], required: true },
   type: { type: String, enum: ["API", "DATABASE"], required: true },
   endpoint: { type: String },
   httpMethod: { type: String, enum: ["GET", "POST", "PUT", "DELETE", "PATCH"], default: "GET", }, headers: { type: Object },
@@ -125,6 +92,7 @@ const ToolSchema = new mongoose.Schema({
       enum: ["header", "query"], // where to put apiKey
       default: "header"
     },
+    fixedParams: { type: Object }, // for any fixed params that should always be sent with the tool request
     apiKeyName: { type: String }, // e.g., "x-api-key" or "Authorization"
   },
 

@@ -15,28 +15,28 @@ export class ChatController {
   chatBot = async (req: Request, res: Response) => {
     try {
       const { question, botId } = req.body;
-
       // Step 1: Check if this query requires a tool
-      const toolRequest = (await this.toolService.detectToolUse({
+      const tool = (await this.toolService.detectToolUse({
         botId,
         query: question,
       })) as any;
-      if (toolRequest) {
+      if (tool) {
         try {
           const toolResponse: any = await this.toolService.toolExecution({
-            toolId: toolRequest.id,
-            args: toolRequest.params,
+            tool: tool.toolData,
+            args: tool.params,
           });
+          console.log(toolResponse)
           const answer = await improveTheToolAnswer({
             query: question,
-            context: toolResponse,
-            systemPrompt: toolRequest.systemPrompt,
+            context: toolResponse.content,
+            systemPrompt: tool.toolData.systemPrompt,
           });
           res.status(200).json({
             success: true,
             answer,
             isToolResponse: true,
-            toolUsed: toolRequest.tool,
+            toolUsed: tool.toolData.name,
           });
           return;
         } catch (toolError) {
@@ -45,24 +45,22 @@ export class ChatController {
         }
       }
 
-
-
       const bot = await this.botService.readByBotId(botId);
       let contextChunks = null
       if (bot?.botType !== "General_Purpose") {
         // Proceed with normal vector search flow if no tool was used
         const queryEmbedding = await generateEmbedding(question);
-        if (!bot || typeof bot.vectorTable !== "string") {
+        if (!bot || typeof bot?.vectorTable !== "string") {
           throw new Error("Bot not found or vectorTable is invalid");
         }
 
         contextChunks = await VectorService.searchVectors({
-          tableName: bot.vectorTable,
+          tableName: bot?.vectorTable || "",
           queryEmbedding,
           options: {},
         });
 
-        if (contextChunks.length === 0 && bot.botType == "KB_Bot") {
+        if (contextChunks.length === 0 && bot?.botType == "KB_Bot") {
           res.status(200).json({
             success: false,
             message:
@@ -74,8 +72,8 @@ export class ChatController {
       const answer = await generateAnswer({
         question,
         contextChunks,
-        instruction: bot.instruction || "",
-        baseModel: bot.baseModel.name
+        instruction: bot?.instruction || "",
+        baseModel: bot?.baseModel?.name || "default"
       });
       res.status(200).json({
         success: true,
