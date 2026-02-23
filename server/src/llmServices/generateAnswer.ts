@@ -19,7 +19,6 @@ export const generateAnswer = async ({
   baseModel: string
 }): Promise<string> => {
   try {
-    baseModel = process.env.BASE_MODEL || "gemma3:4b";
     const OLLAMA_BASE_URL =
       process.env.OLLAMA_BASE_URL || "http://localhost:11434";
     let context = ""
@@ -54,7 +53,6 @@ export const generateAnswer = async ({
       prompt,
       stream: false,
     });
-    console.log(res)
     if (!res.data?.response) {
       throw new Error("Invalid response format from Ollama");
     }
