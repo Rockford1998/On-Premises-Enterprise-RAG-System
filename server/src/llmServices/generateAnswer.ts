@@ -19,6 +19,7 @@ export const generateAnswer = async ({
   baseModel: string
 }): Promise<string> => {
   try {
+    console.log("Generating answer for question:", baseModel, question);
     const OLLAMA_BASE_URL =
       process.env.OLLAMA_BASE_URL || "http://localhost:11434";
     let context = ""

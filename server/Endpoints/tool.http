@@ -9,14 +9,6 @@ Content-Type:  application/json
     "email": "shubhambankar65@gmail.com",
     "password": "Testing@123"
 }
-@token =eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4YzQwYWQ2MDA3NWUwMTAzYTAxNTZlNiIsImVtYWlsIjoic2h1YmhhbWJhbmthcjY1QGdtYWlsLmNvbSIsImlhdCI6MTc3MTE2NTg4MywiZXhwIjoxNzcxMjUyMjgzfQ.xaAnsOzWB-zbK1Wbeit0K6VCd6lPvyPemeW3_QMUa60
-POST http://localhost:3000/auth
-Content-Type:  application/json
-
-{
-    "email": "shubhambankar65@gmail.com",
-    "password": "Testing@123"
-}
 
 
 

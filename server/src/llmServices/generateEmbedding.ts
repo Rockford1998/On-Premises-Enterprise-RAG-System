@@ -5,6 +5,7 @@ import axios from "axios";
 export const generateEmbedding = async (text: string): Promise<number[]> => {
   try {
     const EmbeddingModel = process.env.EMBEDDING_MODEL || "nomic-embed-text";
+    console.log("embedding model:", EmbeddingModel);
     const OLLAMA_BASE_URL = process.env.OLLAMA_BASE_URL || "http://localhost:11434";
     // Pre-process the text for better embeddings
     const processedText = preprocessText(text);

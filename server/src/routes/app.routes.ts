@@ -9,6 +9,7 @@ import { ToolController } from "../controller/tool.controller";
 import { AuthController } from "../controller/auth.controller";
 import { LlmModelController } from "../controller/llmModel.controller";
 import { MatadataController } from "../controller/metadata.controller";
+import { MCPController } from "../controller/mcp.controller";
 
 
 const router = Router();
@@ -20,6 +21,7 @@ const toolController = new ToolController();
 const authController = new AuthController();
 const llmModelController = new LlmModelController();
 const matadataController = new MatadataController();
+const mcpController = new MCPController();
 
 // User management endpoints
 router.get("/users", userController.readUser);
@@ -70,5 +72,6 @@ router.post("/auth", authController.login)
 //Metadata
 router.get("/metadata/bot-type", matadataController.getBotType)
 router.get("/metadata/models", llmModelController.readAvaibleModelsMetadata);
-
+// Mcp
+router.post("/mcp", mcpController.createMCP)
 export default router;

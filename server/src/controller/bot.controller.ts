@@ -5,6 +5,7 @@ import { VectorService } from "../services/vectors.service";
 import { sendResponse } from "../util/sendResponse";
 import { getBotInstructionByBotRequest } from "../util/getBotInstructionByBotRequest";
 import { LlmModelService } from "../services/llmModel.service";
+import { uniqueDocID } from "../services/UniqueDocIDGenerator";
 
 export class BotController {
     botService = new BotService();
@@ -89,9 +90,7 @@ export class BotController {
                 return;
             }
 
-            const timestamp = Date.now().toString(36); // base36 to shorten
-            const random = Math.random().toString(36).substring(2, 8).toUpperCase(); // 6 random alphanumeric chars
-            const botId = `bot_${timestamp}_${random}`;
+            const botId = uniqueDocID({ docType: "BOT" });
 
             // create a new bot profile
             const baseModel = await this.llmService.readByName(process.env.BASE_MODEL || "mistral:latest")

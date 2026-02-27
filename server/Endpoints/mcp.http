@@ -1,0 +1,20 @@
+@token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4YzQwYWQ2MDA3NWUwMTAzYTAxNTZlNiIsImVtYWlsIjoic2h1YmhhbWJhbmthcjY1QGdtYWlsLmNvbSIsImlhdCI6MTc3MjE5NTAzOCwiZXhwIjoxNzcyMjgxNDM4fQ.1m4589azqgJR2fAqfALrUSYVItlWJcQ83bPmM6dMT3s
+
+
+###
+POST http://localhost:3000/auth
+Content-Type:  application/json
+
+{
+    "email": "shubhambankar65@gmail.com",
+    "password": "Testing@123"
+}
+
+###
+POST http://localhost:3000/mcp
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+    "serverUrl":"http://localhost:3099/mcp"
+}

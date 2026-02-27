@@ -1,3 +1,4 @@
-// add handling to manage available models
-// improve the llm tool calling and its schema 
-// implement error handling for API calls
+// make the tools generic and categories them into bottool and mcptool
+// make vector db as a tool and sharable.
+// improve the tool calling for agent to agent call (parallel tool calling)
+//

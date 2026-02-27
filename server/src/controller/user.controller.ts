@@ -5,8 +5,8 @@ import { AuthService } from "../services/auth.service";
 
 
 export class UserController {
-    AuthService = new AuthService()
-    userService = new UserService();
+    private AuthService = new AuthService()
+    private userService = new UserService();
     // Method to handle user-related requests
 
     readUser = async (req: Request, res: Response) => {
