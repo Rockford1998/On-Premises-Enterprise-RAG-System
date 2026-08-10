@@ -1,7 +1,11 @@
 node_modules
 dist
 
-/src/generated/prisma
+
+
+# Uploaded knowledge-base files
+uploads/
+
 sample.pdf
 # files from uploads
 .pdf

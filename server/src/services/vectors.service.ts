@@ -1,46 +1,49 @@
 // src/services/vector.service.ts
 import { toSql } from "pgvector/pg";
-import { retry } from "../util/retry";
-import { appPool } from "../db/pgsql";
+import { query, withTransaction } from "../db/pgsql";
 
-const MAX_RETRIES = 3;
-const RETRY_DELAY = 1000;
-const TABLE_NAME = "document_embeddings";
+/**
+ * Table and index names are interpolated into SQL because identifiers cannot
+ * be parameterised. Every caller derives them from `bot.vectorTable`, which is
+ * generated server-side as `vector_table_<botId>` — never taken from a request
+ * body. This guard is a second line of defence in case that ever changes.
+ */
+const IDENTIFIER_PATTERN = /^[A-Za-z_][A-Za-z0-9_]*$/;
+
+const assertSafeIdentifier = (name: string, label = "table name"): string => {
+  if (!IDENTIFIER_PATTERN.test(name)) {
+    throw new Error(`Unsafe ${label}: ${JSON.stringify(name)}`);
+  }
+  return name;
+};
 
 class VectorService {
 
-  //
+  /**
+   * Run a query through the pool. Retry and client lifecycle are handled by
+   * db/pgsql.query, which acquires a fresh client per attempt and only retries
+   * transient failures.
+   */
   private static async executeQuery<T>(
-    query: string,
+    sql: string,
     params: any[] = [],
   ): Promise<T[]> {
-    if (!appPool) {
-      throw new Error("Database connection pool is not initialized");
-    }
-    const client = await appPool.connect();
-    try {
-      const result = await retry(
-        () => client.query(query, params),
-        MAX_RETRIES,
-        RETRY_DELAY,
-      );
-      return result.rows;
-    } catch (error) {
-      throw error;
-    } finally {
-      client.release();
-    }
+    const result = await query<any>(sql, params);
+    return result.rows as T[];
   }
 
 
   public static async CheckIfkBPresentByFileHash({ fileHash, TABLE_NAME }: { fileHash: string, TABLE_NAME: string }) {
-    const query = `
+    const table = assertSafeIdentifier(TABLE_NAME);
+    // Named `sql`, not `query`: a local `query` would shadow the imported
+    // pool helper that executeQuery relies on.
+    const sql = `
     SELECT 1
-    FROM ${TABLE_NAME}
+    FROM ${table}
     WHERE metadata->>'fileHash' = $1
     LIMIT 1;
   `;
-    const result = await this.executeQuery(query, [fileHash]) as any[];
+    const result = await this.executeQuery(sql, [fileHash]) as any[];
     return result.length > 0;
   }
 
@@ -66,43 +69,63 @@ class VectorService {
       }
     }
   ) {
-    await this.executeQuery(`
-      CREATE TABLE IF NOT EXISTS ${tableName} (
-        id BIGSERIAL PRIMARY KEY,
-        embedding vector(${dimensions}) NOT NULL,
-        content TEXT,
-        metadata JSONB,
-        created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-        updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
-      );
-    `);
+    const table = assertSafeIdentifier(tableName);
 
-    await this.executeQuery(`
-      CREATE INDEX IF NOT EXISTS idx_${tableName}_embedding 
-      ON ${tableName} 
-      USING ${indexParams.type} (embedding vector_l2_ops)
-      ${indexParams.type === "hnsw"
-        ? `WITH (m = ${indexParams.m || 16}, ef_construction = ${indexParams.efConstruction || 64
-        })`
-        : `WITH (lists = ${indexParams.lists || 100})`
-      };
-    `);
+    // Interpolated into the DDL, so it must be a plain integer.
+    if (!Number.isInteger(dimensions) || dimensions <= 0 || dimensions > 16000) {
+      throw new Error(`Invalid vector dimensions: ${dimensions}`);
+    }
 
-    // Add trigger for updated_at
-    await this.executeQuery(`
-      CREATE OR REPLACE FUNCTION update_modified_column()
-      RETURNS TRIGGER AS $$
-      BEGIN
-        NEW.updated_at = NOW();
-        RETURN NEW;
-      END;
-      $$ LANGUAGE plpgsql;
+    const indexType = indexParams.type === "ivfflat" ? "ivfflat" : "hnsw";
+    const indexOptions =
+      indexType === "hnsw"
+        ? `WITH (m = ${Number(indexParams.m) || 16}, ef_construction = ${Number(indexParams.efConstruction) || 64})`
+        : `WITH (lists = ${Number(indexParams.lists) || 100})`;
 
-      DROP TRIGGER IF EXISTS trigger_update_${tableName}_updated_at ON ${tableName};
-      CREATE TRIGGER trigger_update_${tableName}_updated_at
-      BEFORE UPDATE ON ${tableName}
-      FOR EACH ROW EXECUTE FUNCTION update_modified_column();
-    `);
+    // One transaction: a bot must not end up with a table but no index, or an
+    // index but no updated_at trigger.
+    await withTransaction(async (client) => {
+      await client.query(`
+        CREATE TABLE IF NOT EXISTS ${table} (
+          id BIGSERIAL PRIMARY KEY,
+          embedding vector(${dimensions}) NOT NULL,
+          content TEXT,
+          metadata JSONB,
+          created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+          updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+        );
+      `);
+
+      // NOTE: vector_l2_ops does not match the `<=>` (cosine) operator used by
+      // searchVectors, so this index currently goes unused. Tracked separately
+      // — see "Known gaps" in docs/ARCHITECTURE.md.
+      await client.query(`
+        CREATE INDEX IF NOT EXISTS idx_${table}_embedding
+        ON ${table}
+        USING ${indexType} (embedding vector_l2_ops)
+        ${indexOptions};
+      `);
+
+      await client.query(`
+        CREATE OR REPLACE FUNCTION update_modified_column()
+        RETURNS TRIGGER AS $$
+        BEGIN
+          NEW.updated_at = NOW();
+          RETURN NEW;
+        END;
+        $$ LANGUAGE plpgsql;
+      `);
+
+      await client.query(`
+        DROP TRIGGER IF EXISTS trigger_update_${table}_updated_at ON ${table};
+      `);
+
+      await client.query(`
+        CREATE TRIGGER trigger_update_${table}_updated_at
+        BEFORE UPDATE ON ${table}
+        FOR EACH ROW EXECUTE FUNCTION update_modified_column();
+      `);
+    });
   }
 
   //
@@ -114,6 +137,12 @@ class VectorService {
       metadata?: Record<string, any>;
     }[],
   ) {
+    const table = assertSafeIdentifier(tableName);
+
+    // Without this an empty batch produces "VALUES  RETURNING id" — a syntax
+    // error rather than a no-op.
+    if (vectors.length === 0) return [];
+
     const placeholders = vectors
       .map((_, i) => `($${i * 3 + 1}, $${i * 3 + 2}, $${i * 3 + 3})`)
       .join(",");
@@ -124,9 +153,11 @@ class VectorService {
       v.metadata || null,
     ]);
 
-    return this.executeQuery<{ id: number }>(
+    // node-postgres returns int8/BIGSERIAL as a string to avoid losing
+    // precision past Number.MAX_SAFE_INTEGER — hence `string`, not `number`.
+    return this.executeQuery<{ id: string }>(
       `
-      INSERT INTO ${tableName} (embedding, content, metadata)
+      INSERT INTO ${table} (embedding, content, metadata)
       VALUES ${placeholders}
       RETURNING id
     `,
@@ -146,10 +177,13 @@ class VectorService {
         }
       },
   ) {
+    const table = assertSafeIdentifier(tableName);
 
-    return this.executeQuery<{ id: number }>(
+    // node-postgres returns int8/BIGSERIAL as a string to avoid losing
+    // precision past Number.MAX_SAFE_INTEGER — hence `string`, not `number`.
+    return this.executeQuery<{ id: string }>(
       `
-        INSERT INTO ${tableName} (embedding, content, metadata)
+        INSERT INTO ${table} (embedding, content, metadata)
         VALUES ($1, $2, $3)
         RETURNING id
     `,
@@ -161,7 +195,13 @@ class VectorService {
     );
   }
 
-  // --- Search vectors using HNSW 
+  /**
+   * Nearest-neighbour search, ordered by cosine distance.
+   *
+   * `filter` is raw SQL appended to the WHERE clause and must never be built
+   * from user input; `filterParams` supplies its bound values, numbered from
+   * $3 onwards.
+   */
   public static async searchVectors(
     { options, queryEmbedding, tableName }: {
       tableName: string
@@ -174,8 +214,41 @@ class VectorService {
       }
     }
   ) {
+    const table = assertSafeIdentifier(tableName);
+    const limit = Number.isInteger(options.limit) && (options.limit as number) > 0
+      ? (options.limit as number)
+      : 10;
+    const filterParams = options.filterParams ?? [];
+
+    // $1 embedding, $2 limit, $3.. filter params.
+    const sql = `
+      SELECT id, content, metadata, embedding <=> $1 AS distance
+      FROM ${table}
+      ${options.filter ? `WHERE ${options.filter}` : ""}
+      ORDER BY distance
+      LIMIT $2
+    `;
+    const params = [toSql(queryEmbedding), limit, ...filterParams];
+
+    // ef_search has to be set on the SAME connection as the search, inside a
+    // transaction for SET LOCAL to apply. The previous code sent it through a
+    // separate pooled query, where it landed on a different client and was
+    // discarded — so the tuning silently never took effect.
     if (options.efSearch) {
-      await this.executeQuery(`SET LOCAL hnsw.ef_search = ${options.efSearch}`);
+      const efSearch = Number(options.efSearch);
+      if (!Number.isInteger(efSearch) || efSearch <= 0) {
+        throw new Error(`Invalid efSearch: ${options.efSearch}`);
+      }
+      return withTransaction(async (client) => {
+        await client.query(`SET LOCAL hnsw.ef_search = ${efSearch}`);
+        const result = await client.query(sql, params);
+        return result.rows as Array<{
+          id: number;
+          content: string;
+          metadata: Record<string, any>;
+          distance: number;
+        }>;
+      });
     }
 
     return this.executeQuery<{
@@ -183,28 +256,16 @@ class VectorService {
       content: string;
       metadata: Record<string, any>;
       distance: number;
-    }>(
-      `
-      SELECT id, content, metadata, embedding <=> $1 AS distance
-      FROM ${tableName}
-      ${options.filter ? `WHERE ${options.filter}` : ""}
-      ORDER BY distance
-      LIMIT $${options.filter ? 3 : 2}
-    `,
-      [
-        toSql(queryEmbedding),
-        options.limit || 10,
-        ...(options.filterParams || []),
-      ],
-    );
+    }>(sql, params);
   }
 
   public static async deleteOutdatedKnowledgeByFileName(
     { fileName, tableName }: { fileName: string, tableName: string },
 
   ) {
+    const table = assertSafeIdentifier(tableName);
     await this.executeQuery(
-      `DELETE FROM ${tableName} WHERE metadata->>'fileName' = $1`,
+      `DELETE FROM ${table} WHERE metadata->>'fileName' = $1`,
       [fileName]
     );
   }
@@ -212,16 +273,18 @@ class VectorService {
   public static async deleteOutdatedKnowledgeByFileHash(
     { fileHash, tableName }: { fileHash: string, tableName: string },
   ) {
+    const table = assertSafeIdentifier(tableName);
     await this.executeQuery(
-      `DELETE FROM ${tableName} WHERE metadata->>'fileHash' = $1`,
+      `DELETE FROM ${table} WHERE metadata->>'fileHash' = $1`,
       [fileHash]
     );
   }
 
   public static async deleteTable(
     tableName: string) {
+    const table = assertSafeIdentifier(tableName);
     await this.executeQuery(
-      `DROP TABLE IF EXISTS ${tableName} CASCADE`
+      `DROP TABLE IF EXISTS ${table} CASCADE`
     );
   }
 

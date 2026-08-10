@@ -23,6 +23,8 @@ import { useForm } from "react-hook-form";
 import z from "zod";
 import { useStoreAuth } from "@/store/useStoreAuth";
 import { starGate } from "@/utils/starGate";
+import { toast } from "sonner";
+import type { AxiosError } from "axios";
 
 export const Route = createFileRoute("/(auth)/sign-in")({
   component: SignIn,
@@ -122,8 +124,7 @@ function SignIn() {
 }
 
 const useSignIn = () => {
-  const setAccessToken = useStoreAuth((state) => state.setAccessToken);
-  const setUserProfile = useStoreAuth((state) => state.setUserProfile);
+  const setSession = useStoreAuth((state) => state.setSession);
   const navigate = useNavigate();
 
   // form component
@@ -137,20 +138,23 @@ const useSignIn = () => {
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
-      const response = await starGate.post("/auth", values);
-      console.log(response.data);
-      if (response.status === 201) {
-        console.log(response);
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        setAccessToken(response.data.data.token);
-        setUserProfile(response.data.data.user);
-        navigate({ to: "/" });
+      // The refresh token comes back as an httpOnly cookie; only the
+      // short-lived access token is in the body.
+      const response = await starGate.post("/auth/login", values);
+      const { accessToken, user } = response.data?.data ?? {};
+
+      if (!accessToken) {
+        toast.error("Sign in failed. Please try again.");
+        return;
       }
 
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    } catch (error: any) {
-      console.log(error);
-      alert(error);
+      setSession({ accessToken, user });
+      navigate({ to: "/" });
+    } catch (error) {
+      const message =
+        (error as AxiosError<{ message?: string }>).response?.data?.message ??
+        "Unable to sign in. Please try again.";
+      toast.error(message);
     }
   };
 

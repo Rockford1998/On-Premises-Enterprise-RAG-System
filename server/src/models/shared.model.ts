@@ -2,19 +2,48 @@
 import mongoose, { Schema } from "mongoose";
 
 const Roles = ["USER", "CONFIG_ADMIN"] as const;
+
+// One issued refresh token. Stored as a SHA-256 hash so a read of the users
+// collection never yields a usable session. Embedded in the user document, so
+// there is no TTL index available: expired entries are pruned on every login
+// and refresh (see TokenService.prune).
+const refreshTokenSchema = new mongoose.Schema(
+  {
+    tokenHash: { type: String, required: true },
+    expiresAt: { type: Date, required: true },
+    revokedAt: { type: Date, default: null },
+    userAgent: { type: String, default: "" },
+    ip: { type: String, default: "" },
+  },
+  { _id: true, timestamps: true },
+);
+
 // This model is used to store the user profiles
 const userSchema = new mongoose.Schema(
   {
     firstName: { type: String, required: true, trim: true },
     lastName: { type: String, required: true, trim: true },
     email: { type: String, required: true, unique: true, trim: true },
-    password: { type: String, required: true },
+    password: { type: String, required: true, select: false },
     isActive: { type: Boolean, default: true },
-    roles: { type: [String], enum: Roles, default: ["USER"] }
+    roles: { type: [String], enum: Roles, default: ["USER"] },
+    // select:false so refresh tokens never leak through unrelated user reads.
+    refreshTokens: { type: [refreshTokenSchema], default: [], select: false },
   },
   { timestamps: true },
 );
-userSchema.index({ email: 1 });
+// `unique: true` on the email field already builds that index; declaring it
+// again here produced a duplicate-index warning at startup.
+userSchema.index({ "refreshTokens.tokenHash": 1 });
+
+// Belt and braces: strip credentials from anything that gets serialised.
+const stripSecrets = (_doc: unknown, ret: Record<string, any>) => {
+  delete ret.password;
+  delete ret.refreshTokens;
+  return ret;
+};
+userSchema.set("toJSON", { transform: stripSecrets });
+userSchema.set("toObject", { transform: stripSecrets });
 
 export const botType = ["General_Purpose", "KB_Bot"]
 const botProfileSchema = new mongoose.Schema(
@@ -150,7 +179,7 @@ const LlmModelSchema = new mongoose.Schema(
   },
   { timestamps: true }
 );
-LlmModelSchema.index({ name: 1 }, { unique: true });
+// `unique: true` on the name field already builds this index.
 LlmModelSchema.index({ provider: 1 });
 LlmModelSchema.index({ isActive: 1 });
 

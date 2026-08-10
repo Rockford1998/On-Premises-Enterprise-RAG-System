@@ -1,28 +1,31 @@
 import { redirect } from "@tanstack/react-router";
 import { useStoreAuth } from "@/store/useStoreAuth";
-import { verifyAccessToken } from "@/utils/verifyAccessToken";
+import { isAccessTokenValid } from "@/utils/verifyAccessToken";
+import { refreshSession } from "@/utils/starGate";
 
+/**
+ * Route guard for the authenticated shell.
+ *
+ * App already attempts a silent refresh on boot, so a missing token here
+ * usually means there is no session at all. The second refresh attempt covers
+ * the case where the access token lapsed while the tab sat idle — the
+ * httpOnly refresh cookie may still be valid.
+ */
 export const ProtectedRoute = async ({ location }: any) => {
   const { accessToken, logOut } = useStoreAuth.getState();
 
-  // No token → redirect
-  if (!accessToken) {
-    logOut();
-    throw redirect({
-      to: "/sign-in",
-      search: { redirect: location.href },
-    });
+  if (isAccessTokenValid(accessToken)) {
+    return;
   }
 
-  try {
-    const isVerified = await verifyAccessToken(accessToken);
-
-    if (!isVerified) {
-      logOut();
-      throw redirect({ to: "/sign-in" });
-    }
-  } catch (err) {
-    logOut();
-    throw redirect({ to: "/sign-in" });
+  const refreshed = await refreshSession();
+  if (isAccessTokenValid(refreshed)) {
+    return;
   }
+
+  logOut();
+  throw redirect({
+    to: "/sign-in",
+    search: { redirect: location?.href },
+  });
 };

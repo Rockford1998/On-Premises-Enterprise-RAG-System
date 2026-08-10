@@ -1,7 +1,76 @@
-POST http://localhost:3000/auth
-Content-Type:  application/json
+@host = http://localhost:3000
+
+### Register — returns an access token and sets the refresh cookie.
+POST {{host}}/users
+Content-Type: application/json
 
 {
-    "email": "shubhambankar65@gmail.com",
-    "password": "Testing@123"
+  "firstName": "John",
+  "lastName": "Doe",
+  "email": "john.doe@gmail.com",
+  "password": "Testing@123"
+}
+
+### Login — access token in the body, refresh token as an httpOnly cookie.
+# @name login
+POST {{host}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "john.doe@gmail.com",
+  "password": "Testing@123"
+}
+
+###
+@accessToken = {{login.response.body.data.accessToken}}
+
+### Current user
+GET {{host}}/auth/me
+Authorization: Bearer {{accessToken}}
+
+### Refresh — rotates the cookie and returns a new access token.
+# The REST Client replays the cookie set by /auth/login automatically.
+POST {{host}}/auth/refresh
+
+### Any protected route
+GET {{host}}/bots
+Authorization: Bearer {{accessToken}}
+
+### Logout — revokes the current refresh token and clears the cookie.
+POST {{host}}/auth/logout
+
+### Logout everywhere — revokes every session for the caller.
+POST {{host}}/auth/logout-all
+Authorization: Bearer {{accessToken}}
+
+
+### ----------------------- negative cases -----------------------
+
+### Wrong password -> 401 INVALID_CREDENTIALS
+POST {{host}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "john.doe@gmail.com",
+  "password": "wrong-password"
+}
+
+### Missing token -> 401 TOKEN_MISSING
+GET {{host}}/bots
+
+### Malformed token -> 401 TOKEN_INVALID
+GET {{host}}/bots
+Authorization: Bearer not-a-real-token
+
+### Refresh with no cookie -> 401 SESSION_EXPIRED
+# Run this after /auth/logout.
+POST {{host}}/auth/refresh
+
+### Deprecated alias — identical behaviour to /auth/login.
+POST {{host}}/auth
+Content-Type: application/json
+
+{
+  "email": "john.doe@gmail.com",
+  "password": "Testing@123"
 }

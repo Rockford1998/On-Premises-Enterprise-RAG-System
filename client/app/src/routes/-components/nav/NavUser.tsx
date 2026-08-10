@@ -21,6 +21,7 @@ import { EllipsisVertical, LogOut, Sun, Moon } from "lucide-react";
 import { useStoreAuth } from "@/store/useStoreAuth";
 import { useThemeStore } from "@/store/useThemeStore";
 import { useNavigate } from "@tanstack/react-router";
+import { starGate } from "@/utils/starGate";
 
 export function NavUser({
   user,
@@ -34,12 +35,20 @@ export function NavUser({
   const { isMobile } = useSidebar();
   const logOut = useStoreAuth((state) => state.logOut);
   const navigate = useNavigate();
-  const handleLogOut = () => {
-    logOut();
-    navigate({
-      to: "/sign-in",
-      replace: true,
-    });
+  const handleLogOut = async () => {
+    try {
+      // Revokes the refresh token server-side and clears the httpOnly
+      // cookie. Without this the session would stay valid until it expires.
+      await starGate.post("/auth/logout");
+    } catch {
+      // Best effort — clear locally regardless.
+    } finally {
+      logOut();
+      navigate({
+        to: "/sign-in",
+        replace: true,
+      });
+    }
   };
   const { theme, setLightTheme, setDarkTheme } = useThemeStore();
 

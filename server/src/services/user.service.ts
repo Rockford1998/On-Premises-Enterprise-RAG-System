@@ -8,9 +8,10 @@ export class UserService {
         return await user.find().skip(skip).limit(limit).exec();
     };
 
-    // Find user by email
+    // Find user by email. Password and refresh tokens are select:false, so
+    // this never returns credentials — AuthService opts in explicitly.
     findByEmail = async (email: string) => {
-        return await user.findOne({ email }).exec();
+        return await user.findOne({ email: email.trim().toLowerCase() }).exec();
     };
 
     // Find user by userName
@@ -25,10 +26,14 @@ export class UserService {
         email: string;
         password?: string;
     }) => {
+        if (!userData.password || userData.password.length < 8) {
+            throw new Error("Password must be at least 8 characters long");
+        }
         const salt = await bcrypt.genSalt(10);
-        userData.password = await bcrypt.hash(userData.password as string, salt);
         const newUser = new user({
             ...userData,
+            email: userData.email.trim().toLowerCase(),
+            password: await bcrypt.hash(userData.password, salt),
         });
         return await newUser.save();
     };

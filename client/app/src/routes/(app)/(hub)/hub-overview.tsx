@@ -17,12 +17,15 @@ function RouteComponent() {
   const [bots, setBots] = useState<any>([]);
   const navigate = useNavigate();
 
+  const ownerEmail = userProfile?.email;
+
   useEffect(() => {
+    if (!ownerEmail) return;
     (async () => {
-      const res = await starGate.get(`bots/owner/${userProfile.email}`);
+      const res = await starGate.get(`bots/owner/${ownerEmail}`);
       setBots(res.data.data);
     })();
-  }, [userProfile.email]);
+  }, [ownerEmail]);
 
   return (
     <PageWrapper title="Your agents">

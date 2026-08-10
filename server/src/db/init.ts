@@ -1,18 +1,24 @@
-import { VectorService } from "../services/vectors.service";
-import { initializeDatabase } from "./pgsql";
+import { initPostgres } from "./pgsql";
 
-
-// This function initializes the database and creates a table for storing document embeddings.
-// It should be called once at application startup to set up the necessary schema.
+/**
+ * Bring the Postgres side up at startup.
+ *
+ * initPostgres creates the database if needed, verifies pgvector, and opens
+ * the pool. Per-bot vector tables are created on demand by BotController when
+ * a KB_Bot is created — there is no global schema to migrate here.
+ *
+ * Historically this also created a shared `document_embeddings` table and a
+ * `test_pgvector` temp table on every boot. Neither was ever read: per-bot
+ * tables superseded the former and the latter was an extension smoke-test that
+ * initPostgres now covers by querying pg_extension directly.
+ */
 export async function init() {
   try {
-    // Initialize the database
-    await initializeDatabase();
-    // Create a table for our vectors
-    const TABLE_NAME = "document_embeddings";
-    const VECTOR_DIMENSIONS = 768; // Adjust based on your model (e.g., OpenAI uses 1536)
-    await VectorService.createTableWithIndex({ dimensions: VECTOR_DIMENSIONS, indexParams: { type: "hnsw" }, tableName: TABLE_NAME });
+    await initPostgres();
   } catch (error) {
-    console.error("Application error:", error);
+    // Rethrow: a database that failed to initialise must stop startup rather
+    // than leave the server serving 500s.
+    console.error("Database initialisation failed:", error);
+    throw error;
   }
 }

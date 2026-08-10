@@ -44,6 +44,10 @@ export const CreateBotDialog = ({
   });
 
   const handleSubmit = form.handleSubmit(async (values) => {
+    if (!userProfile?.email) {
+      toast.error("You must be signed in to create a bot.");
+      return;
+    }
     try {
       await starGate.post("/bots", {
         owner: userProfile.email,
@@ -55,7 +59,7 @@ export const CreateBotDialog = ({
       refreshData();
     } catch (error: any) {
       console.error(error);
-      toast("Bot created successfully.");
+      toast.error("Failed to create bot. Please try again.");
     }
   });
 

@@ -64,8 +64,14 @@ router.put("/tools/:id", toolController.updateTool);
 router.delete("/tools/:id", toolController.deleteTool);
 
 
-// auth 
-router.post("/auth", authController.login)
+// Auth / session management
+router.post("/auth/login", authController.login);
+router.post("/auth/refresh", authController.refresh);
+router.post("/auth/logout", authController.logout);
+router.post("/auth/logout-all", authController.logoutAll);
+router.get("/auth/me", authController.me);
+// Deprecated: kept so existing clients and .http files keep working.
+router.post("/auth", authController.login);
 
 //Metadata
 router.get("/metadata/bot-type", matadataController.getBotType)

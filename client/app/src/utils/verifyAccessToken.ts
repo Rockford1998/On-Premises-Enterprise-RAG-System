@@ -1,22 +1,24 @@
-// src/utils/auth.js
-import { jwtDecode } from 'jwt-decode'; // Note: the import syntax may vary depending on the library version
+import { jwtDecode } from "jwt-decode";
 
-export const verifyAccessToken = async (token: string) => {
-    if (!token) return true;
-    try {
-        const decodedToken = jwtDecode(token);
-        console.log(decodedToken)
-        const currentTime = Date.now(); // current time in seconds
-        console.log(decodedToken.exp && decodedToken.exp < currentTime)
-        return decodedToken.exp && decodedToken.exp < currentTime;
-    } catch (error) {
-        console.error('Error decoding token:', error);
-        return true; // Assume expired or invalid if decode fails
-    }
+/**
+ * True when the token is present and has not expired.
+ *
+ * `exp` is in SECONDS since the epoch while Date.now() is in milliseconds;
+ * comparing them directly (as an earlier version did) makes every token look
+ * valid for the next several millennia.
+ */
+export const isAccessTokenValid = (
+  token: string | null | undefined,
+): boolean => {
+  if (!token) return false;
+  try {
+    const { exp } = jwtDecode<{ exp?: number }>(token);
+    if (!exp) return false;
+    // Small skew allowance so a token that is about to lapse counts as stale
+    // and gets refreshed proactively rather than failing mid-request.
+    const skewSeconds = 5;
+    return exp - skewSeconds > Date.now() / 1000;
+  } catch {
+    return false;
+  }
 };
-
-
-
-
-
-

@@ -21,6 +21,8 @@ import { starGate } from "@/utils/starGate";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import z from "zod";
+import { toast } from "sonner";
+import type { AxiosError } from "axios";
 
 export const Route = createFileRoute("/(auth)/sign-up")({
   component: SignUp,
@@ -145,8 +147,7 @@ function SignUp() {
 }
 
 const useSignUp = () => {
-  const setAccessToken = useStoreAuth((state) => state.setAccessToken);
-  const setUserProfile = useStoreAuth((state) => state.setUserProfile);
+  const setSession = useStoreAuth((state) => state.setSession);
   const navigate = useNavigate();
 
   // form component
@@ -162,19 +163,24 @@ const useSignUp = () => {
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
+      // Registration signs the user straight in: access token in the body,
+      // refresh token set as an httpOnly cookie.
       const response = await starGate.post("/users", values);
-      if (response.status === 201) {
-        console.log(response);
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        setAccessToken(response.data.data.token);
-        setUserProfile(response.data.data.user);
-        navigate({ to: "/" });
+      const { accessToken, user } = response.data?.data ?? {};
+
+      if (!accessToken) {
+        toast.error("Account created, but sign-in failed. Please sign in.");
+        navigate({ to: "/sign-in" });
+        return;
       }
 
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    } catch (error: any) {
-      console.log(error);
-      alert(error);
+      setSession({ accessToken, user });
+      navigate({ to: "/" });
+    } catch (error) {
+      const message =
+        (error as AxiosError<{ message?: string }>).response?.data?.message ??
+        "Unable to create your account. Please try again.";
+      toast.error(message);
     }
   };
 
@@ -201,9 +207,10 @@ const formSchema = z.object({
 
   email: z.string().trim().email("Please enter a valid email address."),
 
+  // Minimum kept in step with UserService.create on the server.
   password: z
     .string()
-    .min(6, "Password must be at least 6 characters long.")
+    .min(8, "Password must be at least 8 characters long.")
     .max(64, "Password cannot exceed 64 characters.")
     .regex(
       /^(?=.*[A-Za-z])(?=.*\d).+$/,

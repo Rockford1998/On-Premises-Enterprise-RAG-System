@@ -1,5 +1,12 @@
 # On-Premises Enterprise RAG System
 
+## Documentation
+
+- [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) — system architecture, ingestion and
+  query pipelines, data model, endpoint map, known gaps
+- [CLAUDE.md](CLAUDE.md) — how to run the stack and the conventions to follow when
+  contributing
+
 ## Features
 
 - **On-premises solution** - Deployed within your own infrastructure
