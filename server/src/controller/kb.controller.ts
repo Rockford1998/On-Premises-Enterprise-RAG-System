@@ -94,11 +94,13 @@ export class KnowledgeBaseController {
           status: 201,
         });
       } else {
+        // Honour the status the service chose — "No file uploaded" is a 400,
+        // not a server fault. Previously every failure was reported as 500.
         sendResponse({
           res,
           success: false,
           message: result.body.message,
-          status: 500,
+          status: (result.status === 400 ? 400 : 500),
         });
       }
     } catch (error) {

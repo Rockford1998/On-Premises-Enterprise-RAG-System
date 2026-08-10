@@ -93,15 +93,38 @@ export class BotController {
             const random = Math.random().toString(36).substring(2, 8).toUpperCase(); // 6 random alphanumeric chars
             const botId = `bot_${timestamp}_${random}`;
 
-            // create a new bot profile
-            const baseModel = await this.llmService.readByName(process.env.BASE_MODEL || "mistral:latest")
+            // Model names come from configuration and must already exist as
+            // llmModel records. Report the exact name and the remedy — a bare
+            // "model not found" leaves no way to tell which name was wrong.
+            const baseModelName = process.env.BASE_MODEL || "mistral:latest";
+            const embedModelName =
+                process.env.EMBED_MODEL || process.env.EMBEDDING_MODEL || "nomic-embed-text";
+
+            const baseModel = await this.llmService.readByName(baseModelName);
             if (!baseModel) {
-                sendResponse({ res, success: false, message: "Base model not found", status: 400 });
+                sendResponse({
+                    res,
+                    success: false,
+                    message:
+                        `Base model "${baseModelName}" is not registered. ` +
+                        `Register it via POST /llm, or set BASE_MODEL to a registered model. ` +
+                        `See GET /llm for the current list.`,
+                    status: 400,
+                });
                 return;
             }
-            const embedModel = await this.llmService.readByName(process.env.EMBED_MODEL || "nomic-embed-text")
+
+            const embedModel = await this.llmService.readByName(embedModelName);
             if (!embedModel) {
-                sendResponse({ res, success: false, message: "Embed model not found", status: 400 });
+                sendResponse({
+                    res,
+                    success: false,
+                    message:
+                        `Embedding model "${embedModelName}" is not registered. ` +
+                        `Register it via POST /llm, or set EMBED_MODEL to a registered model. ` +
+                        `See GET /llm for the current list.`,
+                    status: 400,
+                });
                 return;
             }
             // const toolModel = await this.llmService.readByName(process.env.EMBED_MODEL || "nomic-embed-text")

@@ -32,39 +32,92 @@
 
 ## Setup Instructions
 
-1.  Install dependencies:
-    ```bash
-    npm install
-    ```
-2.  Start database containers:
-    ```bash
-    cd docker
-    docker-compose up -d
-    ```
-3.  Set up Ollama AI models:
+### 1. Databases
 
-- # Start Ollama container
+```bash
+cd server/docker
+docker compose up -d          # pgvector on :5432, MongoDB on :27017
+```
 
-  ```
-  docker run --gpus all -v ollama:/root/.ollama -p 11434:11434 ollama/ollama
-  ```
+### 2. Ollama models
 
-- # In container bash (or using docker exec):
+Ollama must be reachable at `OLLAMA_BASE_URL` (default `http://localhost:11434`),
+either installed natively or as a container:
 
-  ```
-  ollama pull nomic-embed-text
-  ollama pull mistral:7b
-  ```
+```bash
+docker run -d --gpus all -v ollama:/root/.ollama -p 11434:11434 ollama/ollama
+```
 
-4.  Launch application:
+Pull the models. **These names must match `BASE_MODEL` and `EMBED_MODEL` in your
+`.env` exactly** — the app looks them up by name:
 
-    ```
-    npm run dev
-    ```
+```bash
+ollama pull nomic-embed-text      # embedding model
+ollama pull mistral:latest        # answer + tool model
+ollama list                       # verify both are present
+```
+
+Skipping this is the most common first-run failure: document upload returns
+`404` from the embeddings endpoint because the model was never pulled.
+
+### 3. Server
+
+```bash
+cd server
+npm install
+cp .env.example .env.dev          # then fill it in
+```
+
+`JWT_SECRET` and `JWT_REFRESH_SECRET` are **required** — the server refuses to
+start without them:
+
+```bash
+node -e "console.log(require('crypto').randomBytes(48).toString('base64url'))"
+```
+
+Then:
+
+```bash
+npm run dev:start                 # NODE_ENV=dev, http://localhost:3000
+```
+
+On startup the models named in your `.env` are auto-registered in the
+`llmModel` collection, so bot creation works without any manual database setup.
+Check `GET /health` — both dependencies should report `up`.
+
+### 4. Client
+
+```bash
+cd client/app
+npm install
+npm run dev                       # http://localhost:5173
+```
+
+The client's `VITE_BE_URL` must point at the server, and the server's
+`CLIENT_ORIGIN` must list the client's origin — credentialed CORS rejects a
+wildcard, so a mismatch shows up as a failed login.
 
 ## Workflow of the application
 
-- please follow the demo.http endpoints and accordingly setup the user profile -> bot profile -> knowledge base
+Sign up → create a bot → upload documents → chat.
+
+[server/Endpoints/demo.http](server/Endpoints/demo.http) walks the whole path as
+runnable requests, including the prerequisites and the expected failure cases.
+
+**Bot types**
+- `KB_Bot` — gets its own vector table; answers only from uploaded documents and
+  says so when it finds nothing relevant.
+- `General_Purpose` — no retrieval; answers from the model's own knowledge.
+
+**Troubleshooting**
+
+| Symptom | Cause |
+|---|---|
+| `Base/Embedding model "x" is not registered` | `BASE_MODEL`/`EMBED_MODEL` names no record in `llmModel`. Check `GET /llm`. |
+| Upload fails, log shows `404` from Ollama | Model not pulled. Run `ollama pull <name>`. |
+| Server exits on startup | `JWT_SECRET` or `JWT_REFRESH_SECRET` missing from `.env.<NODE_ENV>`. |
+| `/health` reports `degraded` | Postgres or MongoDB container is not running. |
+| Login succeeds in curl but fails in the browser | `CLIENT_ORIGIN` does not match the client's origin. |
 
 ## Tools
 

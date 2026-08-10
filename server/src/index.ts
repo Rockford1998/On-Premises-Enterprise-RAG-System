@@ -11,6 +11,7 @@ import { env } from "./config/env";
 import { init } from "./db/init";
 import { closeMongo, isMongoReady, mongoCnnection } from "./db/mongo";
 import { closePostgres, isPostgresReady } from "./db/pgsql";
+import { seedLlmModels } from "./db/seed";
 import router from "./routes/app.routes";
 import { authenticateJWT } from "./middlewares/auth.middleware";
 
@@ -54,6 +55,9 @@ const start = async () => {
   // hit a null connection pool.
   await mongoCnnection();
   await init();
+  // Register the configured models so a fresh install can create a bot
+  // without hand-inserting documents.
+  await seedLlmModels();
 
   const server = app.listen(env.port, () => {
     console.log(`Environment: [${env.nodeEnv}]`);

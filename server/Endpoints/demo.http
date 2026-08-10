@@ -1,42 +1,154 @@
-# create a new user profile using following post call (will be improved in future)
-POST http://localhost:3000/users
+###############################################################################
+# Onboarding walkthrough — take a fresh install to a working bot.
+# Run the requests top to bottom.
+#
+# Prerequisites (the flow will not complete without these):
+#   1. docker compose -f docker/docker-compose.yml up -d     # pgvector + mongo
+#   2. ollama pull nomic-embed-text                          # EMBED_MODEL
+#      ollama pull mistral:latest                            # your BASE_MODEL
+#   3. npm run dev:start
+#
+# The models named by BASE_MODEL / TOOL_MODEL / EMBED_MODEL are auto-registered
+# in the llmModel collection at startup, but Ollama must actually have them
+# pulled — otherwise ingestion fails with a 404 from the embeddings endpoint.
+###############################################################################
+
+@host = http://localhost:3000
+
+### 0. Health — both dependencies must report "up" before continuing.
+GET {{host}}/health
+
+### 1. Register. Returns an access token; the refresh token arrives as a cookie.
+POST {{host}}/users
 Content-Type: application/json
 
 {
   "firstName": "John",
   "lastName": "Doe",
-  "userName": "johndoe",
   "email": "john.doe@gmail.com",
-  "password": "your_password_hash"
+  "password": "Testing@123"
 }
 
-
-### after this you need to create a bot profile using following endpoint (will be improved in future)
-POST http://localhost:3000/bots
+### 2. Login (use this if the account already exists).
+# @name login
+POST {{host}}/auth/login
 Content-Type: application/json
 
 {
-  "botName": "Mark2",
-  "botDesc": "Mark2 is a test bot",
+  "email": "john.doe@gmail.com",
+  "password": "Testing@123"
+}
+
+###
+@token = {{login.response.body.data.accessToken}}
+
+### 3. Which models are registered? Bot creation fails unless BASE_MODEL and
+###    EMBED_MODEL both appear here.
+GET {{host}}/llm
+Authorization: Bearer {{token}}
+
+### 4. Available bot types.
+GET {{host}}/metadata/bot-type
+Authorization: Bearer {{token}}
+
+### 5. Create a bot.
+###    KB_Bot          — answers only from uploaded documents (own vector table)
+###    General_Purpose — answers from the model's own knowledge, no retrieval
+# @name createBot
+POST {{host}}/bots
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "botName": "Support Bot",
+  "botDesc": "Answers questions from the support handbook",
+  "botType": "KB_Bot",
   "owner": "john.doe@gmail.com"
 }
 
+###
+@botId = {{createBot.response.body.data.botId}}
 
-### please note down the botId you will get after creating the bot profile or you can get it by using the getbyowner endpoint
-Get http://localhost:3000/bots/owner/john.doe@gmail.com
+### 6. List your bots (handy if you lost the botId above).
+GET {{host}}/bots/owner/john.doe@gmail.com
+Authorization: Bearer {{token}}
 
+### 7. Upload a document. Supported: pdf, docx, doc, pptx, txt (max 25 MB).
+###    Re-uploading identical content is a no-op — dedup is by file hash.
+###    Point the `< ./path` line at a real file next to this .http file.
+POST {{host}}/kb/upload/{{botId}}
+Authorization: Bearer {{token}}
+Content-Type: multipart/form-data; boundary=----Boundary
 
-### further you need to upload the files to you knowledge base
-note:currently only following format supported and only the text will be readed from them : pdf, docx, doc,pptx and txt
-POST  http://localhost:3000/kb/upload/{your_bot_id}
-Content-Type: multipart/form-data
+------Boundary
+Content-Disposition: form-data; name="file"; filename="handbook.txt"
+Content-Type: text/plain
 
+< ./sample-handbook.txt
+------Boundary--
 
-### to chat with the llm use following endpoint
-POST http://localhost:3000/chat
+### 8. Confirm what the bot has ingested.
+GET {{host}}/kb/bot-id/{{botId}}
+Authorization: Bearer {{token}}
+
+### 9. Chat — should answer from the uploaded document.
+POST {{host}}/chat
 Content-Type: application/json
+Authorization: Bearer {{token}}
 
 {
-  "botId": "bot_mdqa1e6y_MMF8T9",
-  "question": "what is weather in mumbai"
+  "botId": "{{botId}}",
+  "question": "What is the refund policy?"
+}
+
+### 10. Off-topic question — a KB_Bot should decline rather than invent an answer.
+POST {{host}}/chat
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "botId": "{{botId}}",
+  "question": "What is the capital of Mongolia?"
+}
+
+### 11. Optional: register a tool the bot can call. See tool.http for the full
+###     shape, including auth modes and parameter definitions.
+POST {{host}}/tools
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "botId": "{{botId}}",
+  "name": "get_weather",
+  "description": "Fetches the current weather for a given city.",
+  "type": "API",
+  "endpoint": "http://api.weatherapi.com/v1/current.json",
+  "method": "GET",
+  "auth": {
+    "type": "apiKey",
+    "apiKey": "REPLACE_WITH_YOUR_KEY",
+    "apiKeyLocation": "query",
+    "apiKeyName": "key"
+  },
+  "queryParam": [
+    {
+      "name": "q",
+      "description": "The city to get weather for.",
+      "type": "string",
+      "required": true
+    }
+  ],
+  "enabled": true,
+  "systemPrompt": "Summarise the weather in one friendly sentence. Do not show raw JSON."
+}
+
+### 12. Tool-routed question. The tool model decides whether to call the tool;
+###     if it declines or the call fails, the request falls back to normal RAG.
+POST {{host}}/chat
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "botId": "{{botId}}",
+  "question": "What is the weather in Mumbai?"
 }

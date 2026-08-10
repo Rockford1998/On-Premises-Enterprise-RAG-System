@@ -1,7 +1,9 @@
 // routes/kb.routes.ts
-import { Router } from "express";
+import { NextFunction, Request, Response, Router } from "express";
+import multer from "multer";
 import { KnowledgeBaseController } from "../controller/kb.controller";
-import { upload } from "../middlewares/uploadMiddleware";
+import { upload, UnsupportedFileTypeError } from "../middlewares/uploadMiddleware";
+import { sendResponse } from "../util/sendResponse";
 import { UserController } from "../controller/user.controller";
 import { BotController } from "../controller/bot.controller";
 import { ChatController } from "../controller/chat.controller";
@@ -20,6 +22,35 @@ const toolController = new ToolController();
 const authController = new AuthController();
 const llmModelController = new LlmModelController();
 const matadataController = new MatadataController();
+
+/**
+ * Translate multer rejections into 400s. Without this they fall through to
+ * Express's default handler and surface as an HTML 500 page.
+ */
+const handleUploadErrors = (
+    err: unknown,
+    _req: Request,
+    res: Response,
+    next: NextFunction,
+) => {
+    if (err instanceof UnsupportedFileTypeError) {
+        sendResponse({ res, success: false, message: err.message, status: 400, code: "VALIDATION_ERROR" });
+        return;
+    }
+    if (err instanceof multer.MulterError) {
+        const message =
+            err.code === "LIMIT_FILE_SIZE"
+                ? "File is too large."
+                : `Upload failed: ${err.message}`;
+        sendResponse({ res, success: false, message, status: 400, code: "VALIDATION_ERROR" });
+        return;
+    }
+    if (err) {
+        next(err);
+        return;
+    }
+    next();
+};
 
 // User management endpoints
 router.get("/users", userController.readUser);
@@ -49,7 +80,7 @@ router.get("/kb", knowledgeBaseController.readKnowledgeBase)
 router.get("/kb/:id", knowledgeBaseController.readById)
 router.get("/kb/bot-id/:botId", knowledgeBaseController.readBybotId)
 router.get("/kb/download/:id", knowledgeBaseController.downloadFile)
-router.post("/kb/upload/:botId", upload.single("file"), knowledgeBaseController.addKnowledgeBase);
+router.post("/kb/upload/:botId", upload.single("file"), handleUploadErrors, knowledgeBaseController.addKnowledgeBase);
 router.post("/kb/delete", knowledgeBaseController.deleteKnowledgeBase)
 
 // Endpoint to handle chat requests
