@@ -176,6 +176,7 @@ export class KnowledgeBaseService {
             content: rawText,
             source: filePath,
             downloadUrl: filePath,
+            chunksTotal: embedded.length,
         });
 
         return {

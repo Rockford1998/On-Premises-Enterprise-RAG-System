@@ -15,7 +15,7 @@ import {
 import { NavUser } from "../nav/NavUser";
 import { Separator } from "@/shadcn/ui/separator";
 import { useIsMobile } from "@/shadcn/hooks/use-mobile";
-import { Link } from "@tanstack/react-router";
+import { Link, useRouterState } from "@tanstack/react-router";
 import type { RoutePaths } from "@/App";
 
 const user = {
@@ -45,39 +45,44 @@ export function AppSidebar({
   open: boolean;
 }) {
   const isMobile = useIsMobile();
+  const pathname = useRouterState({ select: (s) => s.location.pathname });
 
   return (
     <Sidebar collapsible="icon">
       <SidebarContent>
-        <SidebarHeader className="flex flex-row justify-between">
-          {open === true && (
-            <div>
-              <h3>Lamma RAG</h3>
-            </div>
+        <SidebarHeader className="flex h-12 flex-row items-center justify-between px-2">
+          {open && (
+            <span className="font-serif text-sm font-semibold tracking-tight">
+              Lamma RAG
+            </span>
           )}
-          <div>
-            {!isMobile && (
-              <SidebarTrigger
-                onClick={() => setOpen(!open)}
-                className="cursor-pointer"
-              />
-            )}
-          </div>
+          {!isMobile && (
+            <SidebarTrigger
+              onClick={() => setOpen(!open)}
+              className="ml-auto cursor-pointer"
+            />
+          )}
         </SidebarHeader>
+        <Separator />
         <SidebarGroup>
           <SidebarGroupContent>
-            <Separator />
             <SidebarMenu>
-              {items.map((item) => (
-                <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton asChild>
-                    <Link to={item.to}>
-                      <item.icon />
-                      <span>{item.title}</span>
-                    </Link>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
+              {items.map((item) => {
+                const isActive =
+                  item.to === "/"
+                    ? pathname === "/"
+                    : pathname.startsWith(item.to);
+                return (
+                  <SidebarMenuItem key={item.title}>
+                    <SidebarMenuButton asChild isActive={isActive} tooltip={item.title}>
+                      <Link to={item.to}>
+                        <item.icon />
+                        <span>{item.title}</span>
+                      </Link>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                );
+              })}
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>

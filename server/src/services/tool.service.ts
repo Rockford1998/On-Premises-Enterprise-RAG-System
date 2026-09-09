@@ -78,11 +78,28 @@ export class ToolService {
             id: t._id,
             name: t.name,
             description: t.description,
-            parameters: t.parameters,
+            // Every place an argument can be substituted into the request —
+            // detectToolUse used to send only `parameters`, so the model had
+            // no idea path/query args or a request body even existed and
+            // routinely left them out of `params`.
+            pathVariables: t.pathVariable?.map((p: any) => ({
+                name: p.name,
+                type: p.type,
+                description: p.description,
+                required: p.required,
+            })),
+            queryParams: t.queryParam?.map((p: any) => ({
+                name: p.name,
+                type: p.type,
+                description: p.description,
+                required: p.required,
+            })),
+            requestBody: t.requestBody?.schema,
         }));
 
         const prompt = `Analyze the following user query and determine if it requires using one of the available tools.
-                        If yes, respond with a JSON object containing "id" (the tool ID), "tool" (the tool name) and "params" (the parameters for the tool).
+                        If yes, respond with a JSON object containing "id" (the tool ID), "tool" (the tool name) and "params" (a single flat object
+                        with one key per argument name declared in that tool's pathVariables, queryParams, and requestBody — fill in every "required" one).
                         If no tool is needed, respond with null.
 
                         Available tools:
@@ -128,7 +145,7 @@ export class ToolService {
                 break;
             case "bearer":
                 headers["Authorization"] = `Bearer ${tool.auth.apiKey}`;
-                break; ``
+                break;
             case "apiKey":
                 if (tool.auth.apiKeyLocation === "header") {
                     headers[tool.auth.apiKeyName] = tool.auth.apiKey;
@@ -327,12 +344,88 @@ export class ToolService {
     }
 
 
+    // Splits the model's single flat `args` object into where each value
+    // actually belongs — substituted into the URL path, appended as a query
+    // param, or placed in the request body — by matching each arg's key
+    // against the tool's own declared pathVariable/queryParam/requestBody
+    // field names. Also checks that every field marked `required` was
+    // supplied, so a malformed call (e.g. a literal "undefined" in the URL)
+    // fails loudly instead of silently hitting the wrong endpoint.
+    routeToolArgs = ({ tool, args }: { tool: any; args: any }) => {
+        const source = args && typeof args === "object" ? args : {};
+        const missing: string[] = [];
+
+        let endpoint = tool.endpoint || "";
+        const pathVariables: Array<{ name: string; required?: boolean }> = tool.pathVariable || [];
+        for (const pv of pathVariables) {
+            const value = source[pv.name];
+            if (value === undefined || value === null || value === "") {
+                if (pv.required) missing.push(pv.name);
+                continue;
+            }
+            endpoint = endpoint.replace(`:${pv.name}`, encodeURIComponent(String(value)))
+                .replace(`{${pv.name}}`, encodeURIComponent(String(value)));
+        }
+
+        const queryParams: Record<string, unknown> = {};
+        const queryDefs: Array<{ name: string; required?: boolean; defaultValue?: unknown }> = tool.queryParam || [];
+        for (const qp of queryDefs) {
+            const value = source[qp.name];
+            if (value === undefined || value === null || value === "") {
+                if (qp.defaultValue !== undefined) queryParams[qp.name] = qp.defaultValue;
+                else if (qp.required) missing.push(qp.name);
+                continue;
+            }
+            queryParams[qp.name] = value;
+        }
+
+        const bodySchemaProps = tool.requestBody?.schema?.properties;
+        const bodyRequired: string[] = tool.requestBody?.schema?.required || [];
+        let body: Record<string, unknown> | undefined;
+        if (bodySchemaProps) {
+            body = {};
+            for (const fieldName of Object.keys(bodySchemaProps)) {
+                const value = source[fieldName];
+                if (value === undefined || value === null || value === "") {
+                    if (bodyRequired.includes(fieldName)) missing.push(fieldName);
+                    continue;
+                }
+                body[fieldName] = value;
+            }
+        }
+
+        // Fields the model returned that don't match any declared path/query/body
+        // name — fall back to sending them as query (GET) or body (others) data,
+        // same as the tool's static fixedParams, rather than dropping them.
+        const declaredNames = new Set([
+            ...pathVariables.map((p) => p.name),
+            ...queryDefs.map((p) => p.name),
+            ...(bodySchemaProps ? Object.keys(bodySchemaProps) : []),
+        ]);
+        const unmatched: Record<string, unknown> = {};
+        for (const [key, value] of Object.entries(source)) {
+            if (!declaredNames.has(key)) unmatched[key] = value;
+        }
+
+        return { endpoint, queryParams, body, unmatched, missing };
+    };
+
     toolExecution = async ({ tool, args }: { tool: any, args: any }) => {
         let headers = {}
         if (tool.type === "API") {
-            if (tool.auth.type === "apiKey" && tool.auth.apiKeyLocation === "query") {
-                const separator = tool.endpoint?.includes('?') ? '&' : '?';
-                tool.endpoint = `${tool.endpoint}${separator}${tool.auth.apiKeyName}=${tool.auth.apiKey}`;
+            const { endpoint, queryParams, body, unmatched, missing } = this.routeToolArgs({ tool, args });
+            if (missing.length > 0) {
+                return {
+                    error: true,
+                    content: `Missing required parameter(s) for tool "${tool.name}": ${missing.join(", ")}`,
+                    toolName: tool.name,
+                };
+            }
+
+            let renderUrl = endpoint;
+            if (tool.auth?.type === "apiKey" && tool.auth.apiKeyLocation === "query") {
+                const separator = renderUrl.includes('?') ? '&' : '?';
+                renderUrl = `${renderUrl}${separator}${tool.auth.apiKeyName}=${tool.auth.apiKey}`;
             } else {
                 headers = await this.getToolAuthHeaders(tool);
             }
@@ -340,16 +433,23 @@ export class ToolService {
                 const renderApiHeaders = this.renderTemplateByData(tool.headers, args, false)
                 headers = Object.assign(headers, renderApiHeaders)
             }
-            const renderParams = this.renderTemplateByData(tool.fixedParams, args)
-            const renderUrl = this.renderTemplateByData(tool.endpoint, args)
-            console.log("Executing tool with method:", tool.method, "url:", renderUrl, "params:", renderParams, "headers:", headers);
-            const ret = await this.httpCall(tool.method, renderUrl, renderParams, headers)
+
+            // Admin-configured static params always apply; the model-supplied
+            // query/body args (matched above by declared name) layer on top.
+            const fixedParams = tool.auth?.fixedParams;
+            const isGet = String(tool.method).toUpperCase() === "GET";
+            const requestData = isGet
+                ? { ...fixedParams, ...queryParams, ...unmatched }
+                : { ...fixedParams, ...body, ...unmatched, ...queryParams };
+
+            console.log("Executing tool with method:", tool.method, "url:", renderUrl, "data:", requestData, "headers:", headers);
+            const ret = await this.httpCall(tool.method, renderUrl, requestData, headers)
             let strRet = JSON.stringify(ret)
             const toolReturnLengthLimit = 28000
             if (strRet.length > toolReturnLengthLimit) {
                 strRet = strRet.slice(0, toolReturnLengthLimit)
             }
-            return { content: strRet, toolName: tool.name, url: renderUrl, params: renderParams, }
+            return { content: strRet, toolName: tool.name, url: renderUrl, params: requestData, }
         }
         // Future: handle other tool types (database)
         return { error: "Unsupported tool type" };

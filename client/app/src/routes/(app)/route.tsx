@@ -5,6 +5,7 @@ import { useState } from "react";
 import { ProtectedRoute } from "./-component/ProtectedRoute";
 import { AppSidebar } from "../-components/layout/AppSidebar";
 import { MobileHeader } from "../-components/layout/MobileHeader";
+import { DesktopHeader } from "../-components/layout/DesktopHeader";
 
 export const Route = createFileRoute("/(app)")({
   component: RouteComponent,
@@ -13,21 +14,27 @@ export const Route = createFileRoute("/(app)")({
 });
 
 function RouteComponent() {
-  const [open, setOpen] = useState(false);
+  // Desktop opens with the sidebar expanded; mobile always starts collapsed
+  // (it renders as an offcanvas sheet, not inline, so "open" has no layout cost there).
+  const [open, setOpen] = useState(true);
   const isMobile = useIsMobile();
 
   return (
-    <>
-      <SidebarProvider defaultOpen={open}>
-        <AppSidebar open={open} setOpen={setOpen} />
-        <SidebarInset>
-          {isMobile ? <MobileHeader open={open} setOpen={setOpen} /> : null}
-          <main className="px-4">
+    <SidebarProvider open={isMobile ? undefined : open} onOpenChange={setOpen}>
+      <AppSidebar open={open} setOpen={setOpen} />
+      <SidebarInset>
+        {isMobile ? (
+          <MobileHeader open={open} setOpen={setOpen} />
+        ) : (
+          <DesktopHeader />
+        )}
+        <main className="flex-1 px-4 py-4 md:px-6 lg:px-8">
+          <div className="mx-auto w-full max-w-6xl">
             <Outlet />
-          </main>
-        </SidebarInset>
-      </SidebarProvider>{" "}
-    </>
+          </div>
+        </main>
+      </SidebarInset>
+    </SidebarProvider>
   );
 }
 

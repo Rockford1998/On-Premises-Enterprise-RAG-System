@@ -140,52 +140,52 @@ function ChatBox() {
    * -------------------------------------------------------------- */
   const MarkdownComponents = {
     h1: ({ children }: any) => (
-      <h1 className="text-xl font-bold mb-3 mt-4 text-gray-900 dark:text-gray-100">
+      <h1 className="text-xl font-semibold mb-3 mt-4 text-foreground">
         {children}
       </h1>
     ),
     h2: ({ children }: any) => (
-      <h2 className="text-lg font-semibold mb-3 mt-4 text-gray-900 dark:text-gray-100">
+      <h2 className="text-lg font-semibold mb-3 mt-4 text-foreground">
         {children}
       </h2>
     ),
     h3: ({ children }: any) => (
-      <h3 className="text-base font-semibold mb-2 mt-3 text-gray-900 dark:text-gray-100">
+      <h3 className="text-base font-semibold mb-2 mt-3 text-foreground">
         {children}
       </h3>
     ),
     p: ({ children }: any) => (
-      <p className="my-3 text-sm leading-relaxed text-gray-800 dark:text-gray-200">
+      <p className="my-3 text-sm leading-relaxed text-foreground">
         {children}
       </p>
     ),
     ul: ({ children }: any) => (
-      <ul className="list-disc ml-6 my-3 text-sm space-y-2 text-gray-800 dark:text-gray-200">
+      <ul className="list-disc ml-6 my-3 text-sm space-y-2 text-foreground">
         {children}
       </ul>
     ),
     ol: ({ children }: any) => (
-      <ol className="list-decimal ml-6 my-3 text-sm space-y-2 text-gray-800 dark:text-gray-200">
+      <ol className="list-decimal ml-6 my-3 text-sm space-y-2 text-foreground">
         {children}
       </ol>
     ),
     blockquote: ({ children }: any) => (
-      <blockquote className="border-l-4 border-blue-500 pl-4 my-3 italic text-gray-600 dark:text-gray-400">
+      <blockquote className="border-l-4 border-primary pl-4 my-3 italic text-muted-foreground">
         {children}
       </blockquote>
     ),
     table: ({ children }: any) => (
-      <div className="overflow-x-auto my-4 rounded-lg border border-gray-200 dark:border-gray-700">
+      <div className="overflow-x-auto my-4 rounded-lg border border-border">
         <table className="border-collapse w-full text-sm">{children}</table>
       </div>
     ),
     th: ({ children }: any) => (
-      <th className="border border-gray-200 dark:border-gray-700 px-4 py-2 bg-gray-50 dark:bg-gray-800 font-semibold text-gray-900 dark:text-gray-100 text-left">
+      <th className="border border-border px-4 py-2 bg-muted font-semibold text-foreground text-left">
         {children}
       </th>
     ),
     td: ({ children }: any) => (
-      <td className="border border-gray-200 dark:border-gray-700 px-4 py-2 text-gray-800 dark:text-gray-200">
+      <td className="border border-border px-4 py-2 text-foreground">
         {children}
       </td>
     ),
@@ -195,20 +195,20 @@ function ChatBox() {
 
       if (!inline && match) {
         return (
-          <div className="relative my-4 rounded-lg overflow-hidden border border-gray-200 dark:border-gray-700">
-            <div className="flex justify-between items-center px-4 py-2 bg-gray-50 dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
-              <span className="font-mono text-xs text-gray-600 dark:text-gray-400">
+          <div className="relative my-4 rounded-lg overflow-hidden border border-border">
+            <div className="flex justify-between items-center px-4 py-2 bg-muted border-b border-border">
+              <span className="font-mono text-xs text-muted-foreground">
                 {match[1]}
               </span>
               <button
                 onClick={() => handleCopyCode(codeText)}
-                className="flex items-center gap-1 px-2 py-1 text-xs text-gray-600 dark:text-gray-400 hover:bg-none dark:hover:bg-gray-700 rounded transition-colors cursor-pointer"
+                className="flex items-center gap-1 px-2 py-1 text-xs text-muted-foreground hover:bg-accent rounded transition-colors cursor-pointer"
               >
                 {copiedCode ? <CheckCheck size={14} /> : <Copy size={14} />}
                 {copiedCode ? "Copied" : "Copy code"}
               </button>
             </div>
-            <pre className="hljs bg-gray-900 p-4 overflow-x-auto text-sm">
+            <pre className="hljs bg-foreground/95 p-4 overflow-x-auto text-sm">
               <code className={className} {...props}>
                 {children}
               </code>
@@ -217,7 +217,7 @@ function ChatBox() {
         );
       }
       return (
-        <code className="bg-gray-100 dark:bg-gray-800 px-1.5 py-0.5 rounded text-sm font-mono text-gray-800 dark:text-gray-200 border border-gray-200 dark:border-gray-700">
+        <code className="bg-muted px-1.5 py-0.5 rounded text-sm font-mono text-foreground border border-border">
           {children}
         </code>
       );
@@ -238,9 +238,9 @@ function ChatBox() {
           <ConversationContent className="p-4 space-y-6">
             {/* Empty state */}
             {messages.length === 0 && (
-              <div className="flex flex-col items-center justify-center h-full text-center text-gray-500 dark:text-gray-400">
-                <Bot size={48} className="mb-4 text-gray-400" />
-                <h3 className="text-lg font-semibold mb-2">
+              <div className="flex flex-col items-center justify-center h-full text-center text-muted-foreground">
+                <Bot size={48} className="mb-4 text-muted-foreground" />
+                <h3 className="text-lg font-semibold mb-2 text-foreground">
                   How can I help you today?
                 </h3>
                 <p className="text-sm">
@@ -267,10 +267,10 @@ function ChatBox() {
                   {/* Avatar */}
                   <div
                     className={cn(
-                      "flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center text-white mt-1",
+                      "flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center mt-1",
                       msg.from === "user"
-                        ? "bg-gradient-to-br from-gray-500 to-white-700"
-                        : "bg-gradient-to-br from-gray-500 to-white-500",
+                        ? "bg-foreground text-background"
+                        : "bg-primary text-primary-foreground",
                     )}
                   >
                     {msg.from === "user" ? (
@@ -300,8 +300,8 @@ function ChatBox() {
                         onClick={() => handleCopyMessage(msg.text, msg.id)}
                         className={cn(
                           "absolute bottom--0.5 left-1 opacity-0 group-hover:opacity-100",
-                          "transition-opacity p-1.5 rounded bg-white dark:bg-gray-700 shadow-sm",
-                          "border border-gray-200 dark:border-gray-600 cursor-pointer",
+                          "transition-opacity p-1.5 rounded bg-card shadow-sm",
+                          "border border-border cursor-pointer",
                         )}
                       >
                         {copiedMessageId === msg.id ? (
@@ -315,8 +315,8 @@ function ChatBox() {
                         onClick={() => handleCopyMessage(msg.text, msg.id)}
                         className={cn(
                           "absolute top-1 right-1 opacity-0 group-hover:opacity-100",
-                          "transition-opacity p-1.5 rounded bg-white dark:bg-gray-700 shadow-sm",
-                          "border border-gray-200 dark:border-gray-600 cursor-pointer",
+                          "transition-opacity p-1.5 rounded bg-card shadow-sm",
+                          "border border-border cursor-pointer",
                         )}
                       >
                         {copiedMessageId === msg.id ? (
@@ -335,12 +335,12 @@ function ChatBox() {
             {isLoading && (
               <div className="flex justify-start">
                 <div className="flex gap-3 max-w-[80%]">
-                  <div className="flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center bg-gradient-to-br from-gray-500 to-white-500 text-white">
+                  <div className="flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center bg-primary text-primary-foreground">
                     <Bot size={16} />
                   </div>
                   <Message from="assistant">
-                    <MessageContent className="bg-gray-100 dark:bg-gray-800 rounded-2xl rounded-bl-md px-4 py-3 border border-gray-200 dark:border-gray-700">
-                      <div className="flex items-center gap-2 text-gray-600 dark:text-gray-400">
+                    <MessageContent className="bg-muted rounded-2xl rounded-bl-md px-4 py-3 border border-border">
+                      <div className="flex items-center gap-2 text-muted-foreground">
                         <Loader2 size={16} className="animate-spin" />
                         <span className="text-sm">Thinking...</span>
                       </div>
@@ -367,7 +367,7 @@ function ChatBox() {
               onChange={(e) => setText(e.target.value)}
               value={text}
               placeholder="Ask anything..."
-              className="text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl resize-none pr-12"
+              className="text-foreground placeholder-muted-foreground bg-muted border border-border rounded-xl resize-none pr-12"
               minHeight={20}
               maxHeight={50}
               disabled={isLoading}
@@ -376,7 +376,7 @@ function ChatBox() {
         </div>
 
         {/* Helper text */}
-        <div className="text-xs text-center text-gray-500 dark:text-gray-400 mt-3">
+        <div className="text-xs text-center text-muted-foreground mt-3">
           Press Enter to send, Shift + Enter for new line
         </div>
       </div>

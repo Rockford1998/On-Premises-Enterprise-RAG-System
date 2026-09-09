@@ -44,6 +44,9 @@ export class ChatController {
             tool: tool.toolData,
             args: tool.params,
           });
+          if (toolResponse?.error) {
+            throw new Error(toolResponse.content || "Tool execution failed");
+          }
           const answer = await improveTheToolAnswer({
             query: question,
             context: toolResponse.content,

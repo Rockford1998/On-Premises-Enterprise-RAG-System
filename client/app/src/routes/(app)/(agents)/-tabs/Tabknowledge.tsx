@@ -4,17 +4,12 @@ import type { ColumnDef } from "@tanstack/react-table";
 import { toast } from "sonner";
 import { DeleteAlertDialogBox } from "@/routes/-components/alert-dialog-box/DeleteAlertDialogBox";
 import { useRefreshData } from "@/routes/-components/hook/useRefreshData";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTrigger,
-} from "@/shadcn/ui/dialog";
 import { Button } from "@/shadcn/ui/button";
-import { Download, MessageSquareMore } from "lucide-react";
+import { Download } from "lucide-react";
 import { UploadFileDropdown } from "../-UploadFileDropdown";
 import { Route } from "../agent-details.$botId";
 import { DataTable } from "@/routes/-components/example-components/DataTable";
+import { KnowledgeContentDialog } from "./KnowledgeContentDialog";
 //
 
 
@@ -100,31 +95,7 @@ export const Tabknowledge = () => {
     },
     {
       header: "Content",
-      cell: ({ row }) => {
-        const kb = row.original;
-        return (
-          <Dialog>
-            <DialogTrigger asChild>
-              <Button
-                variant="outline"
-                size="sm"
-                className="cursor-pointer h-8 px-3 text-xs "
-              >
-                <MessageSquareMore /> Knowledge
-              </Button>
-            </DialogTrigger>
-            <DialogContent className="w-[28rem] max-h-[32rem] flex flex-col text-xs">
-              <DialogHeader className="text-xs">
-                <h4>{kb.fileName} - Content</h4>
-              </DialogHeader>
-              <div className="flex-1 overflow-auto whitespace-pre-wrap text-xs p-2 border-l ">
-                {kb.content}
-              </div>
-              {/* Fixed Footer */}
-            </DialogContent>
-          </Dialog>
-        );
-      },
+      cell: ({ row }) => <KnowledgeContentDialog kb={row.original} />,
     },
     {
       id: "actions",

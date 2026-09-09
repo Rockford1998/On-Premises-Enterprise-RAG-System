@@ -89,6 +89,7 @@ const knowledgeBaseSchema = new mongoose.Schema(
     fileHash: { type: String, required: true, trim: true },
     type: { type: String, required: true, trim: true },
     downloadUrl: { type: String, required: true },
+    chunksTotal: { type: Number, required: true },
   },
   { timestamps: true },
 );
