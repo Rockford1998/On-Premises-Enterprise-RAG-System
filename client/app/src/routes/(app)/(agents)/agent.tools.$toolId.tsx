@@ -4,7 +4,13 @@ import { FormSelect } from "@/routes/-components/formfields/FormSelect";
 import { FormTextArea } from "@/routes/-components/formfields/FormTextArea";
 import { FormSwitch } from "@/routes/-components/formfields/FormSwitch";
 import { Button } from "@/shadcn/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/shadcn/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/shadcn/ui/card";
 import { Form } from "@/shadcn/ui/form";
 import { starGate } from "@/utils/starGate";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -13,12 +19,19 @@ import { useEffect, useState } from "react";
 import { useForm, useFieldArray } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
+import { ArrowLeft, Plus, Trash2 } from "lucide-react";
 
 export const Route = createFileRoute("/(app)/(agents)/agent/tools/$toolId")({
   component: RouteComponent,
 });
 
 /* ----------------------------- Schema ----------------------------- */
+
+const paramFieldSchema = z.object({
+  name: z.string().min(1, "Required"),
+  description: z.string().optional(),
+  required: z.boolean(),
+});
 
 const toolSchema = z.object({
   botId: z.string().optional(),
@@ -27,7 +40,7 @@ const toolSchema = z.object({
   description: z.string().min(3),
   category: z.string().optional(),
 
-  type: z.enum(["API", "database"]),
+  type: z.enum(["API", "DATABASE"]),
 
   endpoint: z.string().optional(),
   method: z.string().optional(),
@@ -47,20 +60,42 @@ const toolSchema = z.object({
   enabled: z.boolean(),
   systemPrompt: z.string().optional(),
 
-  /* frontend helper */
-  parametersList: z
+  /* execution-time argument sources — routed by tool.service.ts's
+     routeToolArgs() by matching each name against the model's returned args */
+  pathVariable: z
     .array(
-      z.object({
-        name: z.string(),
+      paramFieldSchema.extend({
         type: z.enum(["string", "number", "integer", "boolean"]),
-        description: z.string().optional(),
-        required: z.boolean().default(false),
       }),
     )
+    .optional(),
+  queryParam: z
+    .array(
+      paramFieldSchema.extend({
+        type: z.enum(["string", "number", "integer", "boolean", "array"]),
+        defaultValue: z.string().optional(),
+      }),
+    )
+    .optional(),
+  requestBodyFields: z
+    .array(
+      paramFieldSchema.extend({
+        type: z.enum(["string", "number", "integer", "boolean"]),
+      }),
+    )
+    .optional(),
+  requestBodyContentType: z
+    .enum([
+      "application/json",
+      "application/x-www-form-urlencoded",
+      "multipart/form-data",
+    ])
     .optional(),
 });
 
 type ToolFormValues = z.infer<typeof toolSchema>;
+
+const emptyParamField = { name: "", description: "", required: false };
 
 /* ----------------------------- Component ----------------------------- */
 
@@ -81,19 +116,23 @@ function RouteComponent() {
       auth: { type: "none" },
       enabled: true,
       systemPrompt: "",
-      parametersList: [],
+      pathVariable: [],
+      queryParam: [],
+      requestBodyFields: [],
+      requestBodyContentType: "application/json",
     },
   });
 
   const toolType = form.watch("type");
   const authType = form.watch("auth.type");
+  const method = form.watch("method");
+  const hasRequestBody = method !== "GET" && method !== "DELETE";
 
-  /* ---------------------- Dynamic Parameters ---------------------- */
+  /* ---------------------- Dynamic field arrays ---------------------- */
 
-  const { fields, append, remove } = useFieldArray({
-    control: form.control,
-    name: "parametersList",
-  });
+  const pathVariables = useFieldArray({ control: form.control, name: "pathVariable" });
+  const queryParams = useFieldArray({ control: form.control, name: "queryParam" });
+  const bodyFields = useFieldArray({ control: form.control, name: "requestBodyFields" });
 
   /* ---------------------- Load Tool ---------------------- */
 
@@ -102,25 +141,25 @@ function RouteComponent() {
       const data = res.data?.data;
       if (!data) return;
 
-      /* convert parameters.properties -> parametersList */
-      const parametersList: any[] = [];
-
-      if (data.parameters?.properties) {
-        Object.entries(data.parameters.properties).forEach(
-          ([key, value]: any) => {
-            parametersList.push({
-              name: key,
-              type: value.type || "string",
-              description: value.description || "",
-              required: data.parameters?.required?.includes(key) || false,
-            });
-          },
-        );
+      const requestBodyFields: any[] = [];
+      const bodySchema = data.requestBody?.schema;
+      if (bodySchema?.properties) {
+        Object.entries(bodySchema.properties).forEach(([key, value]: any) => {
+          requestBodyFields.push({
+            name: key,
+            type: value.type || "string",
+            description: value.description || "",
+            required: bodySchema.required?.includes(key) || false,
+          });
+        });
       }
 
       form.reset({
         ...data,
-        parametersList,
+        pathVariable: data.pathVariable || [],
+        queryParam: data.queryParam || [],
+        requestBodyFields,
+        requestBodyContentType: data.requestBody?.contentType || "application/json",
       });
 
       setLoading(false);
@@ -131,28 +170,47 @@ function RouteComponent() {
 
   const onSubmit = async (values: ToolFormValues) => {
     try {
-      const properties: any = {};
+      // `parameters.properties` is what tool-detection sends the LLM — derive
+      // it from the three typed sections so there's one source of truth
+      // instead of a separately hand-maintained list.
+      const properties: Record<string, any> = {};
       const required: string[] = [];
+      const addToParameters = (
+        fields: { name: string; type?: string; description?: string; required?: boolean }[] = [],
+      ) => {
+        fields.forEach((f) => {
+          if (!f.name) return;
+          properties[f.name] = { type: f.type || "string", description: f.description };
+          if (f.required) required.push(f.name);
+        });
+      };
+      addToParameters(values.pathVariable);
+      addToParameters(values.queryParam);
+      addToParameters(values.requestBodyFields);
 
-      values.parametersList?.forEach((p) => {
-        properties[p.name] = {
-          type: p.type,
-          description: p.description,
-        };
-
-        if (p.required) required.push(p.name);
+      const bodyProperties: Record<string, any> = {};
+      const bodyRequired: string[] = [];
+      (values.requestBodyFields || []).forEach((f) => {
+        if (!f.name) return;
+        bodyProperties[f.name] = { type: f.type, description: f.description };
+        if (f.required) bodyRequired.push(f.name);
       });
 
-      const payload = {
-        ...values,
-        parameters: {
-          type: "object",
-          properties,
-          required,
-        },
-      };
+      const { requestBodyFields, requestBodyContentType, ...rest } = values;
 
-      delete (payload as any).parametersList;
+      const payload = {
+        ...rest,
+        parameters: { type: "object", properties, required },
+        requestBody: hasRequestBody
+          ? {
+              contentType: requestBodyContentType,
+              schema:
+                Object.keys(bodyProperties).length > 0
+                  ? { type: "object", properties: bodyProperties, required: bodyRequired }
+                  : undefined,
+            }
+          : undefined,
+      };
 
       await starGate.put(`/tools/${toolId}`, payload);
 
@@ -163,7 +221,7 @@ function RouteComponent() {
     }
   };
 
-  if (loading) return <div>Loading...</div>;
+  if (loading) return <div className="p-6 text-sm text-muted-foreground">Loading...</div>;
 
   /* ----------------------------- UI ----------------------------- */
 
@@ -171,9 +229,20 @@ function RouteComponent() {
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 pb-10">
         {/* Header */}
-        <div className="sticky top-0 z-10 flex justify-between items-center bg-background border-b py-2">
-          <h2 className="text-sm font-semibold">Tool Configuration</h2>
-          <Button type="submit" size="sm">
+        <div className="sticky top-0 z-10 flex items-center justify-between gap-3 border-b border-border bg-background py-2">
+          <div className="flex items-center gap-2">
+            <Button
+              type="button"
+              variant="ghost"
+              size="icon"
+              className="size-8 cursor-pointer"
+              onClick={() => window.history.back()}
+            >
+              <ArrowLeft className="size-4" />
+            </Button>
+            <h2 className="font-serif text-base font-semibold">Tool Configuration</h2>
+          </div>
+          <Button type="submit" size="sm" className="cursor-pointer">
             Save Tool
           </Button>
         </div>
@@ -182,6 +251,7 @@ function RouteComponent() {
         <Card>
           <CardHeader>
             <CardTitle className="text-sm">General</CardTitle>
+            <CardDescription>Identity and behavior shown to the model.</CardDescription>
           </CardHeader>
 
           <CardContent className="grid grid-cols-2 gap-4">
@@ -195,7 +265,7 @@ function RouteComponent() {
               label="Tool Type"
               selectItems={[
                 { value: "API", label: "API" },
-                { value: "database", label: "Database" },
+                { value: "DATABASE", label: "Database" },
               ]}
             />
 
@@ -209,15 +279,35 @@ function RouteComponent() {
           </CardContent>
         </Card>
 
+        {toolType === "DATABASE" && (
+          <Card>
+            <CardContent className="pt-6 text-sm text-muted-foreground">
+              Database tools aren't executable yet — this configuration will be
+              saved, but chat requests can't run it until database execution
+              support is added.
+            </CardContent>
+          </Card>
+        )}
+
         {/* API Config */}
         {toolType === "API" && (
           <Card>
             <CardHeader>
               <CardTitle className="text-sm">API Configuration</CardTitle>
+              <CardDescription>
+                Use <code className="rounded bg-muted px-1 py-0.5 text-xs">:name</code> or{" "}
+                <code className="rounded bg-muted px-1 py-0.5 text-xs">{"{name}"}</code> in
+                the endpoint for a path variable declared below.
+              </CardDescription>
             </CardHeader>
 
             <CardContent className="grid grid-cols-2 gap-4">
-              <FormInput form={form} name="endpoint" label="Endpoint" />
+              <FormInput
+                form={form}
+                name="endpoint"
+                label="Endpoint"
+                placeHolder="https://api.example.com/users/:userId"
+              />
 
               <FormSelect
                 form={form}
@@ -227,6 +317,7 @@ function RouteComponent() {
                   { value: "GET", label: "GET" },
                   { value: "POST", label: "POST" },
                   { value: "PUT", label: "PUT" },
+                  { value: "PATCH", label: "PATCH" },
                   { value: "DELETE", label: "DELETE" },
                 ]}
               />
@@ -303,71 +394,252 @@ function RouteComponent() {
           </Card>
         )}
 
-        {/* Parameters */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-sm">Parameters</CardTitle>
-          </CardHeader>
+        {/* Path Variables */}
+        {toolType === "API" && (
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-sm">Path Variables</CardTitle>
+              <CardDescription>
+                Substituted into the endpoint URL. The model fills these in from the user's message.
+              </CardDescription>
+            </CardHeader>
 
-          <CardContent className="space-y-4">
-            {fields.map((field, index) => (
-              <div key={field.id} className="grid grid-cols-5 gap-3 items-end">
-                <FormInput
-                  form={form}
-                  name={`parametersList.${index}.name`}
-                  label="Name"
-                />
+            <CardContent className="space-y-3">
+              {pathVariables.fields.length === 0 && (
+                <p className="text-xs text-muted-foreground">No path variables configured.</p>
+              )}
+              {pathVariables.fields.map((field, index) => (
+                <div key={field.id} className="grid grid-cols-[1fr_1fr_1fr_auto_auto] gap-3 items-end">
+                  <FormInput
+                    form={form}
+                    name={`pathVariable.${index}.name`}
+                    label="Name"
+                    labelWidth="w-full"
+                    gap={4}
+                  />
+                  <FormSelect
+                    form={form}
+                    name={`pathVariable.${index}.type`}
+                    label="Type"
+                    labelWidth="w-full"
+                    gap={4}
+                    selectItems={[
+                      { value: "string", label: "string" },
+                      { value: "number", label: "number" },
+                      { value: "integer", label: "integer" },
+                      { value: "boolean", label: "boolean" },
+                    ]}
+                  />
+                  <FormInput
+                    form={form}
+                    name={`pathVariable.${index}.description`}
+                    label="Description"
+                    labelWidth="w-full"
+                    gap={4}
+                  />
+                  <FormSwitch
+                    form={form}
+                    name={`pathVariable.${index}.required`}
+                    label="Required"
+                    labelWidth="w-auto"
+                    gap={6}
+                  />
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    className="size-8 cursor-pointer text-destructive"
+                    onClick={() => pathVariables.remove(index)}
+                  >
+                    <Trash2 className="size-4" />
+                  </Button>
+                </div>
+              ))}
 
-                <FormSelect
-                  form={form}
-                  name={`parametersList.${index}.type`}
-                  label="Type"
-                  selectItems={[
-                    { value: "string", label: "string" },
-                    { value: "number", label: "number" },
-                    { value: "integer", label: "integer" },
-                    { value: "boolean", label: "boolean" },
-                  ]}
-                />
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                className="cursor-pointer"
+                onClick={() =>
+                  pathVariables.append({ ...emptyParamField, type: "string", required: true } as any)
+                }
+              >
+                <Plus className="size-3.5" /> Add Path Variable
+              </Button>
+            </CardContent>
+          </Card>
+        )}
 
-                <FormInput
-                  form={form}
-                  name={`parametersList.${index}.description`}
-                  label="Description"
-                />
+        {/* Query Parameters */}
+        {toolType === "API" && (
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-sm">Query Parameters</CardTitle>
+              <CardDescription>
+                Appended to the request as <code className="rounded bg-muted px-1 py-0.5 text-xs">?name=value</code>.
+              </CardDescription>
+            </CardHeader>
 
-                <FormSwitch
-                  form={form}
-                  name={`parametersList.${index}.required`}
-                  label="Required"
-                />
-
-                <Button
-                  type="button"
-                  variant="destructive"
-                  onClick={() => remove(index)}
+            <CardContent className="space-y-3">
+              {queryParams.fields.length === 0 && (
+                <p className="text-xs text-muted-foreground">No query parameters configured.</p>
+              )}
+              {queryParams.fields.map((field, index) => (
+                <div
+                  key={field.id}
+                  className="grid grid-cols-[1fr_1fr_1fr_1fr_auto_auto] gap-3 items-end"
                 >
-                  Remove
-                </Button>
-              </div>
-            ))}
+                  <FormInput
+                    form={form}
+                    name={`queryParam.${index}.name`}
+                    label="Name"
+                    labelWidth="w-full"
+                    gap={4}
+                  />
+                  <FormSelect
+                    form={form}
+                    name={`queryParam.${index}.type`}
+                    label="Type"
+                    labelWidth="w-full"
+                    gap={4}
+                    selectItems={[
+                      { value: "string", label: "string" },
+                      { value: "number", label: "number" },
+                      { value: "integer", label: "integer" },
+                      { value: "boolean", label: "boolean" },
+                      { value: "array", label: "array" },
+                    ]}
+                  />
+                  <FormInput
+                    form={form}
+                    name={`queryParam.${index}.description`}
+                    label="Description"
+                    labelWidth="w-full"
+                    gap={4}
+                  />
+                  <FormInput
+                    form={form}
+                    name={`queryParam.${index}.defaultValue`}
+                    label="Default"
+                    labelWidth="w-full"
+                    gap={4}
+                  />
+                  <FormSwitch
+                    form={form}
+                    name={`queryParam.${index}.required`}
+                    label="Required"
+                    labelWidth="w-auto"
+                    gap={6}
+                  />
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    className="size-8 cursor-pointer text-destructive"
+                    onClick={() => queryParams.remove(index)}
+                  >
+                    <Trash2 className="size-4" />
+                  </Button>
+                </div>
+              ))}
 
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() =>
-                append({
-                  name: "",
-                  type: "string",
-                  description: "",
-                  required: false,
-                })
-              }
-            >
-              Add Parameter
-            </Button>
-          </CardContent>
-        </Card>
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                className="cursor-pointer"
+                onClick={() => queryParams.append({ ...emptyParamField, type: "string" } as any)}
+              >
+                <Plus className="size-3.5" /> Add Query Parameter
+              </Button>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Request Body */}
+        {toolType === "API" && hasRequestBody && (
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-sm">Request Body</CardTitle>
+              <CardDescription>Fields sent in the request body for {method} requests.</CardDescription>
+            </CardHeader>
+
+            <CardContent className="space-y-4">
+              <FormSelect
+                form={form}
+                name="requestBodyContentType"
+                label="Content Type"
+                selectItems={[
+                  { value: "application/json", label: "application/json" },
+                  { value: "application/x-www-form-urlencoded", label: "x-www-form-urlencoded" },
+                  { value: "multipart/form-data", label: "multipart/form-data" },
+                ]}
+              />
+
+              {bodyFields.fields.length === 0 && (
+                <p className="text-xs text-muted-foreground">No body fields configured.</p>
+              )}
+              {bodyFields.fields.map((field, index) => (
+                <div key={field.id} className="grid grid-cols-[1fr_1fr_1fr_auto_auto] gap-3 items-end">
+                  <FormInput
+                    form={form}
+                    name={`requestBodyFields.${index}.name`}
+                    label="Name"
+                    labelWidth="w-full"
+                    gap={4}
+                  />
+                  <FormSelect
+                    form={form}
+                    name={`requestBodyFields.${index}.type`}
+                    label="Type"
+                    labelWidth="w-full"
+                    gap={4}
+                    selectItems={[
+                      { value: "string", label: "string" },
+                      { value: "number", label: "number" },
+                      { value: "integer", label: "integer" },
+                      { value: "boolean", label: "boolean" },
+                    ]}
+                  />
+                  <FormInput
+                    form={form}
+                    name={`requestBodyFields.${index}.description`}
+                    label="Description"
+                    labelWidth="w-full"
+                    gap={4}
+                  />
+                  <FormSwitch
+                    form={form}
+                    name={`requestBodyFields.${index}.required`}
+                    label="Required"
+                    labelWidth="w-auto"
+                    gap={6}
+                  />
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    className="size-8 cursor-pointer text-destructive"
+                    onClick={() => bodyFields.remove(index)}
+                  >
+                    <Trash2 className="size-4" />
+                  </Button>
+                </div>
+              ))}
+
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                className="cursor-pointer"
+                onClick={() => bodyFields.append({ ...emptyParamField, type: "string" } as any)}
+              >
+                <Plus className="size-3.5" /> Add Body Field
+              </Button>
+            </CardContent>
+          </Card>
+        )}
       </form>
     </Form>
   );
