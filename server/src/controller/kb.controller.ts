@@ -2,8 +2,17 @@ import { Request, Response } from "express";
 import { KnowledgeBaseService } from "../services/knowledgebase.service";
 import { BotService } from "../services/bot.service";
 import { sendResponse } from "../util/sendResponse";
+import { ForbiddenError } from "../util/botAccess";
 import path from "path";
 import fs from "fs";
+
+const sendForbidden = (res: Response, error: unknown): boolean => {
+  if (error instanceof ForbiddenError) {
+    sendResponse({ res, success: false, message: error.message, status: 403 });
+    return true;
+  }
+  return false;
+};
 
 
 //  read knowledge base with pagination 
@@ -50,14 +59,19 @@ export class KnowledgeBaseController {
 
   readById = async (req: Request, res: Response) => {
     try {
+      if (!req.user) {
+        sendResponse({ res, success: false, message: "Not authenticated", status: 401 });
+        return;
+      }
       const { id } = req.params;
-      const knowledgeBaseEntry = await this.knowledgeBaseService.readById(id);
+      const knowledgeBaseEntry = await this.knowledgeBaseService.readById(id, req.user);
       if (!knowledgeBaseEntry) {
         sendResponse({ res, success: false, message: "Knowledge base entry not found", status: 404 });
         return;
       }
       sendResponse({ res, success: true, message: "Knowledge base entry retrieved successfully", data: knowledgeBaseEntry, status: 200 });
     } catch (error) {
+      if (sendForbidden(res, error)) return;
       console.error("Error reading knowledge base entry by ID:", error);
       sendResponse({ res, success: false, message: "Failed to read knowledge base entry", status: 500 });
     }
@@ -65,10 +79,15 @@ export class KnowledgeBaseController {
 
   readBybotId = async (req: Request, res: Response) => {
     try {
+      if (!req.user) {
+        sendResponse({ res, success: false, message: "Not authenticated", status: 401 });
+        return;
+      }
       const { botId } = req.params;
-      const knowledgeBaseEntry = await this.knowledgeBaseService.readByBotId({ botId });
+      const knowledgeBaseEntry = await this.knowledgeBaseService.readByBotId({ botId, actor: req.user });
       sendResponse({ res, success: true, message: "Knowledge base entry retrieved successfully", data: knowledgeBaseEntry, status: 200 });
     } catch (error) {
+      if (sendForbidden(res, error)) return;
       console.error("Error reading knowledge base entry by ID:", error);
       sendResponse({ res, success: false, message: "Failed to read knowledge base entry", status: 500 });
     }
@@ -78,10 +97,15 @@ export class KnowledgeBaseController {
   addKnowledgeBase = async (req: Request, res: Response) => {
     const startTime = Date.now();
     try {
+      if (!req.user) {
+        sendResponse({ res, success: false, message: "Not authenticated", status: 401 });
+        return;
+      }
       const botId = req.params.botId;
       const result = await this.knowledgeBaseService.processFile({
         botId,
         file: req.file,
+        actor: req.user,
       });
       const duration = (Date.now() - startTime) / 1000;
       const responseBody = { ...result.body, duration };
@@ -104,6 +128,7 @@ export class KnowledgeBaseController {
         });
       }
     } catch (error) {
+      if (sendForbidden(res, error)) return;
       const duration = (Date.now() - startTime) / 1000;
       console.error(`Training failed after ${duration} seconds:`, error);
       sendResponse({
@@ -117,8 +142,12 @@ export class KnowledgeBaseController {
 
   downloadFile = async (req: Request, res: Response) => {
     try {
+      if (!req.user) {
+        sendResponse({ res, success: false, message: "Not authenticated", status: 401 });
+        return;
+      }
       const { id } = req.params;
-      const file = await this.knowledgeBaseService.readById(id)
+      const file = await this.knowledgeBaseService.readById(id, req.user)
       if (file) {
         const safeFilePath = path.join(__dirname, "..", "..", file?.downloadUrl);
         console.log(safeFilePath)
@@ -147,6 +176,7 @@ export class KnowledgeBaseController {
         return
       }
     } catch (error) {
+      if (sendForbidden(res, error)) return;
       console.log(error)
       sendResponse({
         res,
@@ -163,10 +193,14 @@ export class KnowledgeBaseController {
   //
   deleteKnowledgeBase = async (req: Request, res: Response) => {
     try {
+      if (!req.user) {
+        sendResponse({ res, success: false, message: "Not authenticated", status: 401 });
+        return;
+      }
       const { fileName, botId } = req.body;
       console.log("Received request to delete knowledge base:", { fileName, botId });
       // Validate input
-      await this.knowledgeBaseService.deleteKnowledgeBase({ fileName, botId })
+      await this.knowledgeBaseService.deleteKnowledgeBase({ fileName, botId, actor: req.user })
       sendResponse({
         res,
         success: true,
@@ -176,6 +210,7 @@ export class KnowledgeBaseController {
       return;
 
     } catch (error) {
+      if (sendForbidden(res, error)) return;
       console.error("Error deleting knowledge base:", error);
       sendResponse({
         res,

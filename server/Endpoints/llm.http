@@ -1,7 +1,6 @@
 @token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4YzMxZWZlNDI3M2M2NzBhMTYxNjFhOCIsImVtYWlsIjoic2h1YmhhbWJhbmthcjY1QGdtYWlsLmNvbSIsImlhdCI6MTc2Njg0NjQ0NSwiZXhwIjoxNzY2OTMyODQ1fQ.cQlJJaW89KDK6-uctUUFaQFfpr2jXbmqoYqNrSYD4rY
 ### get all
 
-
 POST http://localhost:3000/auth
 Content-Type:  application/json
 
@@ -11,70 +10,78 @@ Content-Type:  application/json
 }
 
 
-### passing paramters for now  page and limit only
-http://localhost:3000/metadata/models
+### List, with optional ?provider= / ?isActive= / ?page= / ?size=
+GET http://localhost:3000/llm
+Authorization: Bearer {{token}}
+
+### Minimal metadata only (name + _id), used to populate model pickers
+GET http://localhost:3000/metadata/models
+Authorization: Bearer {{token}}
+
+### Get by _id — route param is :id, must match the controller's req.params.id
+GET http://localhost:3000/llm/68a16a5c513f9ec57abcf664
 Authorization: Bearer {{token}}
 
 
-### Get by botId
-http://localhost:3000/model
-Authorization: Bearer {{token}}
-
-### Get by owner(email address)
-http://localhost:3000/llm/owner/shubhambankar65@gmail.com
-Authorization: Bearer {{token}}
-
-
-### 
+###
 POST http://localhost:3000/llm
 Content-Type:  application/json
 Authorization: Bearer {{token}}
 
 {
     "name": "gpt-oss:120b-cloud",
-    "provider":"ollama",           
+    "provider":"ollama",
     "endpoint": "",
     "isActive": true,
+    "description": "Cloud-hosted chat model used as BASE_MODEL / TOOL_MODEL in dev.",
+    "tags": ["chat", "cloud", "tool-calling"],
     "meta": {
       "contextWindow": "128k",
-      "modelType": "chat", 
+      "maxOutputTokens": 16000,
+      "modelType": "chat",
       "inputPrice": 0,
       "outputPrice": 0,
-      "inputType":"text"
+      "inputType":"text",
+      "supportsTools": true,
+      "supportsStreaming": true
     }
 }
 
 
-### 
+###
 POST http://localhost:3000/llm
 Content-Type:  application/json
 Authorization: Bearer {{token}}
 
 {
     "name": "nomic-embed-text",
-    "provider":"ollama",           
+    "provider":"ollama",
     "endpoint": "",
     "isActive": true,
+    "description": "Local 768-dim embedding model — matches the dimension every existing vector_table_* was created with.",
+    "tags": ["embedding", "local"],
     "meta": {
-      "contextWindow": "128k",
-      "modelType": "embedding", 
+      "contextWindow": "8k",
+      "modelType": "embedding",
       "inputPrice": 0,
       "outputPrice": 0,
-      "inputType":"text"
+      "inputType":"text",
+      "supportsTools": false,
+      "supportsStreaming": false
     }
 }
 
 
-### Update by email`
-PUT http://localhost:3000/llm/bot_mdqa1e6y_MMF8T9
+### Update by _id — route param is :id
+PUT http://localhost:3000/llm/68a16a5c513f9ec57abcf664
 Content-Type:  application/json
 Authorization: Bearer {{token}}
 
-
 {
-  "botName": "Mark1-updated"
+  "isActive": false
 }
 
 
-### Delete by email
-DELETE http://localhost:3000/llm/bot_mdq9tfo3_1IL1QL
+### Delete by _id — route param is :id
+DELETE http://localhost:3000/llm/68a16a5c513f9ec57abcf664
+Authorization: Bearer {{token}}

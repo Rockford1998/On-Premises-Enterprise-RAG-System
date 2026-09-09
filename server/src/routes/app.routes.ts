@@ -11,6 +11,7 @@ import { ToolController } from "../controller/tool.controller";
 import { AuthController } from "../controller/auth.controller";
 import { LlmModelController } from "../controller/llmModel.controller";
 import { MatadataController } from "../controller/metadata.controller";
+import { requireRole } from "../middlewares/auth.middleware";
 
 
 const router = Router();
@@ -69,14 +70,19 @@ router.put("/bots/:botId", botController.update);
 router.delete("/bots/:botId", botController.delete);
 
 // LLM profile management endpoint
+// Param must be named :id — LlmModelController.readById/update/delete all
+// destructure req.params.id; a mismatched name here silently resolves to
+// undefined and every by-id lookup 404s.
 router.get("/llm", llmModelController.read);
-router.get("/llm/:llmId", llmModelController.readById);
+router.get("/llm/:id", llmModelController.readById);
 router.post("/llm", llmModelController.create);
-router.put("/llm/:botId", llmModelController.update);
-router.delete("/llm/:botId", llmModelController.delete);
+router.put("/llm/:id", llmModelController.update);
+router.delete("/llm/:id", llmModelController.delete);
 
 // KB handling endpoints
-router.get("/kb", knowledgeBaseController.readKnowledgeBase)
+// Unscoped list across every bot's KB — not resource-owner-checkable, so
+// restricted to admins rather than left open to any authenticated user.
+router.get("/kb", requireRole("CONFIG_ADMIN"), knowledgeBaseController.readKnowledgeBase)
 router.get("/kb/:id", knowledgeBaseController.readById)
 router.get("/kb/bot-id/:botId", knowledgeBaseController.readBybotId)
 router.get("/kb/download/:id", knowledgeBaseController.downloadFile)
@@ -85,7 +91,6 @@ router.post("/kb/delete", knowledgeBaseController.deleteKnowledgeBase)
 
 // Endpoint to handle chat requests
 router.post("/chat", chatController.chatBot);
-router.post("/streamChat", chatController.streamChatBot);
 
 // Tool management endpoints
 router.get("/tools/bot/:botId", toolController.readToolsByBotId);

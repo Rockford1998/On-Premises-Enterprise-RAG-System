@@ -21,6 +21,10 @@ type DialogMaxWidth =
 interface FormDialogBoxProps {
   title: string;
   triggerLabel: string;
+  /** Overrides the default `<Button>{triggerLabel}</Button>` trigger — for an
+   * icon-only trigger (e.g. an edit pencil in a table row). `triggerLabel` is
+   * still required for accessibility/consistency even when this is set. */
+  trigger?: React.ReactNode;
   children: React.ReactNode;
   onSubmit?: () => void;
   submitLabel?: string;
@@ -34,6 +38,7 @@ interface FormDialogBoxProps {
 export const FormDialogBox: React.FC<FormDialogBoxProps> = ({
   title,
   triggerLabel,
+  trigger,
   children,
   onSubmit,
   submitLabel = "Submit",
@@ -56,9 +61,11 @@ export const FormDialogBox: React.FC<FormDialogBoxProps> = ({
       onOpenChange={handleOpenChange}
     >
       <DialogTrigger asChild>
-        <Button variant="outline" className="cursor-pointer">
-          {triggerLabel}
-        </Button>
+        {trigger ?? (
+          <Button variant="outline" className="cursor-pointer">
+            {triggerLabel}
+          </Button>
+        )}
       </DialogTrigger>
 
       <DialogContent className={maxWidth}>

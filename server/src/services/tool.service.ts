@@ -1,17 +1,29 @@
 import axios from "axios";
 import { Tools } from "../models/shared.model";
 import https from "https";
+import { BotService } from "./bot.service";
+import { Actor, assertCanManage, assertCanView } from "../util/botAccess";
 
 export class ToolService {
     OLLAMA_BASE_URL = process.env.OLLAMA_BASE_URL || "http://localhost:11434";
+    botService = new BotService();
 
-    readToolsByBotId = async ({ botId }: { botId: string }) => {
+    readToolsByBotId = async ({ botId, actor }: { botId: string; actor: Actor }) => {
+        const bot = await this.botService.readByBotId(botId);
+        if (!bot) return [];
+        assertCanView(bot, actor);
         const tools = await Tools.find({ botId });
         return tools;
     }
 
-    readToolById = async ({ id }: { id: string }) => {
+    // A tool's stored auth (API keys, basic-auth credentials) makes reading
+    // one exactly as sensitive as reading the bot it belongs to.
+    readToolById = async ({ id, actor }: { id: string; actor: Actor }) => {
         const tool = await Tools.findById(id);
+        if (!tool) return null;
+        const bot = await this.botService.readByBotId(tool.botId);
+        if (!bot) return null;
+        assertCanView(bot, actor);
         return tool;
     }
 
@@ -20,24 +32,45 @@ export class ToolService {
         return tool;
     }
 
-    create = async (toolData: any) => {
+    create = async (toolData: any, actor: Actor) => {
+        const bot = await this.botService.readByBotId(toolData.botId);
+        if (!bot) {
+            throw new Error("Bot not found");
+        }
+        assertCanManage(bot, actor);
         const tool = new Tools(toolData);
         await tool.save();
         return tool;
     }
 
-    update = async ({ id, toolData }: { id: string, toolData: any }) => {
+    update = async ({ id, toolData, actor }: { id: string, toolData: any, actor: Actor }) => {
+        const existing = await Tools.findById(id);
+        if (!existing) return null;
+        // Ownership is checked against the tool's own botId, never the body's
+        // — a caller could otherwise smuggle in a botId they do control.
+        const bot = await this.botService.readByBotId(existing.botId);
+        if (!bot) return null;
+        assertCanManage(bot, actor);
         const tool = await Tools.findByIdAndUpdate(id, toolData, { new: true });
         return tool;
     }
 
-    delete = async ({ id }: { id: string }) => {
+    delete = async ({ id, actor }: { id: string, actor: Actor }) => {
+        const existing = await Tools.findById(id);
+        if (!existing) return;
+        const bot = await this.botService.readByBotId(existing.botId);
+        if (!bot) return;
+        assertCanManage(bot, actor);
         await Tools.findByIdAndDelete(id);
     }
 
     // Detect if a tool should be used using LLM
+    //
+    // Queries Tools directly rather than through readToolsByBotId: this runs
+    // inside the chat flow, which isn't gated by bot ownership in this pass
+    // (see chat.controller.ts), so there is no "actor" to check against here.
     detectToolUse = async ({ botId, query }: { botId: string; query: string }): Promise<{ tool: string, params: any } | null> => {
-        const availableTools = await this.readToolsByBotId({ botId }) as Array<any>;
+        const availableTools = await Tools.find({ botId }) as Array<any>;
         if (availableTools.length === 0) {
             return null;
         }
@@ -119,7 +152,7 @@ export class ToolService {
                     let value = data;
                     let found = true;
                     for (const p of path.split('.')) {
-                        if (value && value.hasOwnProperty(p)) {
+                        if (value && Object.prototype.hasOwnProperty.call(value, p)) {
                             value = value[p];
                         } else {
                             value = undefined;
@@ -135,7 +168,7 @@ export class ToolService {
             return result;
         }
         if (template === undefined) { template = {} }   // if template is undefined, set it to empty object
-        let templateString = JSON.stringify(template);
+        const templateString = JSON.stringify(template);
 
         const templateCopy = JSON.parse(templateString);
         const dataCopy = JSON.parse(JSON.stringify(data));
@@ -160,7 +193,7 @@ export class ToolService {
                             let value = dataCopy;
                             let found = true;
                             for (const p of path.split('.')) {
-                                if (value && value.hasOwnProperty(p)) {
+                                if (value && Object.prototype.hasOwnProperty.call(value, p)) {
                                     value = value[p];
                                 } else {
                                     value = undefined;
@@ -181,7 +214,7 @@ export class ToolService {
                                 let value = dataCopy;
                                 let found = true;
                                 for (const p of path.split('.')) {
-                                    if (value && value.hasOwnProperty(p)) {
+                                    if (value && Object.prototype.hasOwnProperty.call(value, p)) {
                                         value = value[p];
                                     } else {
                                         value = undefined;
@@ -213,7 +246,7 @@ export class ToolService {
 
                 for (let i = 0; i < parts.length; i++) {
                     const part = parts[i];
-                    if (current && current.hasOwnProperty(part)) {
+                    if (current && Object.prototype.hasOwnProperty.call(current, part)) {
                         if (i === parts.length - 1) {
                             // Reach the end of the path and delete the property
                             delete current[part];
@@ -252,7 +285,7 @@ export class ToolService {
     }
 
     httpCall = async function (method: any, url: any, data: any, headers: any = { 'Content-Type': 'application/json' }) {
-        let config: any = {
+        const config: any = {
             method: method,
             url: url,
             headers: headers,
@@ -266,7 +299,7 @@ export class ToolService {
             config.data = data
         }
         try {
-            let response = await axios.request(config)
+            const response = await axios.request(config)
             if (response.data) {
                 return response.data
             } else if (response.status == 200) {
@@ -310,13 +343,11 @@ export class ToolService {
             const renderParams = this.renderTemplateByData(tool.fixedParams, args)
             const renderUrl = this.renderTemplateByData(tool.endpoint, args)
             console.log("Executing tool with method:", tool.method, "url:", renderUrl, "params:", renderParams, "headers:", headers);
-            let ret = await this.httpCall(tool.method, renderUrl, renderParams, headers)
+            const ret = await this.httpCall(tool.method, renderUrl, renderParams, headers)
             let strRet = JSON.stringify(ret)
             const toolReturnLengthLimit = 28000
-            let isOverLengthLimit = false
             if (strRet.length > toolReturnLengthLimit) {
                 strRet = strRet.slice(0, toolReturnLengthLimit)
-                isOverLengthLimit = true
             }
             return { content: strRet, toolName: tool.name, url: renderUrl, params: renderParams, }
         }

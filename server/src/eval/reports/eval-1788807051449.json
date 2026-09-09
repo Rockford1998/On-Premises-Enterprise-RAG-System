@@ -1,0 +1,37 @@
+{
+  "runAt": "2026-09-07T18:50:51.449Z",
+  "results": [
+    {
+      "id": "tool-weather-mumbai",
+      "type": "tool",
+      "passed": true,
+      "reason": "used tool \"get_weather\"",
+      "latencyMs": 17203,
+      "answer": "I’m not able to pull a live weather read‑out for Mumbai at the moment. Based on typical climate patterns for late September, Mumbai is usually hot and humid, with daytime temperatures in the low‑to‑mid 30 °C (86‑90 °F) and nighttime lows around 26 °C (79 °F). There’s often a chance of brief rain showers or thunderstorms, especially during the monsoon’s tail‑end, and the humidity generally stays above 70 %. For an up‑to‑date forecast, you can check a weather website or app (e.g., Weather.com, AccuWeather, or a local meteorological service)."
+    },
+    {
+      "id": "tool-get-all-users",
+      "type": "tool",
+      "passed": false,
+      "reason": "threw: different vector dimensions 768 and 2560",
+      "latencyMs": 3402,
+      "answer": ""
+    },
+    {
+      "id": "retrieval-resume",
+      "type": "retrieval",
+      "passed": false,
+      "reason": "threw: different vector dimensions 768 and 2560",
+      "latencyMs": 3493,
+      "answer": ""
+    },
+    {
+      "id": "answer-example",
+      "type": "answer",
+      "passed": false,
+      "reason": "threw: Bot not found",
+      "latencyMs": 10,
+      "answer": ""
+    }
+  ]
+}

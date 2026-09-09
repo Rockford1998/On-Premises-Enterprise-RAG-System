@@ -1,6 +1,4 @@
-import { OllamaEmbeddings } from "@langchain/ollama";
 import axios from "axios";
-// import { OllamaEmbeddings } from "@langchain/community/embeddings/ollama";
 
 export const generateEmbedding = async (text: string): Promise<number[]> => {
   try {

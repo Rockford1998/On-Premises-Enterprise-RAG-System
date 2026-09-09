@@ -5,11 +5,13 @@ import { VectorService } from "../services/vectors.service";
 import { sendResponse } from "../util/sendResponse";
 import { getBotInstructionByBotRequest } from "../util/getBotInstructionByBotRequest";
 import { LlmModelService } from "../services/llmModel.service";
+import { canViewBot, ForbiddenError } from "../util/botAccess";
 
 export class BotController {
     botService = new BotService();
     userService = new UserService();
     llmService = new LlmModelService()
+
     //
     readBots = async (req: Request, res: Response) => {
         try {
@@ -48,11 +50,19 @@ export class BotController {
     //
     readBotById = async (req: Request, res: Response) => {
         try {
+            if (!req.user) {
+                sendResponse({ res, success: false, message: "Not authenticated", status: 401 });
+                return;
+            }
             const { botId } = req.params;
             const bot = await this.botService.readByBotId(botId);
             if (!bot) {
                 sendResponse({ res, success: false, message: "Bot not found", status: 404 });
                 return
+            }
+            if (!canViewBot(bot, req.user)) {
+                sendResponse({ res, success: false, message: "You do not have access to this bot", status: 403 });
+                return;
             }
             sendResponse({ res, success: true, message: "Bot retrieved successfully", data: bot, status: 200 });
         } catch (error) {
@@ -61,11 +71,19 @@ export class BotController {
         }
     };
 
+    // Scoped to the caller's own bots — this reveals which bots an email
+    // owns, so only the owner (or an admin) may query it.
     readBotByOwner = async (req: Request, res: Response) => {
         try {
-
+            if (!req.user) {
+                sendResponse({ res, success: false, message: "Not authenticated", status: 401 });
+                return;
+            }
             const { owner } = req.params;
-            console.log("Reading bot by owner field:", owner);
+            if (owner !== req.user.email && !req.user.roles?.includes("CONFIG_ADMIN")) {
+                sendResponse({ res, success: false, message: "You do not have access to this owner's bots", status: 403 });
+                return;
+            }
             const bot = await this.botService.readByBotOwner(owner);
             if (!bot) {
                 sendResponse({ res, success: false, message: "Bot not found", status: 404 });
@@ -82,7 +100,17 @@ export class BotController {
     create = async (req: Request, res: Response) => {
         let newBot = null;
         try {
+            if (!req.user) {
+                sendResponse({ res, success: false, message: "Not authenticated", status: 401 });
+                return;
+            }
             const botReq = req.body;
+            // A caller may only create bots owned by themselves, unless admin —
+            // otherwise anyone could mint a bot "owned" by an arbitrary email.
+            if (botReq.owner !== req.user.email && !req.user.roles?.includes("CONFIG_ADMIN")) {
+                sendResponse({ res, success: false, message: "You may only create bots owned by yourself", status: 403 });
+                return;
+            }
             const owner = await this.userService.findByEmail(botReq.owner);
             if (!owner) {
                 sendResponse({ res, success: false, message: "Owner not found", status: 404 });
@@ -173,8 +201,8 @@ export class BotController {
 
             sendResponse({ res, success: true, message: "Bot created successfully", data: newBot, status: 201 });
         } catch (error) {
-            if (newBot && newBot.botId)
-                await this.botService.deleteById(newBot.botId);
+            if (newBot && newBot.botId && req.user)
+                await this.botService.deleteById(newBot.botId, req.user);
             console.error("Error creating bot:", error);
             sendResponse({ res, success: false, message: "Failed to create bot", status: 400 });
         }
@@ -182,6 +210,10 @@ export class BotController {
 
     update = async (req: Request, res: Response) => {
         try {
+            if (!req.user) {
+                sendResponse({ res, success: false, message: "Not authenticated", status: 401 });
+                return;
+            }
             const botId = req.params.botId;
             const botReq = req.body;
             const oldBot = await this.botService.readByBotId(botId);
@@ -230,7 +262,7 @@ export class BotController {
             }
 
             console.log(botReq.baseModel)
-            const updatedBot = await this.botService.updateById(botId, botReq);
+            const updatedBot = await this.botService.updateById(botId, botReq, req.user);
 
             sendResponse({
                 res,
@@ -240,6 +272,10 @@ export class BotController {
                 status: 200,
             });
         } catch (error: any) {
+            if (error instanceof ForbiddenError) {
+                sendResponse({ res, success: false, message: error.message, status: 403 });
+                return;
+            }
             console.error(error);
             sendResponse({
                 res,
@@ -253,13 +289,21 @@ export class BotController {
 
     delete = async (req: Request, res: Response) => {
         try {
+            if (!req.user) {
+                sendResponse({ res, success: false, message: "Not authenticated", status: 401 });
+                return;
+            }
             const botId = req.params.botId;
-            const data = await this.botService.deleteById(botId);
+            const data = await this.botService.deleteById(botId, req.user);
             if (data && data.botType !== "General_Purpose") {
                 await VectorService.deleteTable(`vector_table_${botId}`);
             }
             sendResponse({ res, success: true, message: "Bot deleted successfully", status: 200 });
         } catch (error) {
+            if (error instanceof ForbiddenError) {
+                sendResponse({ res, success: false, message: error.message, status: 403 });
+                return;
+            }
             console.log(error);
             sendResponse({ res, success: false, message: "Failed to delete bot", status: 400 });
         }

@@ -1,5 +1,5 @@
 
-import mongoose, { Schema } from "mongoose";
+import mongoose from "mongoose";
 
 const Roles = ["USER", "CONFIG_ADMIN"] as const;
 
@@ -169,12 +169,17 @@ const LlmModelSchema = new mongoose.Schema(
     provider: { type: String, required: true },           // "openai" | "ollama" | "anthropic"
     endpoint: { type: String, trim: true, required: false },                            // API endpoint
     isActive: { type: Boolean, default: true },
+    description: { type: String, trim: true },            // shown in the deployed-models UI
+    tags: { type: [String], default: [] },                // free-form labels for filtering (e.g. "fast", "reasoning", "local")
     meta: {
       contextWindow: { type: String, required: true, trim: true },
+      maxOutputTokens: { type: Number, required: false }, // generation cap — distinct from contextWindow
       modelType: { type: String, enum: ["chat", "embedding", "code"], required: true, }, // chat | embedding | code
       inputPrice: { type: Number, required: false },
       outputPrice: { type: Number, required: false },
-      inputType: { type: String, enum: ["text", "image", "text|image"], required: true }          // "text" | "image" | "text||image"
+      inputType: { type: String, enum: ["text", "image", "text|image"], required: true },          // "text" | "image" | "text||image"
+      supportsTools: { type: Boolean, default: false },     // can this model be used as TOOL_MODEL (function calling)?
+      supportsStreaming: { type: Boolean, default: false }, // does the deployment support streamed responses?
     },
   },
   { timestamps: true }
@@ -184,8 +189,24 @@ LlmModelSchema.index({ provider: 1 });
 LlmModelSchema.index({ isActive: 1 });
 
 
+// Persisted login-attempt counters, keyed by "email|ip". Backs AuthService's
+// throttle so a restart or a second instance doesn't reset a lockout — a
+// plain in-process Map only protects a single, continuously-running process.
+// The TTL index drops the document itself once its window has passed, so
+// there is nothing to prune manually.
+const loginAttemptSchema = new mongoose.Schema(
+  {
+    key: { type: String, required: true, unique: true },
+    count: { type: Number, default: 0 },
+    resetAt: { type: Date, required: true },
+  },
+  { timestamps: true },
+);
+loginAttemptSchema.index({ resetAt: 1 }, { expireAfterSeconds: 0 });
+
 export const user = mongoose.model("user", userSchema);
 export const botProfile = mongoose.model("botProfile", botProfileSchema);
 export const KnowledgeBase = mongoose.model("KnowledgeBase", knowledgeBaseSchema);
 export const Tools = mongoose.model("Tools", ToolSchema);
 export const llmModel = mongoose.model("llmModel", LlmModelSchema);
+export const LoginAttempt = mongoose.model("LoginAttempt", loginAttemptSchema);

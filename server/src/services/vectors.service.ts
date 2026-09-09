@@ -96,13 +96,14 @@ class VectorService {
         );
       `);
 
-      // NOTE: vector_l2_ops does not match the `<=>` (cosine) operator used by
-      // searchVectors, so this index currently goes unused. Tracked separately
-      // — see "Known gaps" in docs/ARCHITECTURE.md.
+      // vector_cosine_ops matches the `<=>` (cosine) operator used by
+      // searchVectors — embeddings are L2-normalised, so this ranks
+      // identically to vector_l2_ops but lets Postgres actually use the
+      // index instead of falling back to a sequential scan.
       await client.query(`
         CREATE INDEX IF NOT EXISTS idx_${table}_embedding
         ON ${table}
-        USING ${indexType} (embedding vector_l2_ops)
+        USING ${indexType} (embedding vector_cosine_ops)
         ${indexOptions};
       `);
 

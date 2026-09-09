@@ -48,30 +48,46 @@ export class LlmModelService {
         provider: string;
         endpoint?: string;
         isActive?: boolean;
+        description?: string;
+        tags?: string[];
         meta: {
-            contextWindow: number;
+            contextWindow: string;
+            maxOutputTokens?: number;
             modelType: string;
             inputPrice?: number;
             outputPrice?: number;
-            inputType: string
+            inputType: string;
+            supportsTools?: boolean;
+            supportsStreaming?: boolean;
         };
     }) => {
         const newModel = new llmModel(modelData);
         return await newModel.save();
     };
 
-    // Update a model by id
+    // Update a model by id. Partial and possibly a partial `meta` too (e.g. the
+    // deployed-models screen's inline active/inactive toggle sends just
+    // { isActive } — findByIdAndUpdate with a plain object only sets the keys
+    // present, so a partial `meta` here would still replace the whole
+    // sub-document; callers that only touch one meta field should read-modify-
+    // write instead.
     updateById = async (id: string, updateData: Partial<{
         name: string;
         provider: string;
         endpoint?: string;
         isActive?: boolean;
-        meta?: {
-            contextWindow?: number;
-            type?: string;
+        description?: string;
+        tags?: string[];
+        meta?: Partial<{
+            contextWindow: string;
+            maxOutputTokens?: number;
+            modelType: string;
             inputPrice?: number;
             outputPrice?: number;
-        };
+            inputType: string;
+            supportsTools?: boolean;
+            supportsStreaming?: boolean;
+        }>;
     }>) => {
         return await llmModel.findByIdAndUpdate(id, updateData, { new: true, runValidators: true }).exec();
     };

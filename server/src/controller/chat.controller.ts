@@ -3,9 +3,27 @@ import { generateEmbedding } from "../llmServices/generateEmbedding";
 import { BotService } from "../services/bot.service";
 import { VectorService } from "../services/vectors.service";
 import { generateAnswer } from "../llmServices/generateAnswer";
-import axios from "axios";
 import { ToolService } from "../services/tool.service";
 import { improveTheToolAnswer } from "../llmServices/improveTheToolAnswer";
+
+const parsePositiveInt = (raw: string | undefined, fallback: number): number => {
+  const parsed = Number(raw);
+  return Number.isInteger(parsed) && parsed > 0 ? parsed : fallback;
+};
+
+const parsePositiveFloat = (raw: string | undefined): number | undefined => {
+  const parsed = Number(raw);
+  return Number.isFinite(parsed) && parsed > 0 ? parsed : undefined;
+};
+
+// Retrieval tuning. TOP_K bounds how many chunks reach the model; KB_MAX_DISTANCE
+// (cosine distance, lower = closer) drops chunks that matched but aren't
+// actually relevant — previously every search used LIMIT 10 with no cutoff.
+const TOP_K = parsePositiveInt(process.env.TOP_K, 5);
+const KB_MAX_DISTANCE = parsePositiveFloat(process.env.KB_MAX_DISTANCE);
+// ef_search should exceed the requested limit for HNSW to have room to find
+// the true nearest neighbours rather than just the first ones it walks past.
+const EF_SEARCH = Math.max(TOP_K * 4, 40);
 
 export class ChatController {
   botService = new BotService();
@@ -26,7 +44,6 @@ export class ChatController {
             tool: tool.toolData,
             args: tool.params,
           });
-          console.log(toolResponse)
           const answer = await improveTheToolAnswer({
             query: question,
             context: toolResponse.content,
@@ -54,11 +71,16 @@ export class ChatController {
           throw new Error("Bot not found or vectorTable is invalid");
         }
 
-        contextChunks = await VectorService.searchVectors({
+        const rawChunks = await VectorService.searchVectors({
           tableName: bot?.vectorTable || "",
           queryEmbedding,
-          options: {},
+          options: { limit: TOP_K, efSearch: EF_SEARCH },
         });
+
+        contextChunks =
+          KB_MAX_DISTANCE !== undefined
+            ? rawChunks.filter((c) => c.distance <= KB_MAX_DISTANCE)
+            : rawChunks;
 
         if (contextChunks.length === 0 && bot?.botType == "KB_Bot") {
           res.status(200).json({
@@ -92,142 +114,6 @@ export class ChatController {
         message: "An error occurred while processing your request",
       });
       return;
-    }
-  };
-
-  // Endpoint to handle streaming chat requests
-  streamChatBot = async (req: Request, res: Response) => {
-    try {
-      const baseModel = process.env.BASE_MODEL || "gemma3:4b";
-      const OLLAMA_BASE_URL =
-        process.env.OLLAMA_BASE_URL || "http://localhost:11434";
-      const { question, botId } = req.body;
-
-      const bot = await this.botService.readByBotId(botId);
-      if (!bot || typeof bot.vectorTable !== "string") {
-        throw new Error("Bot not found or vectorTable is invalid");
-      }
-      // Set headers for streaming
-      res.setHeader("Content-Type", "text/event-stream");
-      res.setHeader("Cache-Control", "no-cache");
-      res.setHeader("Connection", "keep-alive");
-
-      const originalPrompt = req.body.prompt;
-
-      // Validate input
-      if (!originalPrompt?.trim()) {
-        res.status(400).json({ error: "Prompt is required" });
-        return;
-      }
-
-      const queryEmbedding = await generateEmbedding(question);
-      const relevantChunks = await VectorService.searchVectors({
-        tableName: bot.vectorTable,
-        queryEmbedding,
-        options: {},
-      });
-
-      if (relevantChunks.length === 0) {
-        res.write("data: No relevant information found\n\n");
-        res.end();
-        return;
-      }
-
-      // Build prompt with Markdown instructions
-      const context = relevantChunks
-        .map((c, i) => `### Context Source ${i + 1}\n${c.content}`)
-        .join("\n\n");
-
-      const prompt = `You are a helpful assistant. 
-Respond using **Markdown formatting** with the following rules:
-
-- Use **bold** for key terms and important points.
-- Use \`inline code\` for technical terms, variables, or code references.
-- Use **bullet points** for steps, features, and lists.
-- Use **numbered lists** for sequential instructions.
-- Use **tables** where it improves clarity (comparisons, data, pros/cons).
-- Use fenced code blocks (\`\`\`) for code snippets and highlight with the correct language.
-- Keep responses **concise but clear** — no unnecessary fluff.
-- Support GFM (GitHub Flavored Markdown) — allow tables, strikethrough, and task lists.
-- If there is **no relevant context**, respond with: "I don't know."
-- For general questions, provide **factual, helpful, and well-structured answers** in Markdown.
-
-Context:
-${context}
-
-Question:
-${originalPrompt}
-
-Answer (in Markdown):
-`;
-
-      const ollamaStream = await axios.post(
-        `${OLLAMA_BASE_URL}/api/generate`,
-        {
-          model: baseModel,
-          prompt,
-          stream: true,
-          // Remove the 'format' parameter as Ollama doesn't support it directly
-          options: {
-            temperature: 0.7,
-          },
-        },
-        {
-          responseType: "stream",
-        },
-      );
-
-      ollamaStream.data.on("data", (chunk: Buffer) => {
-        const lines = chunk.toString().split("\n").filter(Boolean);
-
-        for (const line of lines) {
-          try {
-            const parsed = JSON.parse(line);
-
-            if (parsed.response) {
-              res.write(
-                `data: ${JSON.stringify({ text: parsed.response })}\n\n`,
-              );
-            }
-
-            if (parsed.done) {
-              res.write("event: end\ndata: {}\n\n");
-              res.end();
-              return;
-            }
-          } catch (err) {
-            console.warn("Non-JSON chunk:", line);
-          }
-        }
-      });
-
-      ollamaStream.data.on("end", () => {
-        res.write("event: end\ndata: {}\n\n");
-        res.end();
-      });
-
-      ollamaStream.data.on("error", (err: Error) => {
-        console.error("Stream error:", err.message);
-        res.write(
-          `event: error\ndata: ${JSON.stringify({ error: err.message })}\n\n`,
-        );
-        res.end();
-      });
-    } catch (error) {
-      console.error("Error in streamChatBot:", error);
-      if (!res.headersSent) {
-        res.status(500).json({
-          error: "Stream initialization failed",
-          details: error instanceof Error ? error.message : String(error),
-        });
-      } else {
-        res.write(
-          `event: error\ndata: ${JSON.stringify({
-            error: "Service unavailable",
-          })}\n\n`,
-        );
-        res.end();
-      }
     }
   };
 }

@@ -1,17 +1,9 @@
 import axios from "axios";
 
-type relevantChunks = {
-    id: number;
-    content: string;
-    metadata: Record<string, any>;
-    distance: number;
-};
-
 export const improveTheToolAnswer = async (
-    { query, context, systemPrompt, model = "llama3.2:latest" }: {
+    { query, context, systemPrompt }: {
         query: string,
         context: any,
-        model?: string,
         systemPrompt: string
     }
 ): Promise<string> => {

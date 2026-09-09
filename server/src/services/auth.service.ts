@@ -1,5 +1,5 @@
 import bcrypt from "bcryptjs";
-import { user } from "../models/shared.model";
+import { user, LoginAttempt } from "../models/shared.model";
 import {
   TokenService,
   type IssuedTokens,
@@ -47,37 +47,45 @@ export const toPublicUser = (doc: any): PublicUser => ({
 });
 
 /**
- * In-memory fixed-window throttle keyed on email+IP. Adequate for a
- * single-process on-prem deployment; move to a shared store if the API is
- * ever horizontally scaled.
+ * Fixed-window throttle keyed on email+IP, persisted in Mongo so it survives
+ * a restart and holds across replicas — a plain in-process Map only protects
+ * a single, continuously-running process. The LoginAttempt TTL index (see
+ * shared.model.ts) drops each document once its own window has passed, so
+ * there is nothing to sweep manually.
  */
 class LoginThrottle {
-  private attempts = new Map<string, { count: number; resetAt: number }>();
-
-  check(key: string): void {
-    const entry = this.attempts.get(key);
+  async check(key: string): Promise<void> {
+    const entry = await LoginAttempt.findOne({ key }).lean().exec();
     const now = Date.now();
-    if (!entry || entry.resetAt <= now) return;
+    // Treat a not-yet-TTL-swept document as expired too — Mongo's TTL
+    // monitor runs on its own cadence (~60s), not the instant resetAt passes.
+    if (!entry || new Date(entry.resetAt).getTime() <= now) return;
     if (entry.count >= env.auth.loginMaxAttempts) {
-      throw new TooManyAttemptsError(Math.ceil((entry.resetAt - now) / 1000));
+      throw new TooManyAttemptsError(
+        Math.ceil((new Date(entry.resetAt).getTime() - now) / 1000),
+      );
     }
   }
 
-  fail(key: string): void {
+  async fail(key: string): Promise<void> {
     const now = Date.now();
-    const entry = this.attempts.get(key);
-    if (!entry || entry.resetAt <= now) {
-      this.attempts.set(key, {
-        count: 1,
-        resetAt: now + env.auth.loginWindowSeconds * 1000,
-      });
+    const entry = await LoginAttempt.findOne({ key }).exec();
+    if (!entry || entry.resetAt.getTime() <= now) {
+      // Upsert is atomic, so concurrent first-failures for the same key
+      // cannot race into a duplicate-key error on the unique `key` index.
+      await LoginAttempt.findOneAndUpdate(
+        { key },
+        { key, count: 1, resetAt: new Date(now + env.auth.loginWindowSeconds * 1000) },
+        { upsert: true },
+      ).exec();
       return;
     }
     entry.count += 1;
+    await entry.save();
   }
 
-  clear(key: string): void {
-    this.attempts.delete(key);
+  async clear(key: string): Promise<void> {
+    await LoginAttempt.deleteOne({ key }).exec();
   }
 }
 
@@ -103,7 +111,7 @@ export class AuthService {
   }): Promise<{ tokens: IssuedTokens; user: PublicUser }> => {
     const normalisedEmail = email.trim().toLowerCase();
     const throttleKey = `${normalisedEmail}|${context.ip ?? "unknown"}`;
-    this.throttle.check(throttleKey);
+    await this.throttle.check(throttleKey);
 
     const found = await user
       .findOne({ email: normalisedEmail })
@@ -117,7 +125,7 @@ export class AuthService {
     const passwordMatches = await bcrypt.compare(password, hash);
 
     if (!found || !passwordMatches) {
-      this.throttle.fail(throttleKey);
+      await this.throttle.fail(throttleKey);
       throw new InvalidCredentialsError();
     }
 
@@ -125,7 +133,7 @@ export class AuthService {
       throw new AccountDisabledError();
     }
 
-    this.throttle.clear(throttleKey);
+    await this.throttle.clear(throttleKey);
 
     const tokens = await this.tokenService.issueTokensForUser(
       { _id: found._id, email: found.email, roles: found.roles as string[] },

@@ -1,4 +1,4 @@
-import { Bot, Computer, Home } from "lucide-react";
+import { Bot, Computer, Home, Server } from "lucide-react";
 
 import {
   Sidebar,
@@ -34,6 +34,7 @@ const items: NavItem[] = [
   { title: "Home", to: "/", icon: Home },
   { title: "Hub", to: "/hub-overview", icon: Computer },
   { title: "Agents", to: "/agent-overview", icon: Bot },
+  { title: "LLM Models", to: "/llm-overview", icon: Server },
 ];
 
 export function AppSidebar({

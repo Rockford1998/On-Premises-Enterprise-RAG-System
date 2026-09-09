@@ -155,8 +155,10 @@ and the file on disk.
                                   │        generateEmbedding(question)
                                   │        VectorService.searchVectors()
                                   │          cosine `<=>`, ORDER BY distance
-                                  │          (TOP_K env exists but the call
-                                  │           passes `options: {}` → LIMIT 10)
+                                  │          limit = TOP_K (env, default 5),
+                                  │          efSearch = max(TOP_K*4, 40);
+                                  │          KB_MAX_DISTANCE (env, optional)
+                                  │          drops chunks past that distance
                                   │                     │
                                   │        0 chunks && KB_Bot → 200 { success:false }
                                   │                     │
@@ -170,9 +172,10 @@ and the file on disk.
 
 Tool failure is non-fatal: the catch block falls through to normal RAG.
 
-`POST /streamChat` is a separate SSE path that streams Ollama tokens directly. It
-does **not** run tool detection and reads the question from `req.body.prompt`
-rather than `question` — it is effectively a second, older code path.
+`POST /streamChat` (the older SSE path that bypassed tool detection and read
+`req.body.prompt` instead of `question`) has been removed — it was unused by
+the client and diverged from `/chat`. Streaming support would need to be
+rebuilt as part of `/chat` itself rather than as a second path.
 
 ---
 
@@ -220,12 +223,23 @@ CREATE TABLE vector_table_<botId> (
   created_at TIMESTAMPTZ DEFAULT NOW(),
   updated_at TIMESTAMPTZ DEFAULT NOW()   -- maintained by trigger
 );
-CREATE INDEX ... USING hnsw (embedding vector_l2_ops) WITH (m = 16, ef_construction = 200);
+CREATE INDEX ... USING hnsw (embedding vector_cosine_ops) WITH (m = 16, ef_construction = 200);
 ```
 
 768 dimensions is hard-coded to match `nomic-embed-text`. Changing the embedding
 model to one with a different dimensionality requires recreating every table
-(`bot.controller.ts` carries the literal `768`).
+(`bot.controller.ts` carries the literal `768`) — this is not a hypothetical:
+pointing `EMBEDDING_MODEL` at a model with a different output size (e.g.
+`qwen3-embedding:4b`, 2560-dim) without migrating existing tables produces a
+`different vector dimensions` error the moment a query embedding is compared
+against previously-stored 768-dim rows.
+
+`vector_cosine_ops` (not `vector_l2_ops`) is required for the index to actually
+be used: `searchVectors` orders by the `<=>` (cosine) operator, and Postgres
+cannot satisfy a cosine ordering from an L2 index — every search was a
+sequential scan until this was fixed. Existing tables need reindexing; run
+`npm run migrate:hnsw-cosine` once (see
+[migrations/rebuild-hnsw-cosine-indexes.ts](../server/src/migrations/rebuild-hnsw-cosine-indexes.ts)).
 
 Isolation is **per bot, per table** — that is the confidentiality boundary.
 
@@ -392,7 +406,43 @@ in-memory access token does not survive a reload but the cookie does.
 `POST /auth/login`, `POST /auth/refresh`, `POST /auth/logout`. Everything else
 requires a valid Bearer token.
 
-> Authentication only. There are still **no ownership checks** — see §10.
+> Authentication proves identity. Authorization (does this caller own this
+> bot?) is a separate layer — see §8.2.
+
+### 8.2 Authorization
+
+[util/botAccess.ts](../server/src/util/botAccess.ts) is the ownership check
+for bot-scoped resources (the bot itself, its KB entries, its tools). It is
+called from the **service** layer, not controllers, matching this repo's
+"services own the models" convention — a controller loads `req.user` (set by
+`authenticateJWT`) and passes it through as `actor`; the service throws
+`ForbiddenError` (mapped to 403) if the actor isn't allowed.
+
+Two tiers:
+
+| Tier | Who | Grants |
+|---|---|---|
+| **view** | owner, a `botUsers` member, `CONFIG_ADMIN`, or anyone when `bot.publicAccess` | read the bot, its KB entries, its tools |
+| **manage** | owner, a `botUsers` member, or `CONFIG_ADMIN` | mutate the bot's KB/tools, and the bot's own settings |
+
+Deleting the bot profile itself is narrower than "manage" — owner or admin
+only, so a shared `botUsers` member can use and configure a bot's KB/tools but
+cannot remove the bot out from under its owner (`assertCanDelete`).
+
+Applied to: `bots` (create requires `owner` to match the caller unless admin;
+read/update/delete check the target bot), `kb` (per-file and per-bot reads,
+uploads, deletes — `GET /kb`, the unscoped list-all across every bot, is
+`CONFIG_ADMIN`-only instead, since it has no single bot to check ownership
+against), `tools` (reading a tool is treated as sensitive as reading the bot,
+since a tool's stored `auth` can hold plaintext API keys/credentials).
+
+**Not covered**: `/chat` and `/streamChat`'s removal aside, chatting with a
+bot is still unauthenticated-by-bot — any authenticated user can converse
+with any bot regardless of `publicAccess`/`botUsers`. This was left out of
+this pass deliberately to avoid changing the primary demo flow's behavior;
+closing it would mean threading `req.user` through
+`ChatController.chatBot` → `ToolService.detectToolUse` /
+`BotService.readByBotId` the same way the CRUD routes do.
 
 ### Endpoint map
 
@@ -402,8 +452,8 @@ requires a valid Bearer token.
 | Users    | `GET /users`, `GET /users/email/:email`, `GET /users/username/:userName`, `POST /users`, `PUT /users/email/:email`, `DELETE /users/email/:email` |
 | Bots     | `GET /bots`, `GET /bots/:botId`, `GET /bots/owner/:owner`, `POST /bots`, `PUT /bots/:botId`, `DELETE /bots/:botId` |
 | LLM      | `GET /llm`, `GET /llm/:llmId`, `POST /llm`, `PUT /llm/:botId`, `DELETE /llm/:botId` |
-| KB       | `GET /kb`, `GET /kb/:id`, `GET /kb/bot-id/:botId`, `GET /kb/download/:id`, `POST /kb/upload/:botId`, `POST /kb/delete` |
-| Chat     | `POST /chat`, `POST /streamChat` |
+| KB       | `GET /kb` (CONFIG_ADMIN only — unscoped across every bot), `GET /kb/:id`, `GET /kb/bot-id/:botId`, `GET /kb/download/:id`, `POST /kb/upload/:botId`, `POST /kb/delete` |
+| Chat     | `POST /chat` |
 | Tools    | `GET /tools/bot/:botId`, `GET /tools/:id`, `POST /tools`, `PUT /tools/:id`, `DELETE /tools/:id` |
 | Metadata | `GET /metadata/bot-type`, `GET /metadata/models` |
 
@@ -462,46 +512,56 @@ Auth flow:
 
 Things the code does not yet do; useful context before extending it (see also
 [todo.txt](../todo.txt), [server/improvement](../server/improvement),
-[server/tobe.md](../server/tobe.md)):
+[server/tobe.md](../server/tobe.md)).
 
-- **HNSW index is never used.** The index is built with `vector_l2_ops` but
-  every query orders by `<=>` (cosine), and Postgres cannot use an L2 index for
-  a cosine ordering — so **every similarity search is a sequential scan**.
-  Embeddings are already L2-normalised, so switching to `vector_cosine_ops`
-  gives identical rankings with the index actually engaged. Requires
-  recreating indexes on existing `vector_table_*`.
-- **`TOP_K` is unused** — `chat.controller.ts` calls `searchVectors` with
-  `options: {}`, so the limit defaults to 10 and `efSearch` is never set. The
-  plumbing now works (see §7.1); the caller just does not pass anything. There
-  is also no distance threshold, so irrelevant chunks are always included.
-- **No authorization** — `authenticateJWT` proves *who* you are; no endpoint
-  checks that the caller owns the bot/KB/tool it is mutating. Any authenticated
-  user can read or delete any bot, download any document, and read any tool's
-  stored API key. `botUsers` and `roles` are stored but not enforced. A
-  `requireRole` helper exists in the middleware but is not yet applied anywhere.
+### Still open
+
 - **Secrets in the repo** — `.env.dev/.env.prod/.env.test` and `client/app/.env`
   are still tracked by git (a `.env.example` and `.gitignore` rules now exist,
-  but the files were not untracked). The WeatherAPI key in `.env.dev` and
-  `Readme.md` should be rotated. Tool credentials are stored plaintext in Mongo.
+  but the files were not untracked, and dev is actively depending on the
+  tracked `.env.dev` right now — untracking/rotating needs a deliberate pass,
+  not a drive-by edit). The WeatherAPI key in `.env.dev` and `Readme.md` should
+  be rotated once that happens. Tool credentials are stored plaintext in Mongo.
 - **Refresh tokens are per-user-document**, not a separate collection, so
   expiry relies on `prune` running rather than a Mongo TTL index. Sessions are
   therefore only cleaned up when that user next logs in or refreshes.
-- **Login throttling is in-process** — a `Map` in `AuthService`. It resets on
-  restart and is per-instance, so it would not hold across multiple replicas.
-- **Upload filenames are not sanitised** on write (`file.originalname` straight
-  into the path); reads use `path.basename`, writes do not. Neither `botId` nor
-  the filename is checked for `../` before `path.join`, and multer has no file
-  type or size limit.
-- **Ingestion rollback is not atomic.** `processFile` deletes vectors, the
-  Mongo record and the file individually on failure; a crash mid-rollback
-  leaves the three stores inconsistent. `withTransaction` now exists for the
-  Postgres half, but Mongo and the filesystem cannot join that transaction.
-- **`streamChat`** is unused by the client and diverges from `/chat` (no tools,
-  different request field).
-- **Dead code** — an unused `models/tool.schema.ts`, a legacy
-  `utils/AxiosInterceptor.tsx`, and `generateStreamAnswer` /
-  `promptImprovement`, neither of which is called.
-- **No test framework, no linting on the server, no CI.** The client has ~60
+- **Ingestion rollback is not fully atomic.** The Postgres half now is — every
+  chunk is embedded in memory first and written in a single
+  `batchInsertVectors` statement, so a partway failure leaves nothing in
+  Postgres to clean up (see §4). What's left: a crash between that insert
+  committing and the Mongo `KnowledgeBase.create()` call still leaves vectors
+  indexed with no corresponding Mongo record. Closing that fully would need a
+  saga/outbox pattern across Mongo and Postgres, which don't share a
+  transaction.
+- **`/chat` has no per-bot authorization** — see §8.2's "Not covered".
+- **No test framework, no linting, no CI on the client.** The server now has
+  all three (§10 "Fixed", below); the client still has neither, and ~60
   pre-existing type errors (mostly in `agent.tools.$toolId.tsx` and the
   vendored `shadcn-io/ai` components) that `npm run build` will trip over.
 - **`temp project/`** is an unrelated Postgres scratch app, not part of the system.
+
+### Fixed
+
+- **HNSW index now uses `vector_cosine_ops`**, matching the `<=>` operator
+  `searchVectors` orders by — previously every similarity search was a
+  sequential scan regardless of the index. New tables get this automatically;
+  existing ones need `npm run migrate:hnsw-cosine` once (§7 has the details).
+- **`TOP_K` and a distance cutoff are wired in** — `chat.controller.ts` passes
+  `limit: TOP_K` (env, default 5) and `efSearch` to `searchVectors`, and drops
+  chunks past `KB_MAX_DISTANCE` (env, optional) before they reach the model.
+- **Authorization** — `util/botAccess.ts` + service-layer checks now cover
+  bot/KB/tool CRUD; see §8.2.
+- **Login throttling is Mongo-backed** (`LoginAttempt`, TTL-indexed on
+  `resetAt`), not an in-process `Map` — a restart or a second instance no
+  longer resets every lockout.
+- **Upload filenames are sanitised consistently** — `uploadMiddleware.ts`
+  already ran `path.basename` on both `botId` and the filename when writing;
+  `knowledgebase.service.ts`'s `processFile` now does the same before it
+  re-derives the file path for hashing, instead of trusting the raw param.
+- **Dead code removed** — `models/tool.schema.ts`, `utils/AxiosInterceptor.tsx`,
+  `generateStreamAnswer`, `promptImprovement`, and the `/streamChat` path
+  itself are all gone.
+- **Server has tests, linting, and CI** — Jest (`npm test`, mocked-model unit
+  tests for `TokenService` rotation/reuse-detection and `botAccess`, plus pure
+  tests for `renderTemplateByData`), ESLint (`npm run lint`), and
+  `.github/workflows/ci.yml` running typecheck + lint + test on push/PR.
