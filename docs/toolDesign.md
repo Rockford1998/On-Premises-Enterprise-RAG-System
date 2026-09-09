@@ -216,3 +216,57 @@ toolExecution (new DATABASE branch)
 - Does `LIMIT` injection need real SQL parsing too (a subquery or CTE can
   make naive string-append wrong), or is a simpler heuristic acceptable for
   a first version?
+
+---
+
+## 6. "Code interpreter" — shipped, but as Knowledge Base ingestion, not a Tool
+
+Worth flagging explicitly: despite being requested as a "code interpreter
+tool," this is **not** a `Tools` entry and doesn't go through
+`detectToolUse`/`toolExecution` at all. It's a new *upload format* for the
+existing Knowledge Base pipeline — the answer to "upload a codebase and ask
+issue-resolution questions" turned out to be "let code be RAG context," not
+"let the model execute code." No code from the archive is ever run.
+
+**Flow:** upload a `.zip` via the same `/kb/upload/:botId` endpoint used for
+PDFs/DOCX today → [uploadMiddleware.ts](../server/src/middlewares/uploadMiddleware.ts)
+now accepts the `.zip` extension → `knowledgebase.service.ts`'s `processFile`
+detects the `.zip` extension and branches to `processZipFile` instead of the
+single-document `readFile` path.
+
+**Extraction:** [util/extractZipEntries.ts](../server/src/util/extractZipEntries.ts)
+reads every entry, keeping only common source/text extensions (`.ts .py .go
+.md .json .css` etc.), and skips:
+
+- noise directories — `node_modules`, `.git`, `dist`, `build`, `vendor`,
+  `.next`, `venv`, `__pycache__`, `coverage`, `target`, `.idea`, `.vscode`
+- entries over 2 MB
+- entries whose content contains a NUL byte (mis-tagged binary asset)
+- more than 500 entries total (zip-bomb guard)
+
+**Ingestion:** each surviving entry becomes its **own independent KB
+document** — same dedup-by-hash, chunk, embed, and store path a single
+uploaded file goes through today, factored out of `processFile` into a
+shared `ingestText` helper so both paths behave identically. The entry's
+content is hashed directly (no on-disk file to hash, unlike a normal upload),
+and its KB `fileName` is qualified as `<archive>.zip/<path-inside-zip>` so
+two different zips can both contain `index.ts` without colliding.
+
+**Per-entry failure isolation:** unlike a single-file upload (still
+all-or-nothing — one failure rolls back the whole thing), one bad or
+duplicate file inside a 200-file archive does **not** discard the 199 that
+already succeeded. `processZipFile` aggregates `created`/`duplicate`/`failed`
+counts and returns a summary message; the archive itself is only rolled back
+if *nothing* in it landed.
+
+**Chat-time behavior:** completely unchanged — extracted code is retrieved
+through the bot's existing vector search / RAG flow in `chat.controller.ts`,
+same as any other KB chunk. "What's the standard way to resolve X" works
+because the model has the actual source in context, not because of any new
+reasoning path.
+
+**Tests:** [util/__tests__/extractZipEntries.test.ts](../server/src/util/__tests__/extractZipEntries.test.ts)
+— extraction with relative paths, noise-dir skipping, extension allowlist,
+binary detection, empty-archive handling.
+
+**Dependency added:** `adm-zip` (+ `@types/adm-zip`).

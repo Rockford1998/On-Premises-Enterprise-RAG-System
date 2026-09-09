@@ -2,8 +2,13 @@ import multer from "multer";
 import fs from "fs";
 import path from "path";
 
-/** Extensions readFile() can actually parse. Keep in step with util/readFile.ts. */
-export const SUPPORTED_UPLOAD_EXTENSIONS = ["pdf", "docx", "doc", "pptx", "txt"] as const;
+/**
+ * Extensions the knowledge-base upload accepts. Everything but "zip" is
+ * parsed by readFile() (keep those in step with util/readFile.ts) — "zip" is
+ * handled separately in knowledgebase.service.ts's processZipFile, which
+ * extracts and ingests each source/text file inside it individually.
+ */
+export const SUPPORTED_UPLOAD_EXTENSIONS = ["pdf", "docx", "doc", "pptx", "txt", "zip"] as const;
 
 const MAX_FILE_BYTES = Number(process.env.MAX_UPLOAD_BYTES) || 25 * 1024 * 1024; // 25 MB
 

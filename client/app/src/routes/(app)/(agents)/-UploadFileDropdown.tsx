@@ -14,9 +14,9 @@ import { toast } from "sonner";
 import { Input } from "@/shadcn/ui/input";
 import { useAgentContext } from "./agent-details.$botId";
 
-type FileType = "pdf" | "docx" | "doc" | "pptx" | "txt";
+type FileType = "pdf" | "docx" | "doc" | "pptx" | "txt" | "zip";
 
-const SUPPORTED_FILE_TYPES: FileType[] = ["pdf", "docx", "doc", "pptx", "txt"];
+const SUPPORTED_FILE_TYPES: FileType[] = ["pdf", "docx", "doc", "pptx", "txt", "zip"];
 
 type UploadFileDropdownProps = {
   refreshData: () => void;
