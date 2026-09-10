@@ -47,7 +47,6 @@ export class LlmModelController {
     }
     readAvaibleModelsMetadata = async (req: Request, res: Response) => {
         try {
-            console.log("call this service")
             const models = await this.llmModelService.readAllModelsMetadata()
             sendResponse({ res, success: true, message: "LLM models retrieved successfully", data: models, status: 200 })
         } catch (error) {

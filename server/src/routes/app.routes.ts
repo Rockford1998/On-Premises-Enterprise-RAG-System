@@ -2,6 +2,7 @@
 import { NextFunction, Request, Response, Router } from "express";
 import multer from "multer";
 import { KnowledgeBaseController } from "../controller/kb.controller";
+import { KnowledgeConnectionController } from "../controller/knowledgeConnection.controller";
 import { upload, UnsupportedFileTypeError } from "../middlewares/uploadMiddleware";
 import { sendResponse } from "../util/sendResponse";
 import { UserController } from "../controller/user.controller";
@@ -18,6 +19,7 @@ const router = Router();
 const userController = new UserController();
 const botController = new BotController();
 const knowledgeBaseController = new KnowledgeBaseController();
+const knowledgeConnectionController = new KnowledgeConnectionController();
 const chatController = new ChatController();
 const toolController = new ToolController();
 const authController = new AuthController();
@@ -88,6 +90,17 @@ router.get("/kb/bot-id/:botId", knowledgeBaseController.readBybotId)
 router.get("/kb/download/:id", knowledgeBaseController.downloadFile)
 router.post("/kb/upload/:botId", upload.single("file"), handleUploadErrors, knowledgeBaseController.addKnowledgeBase);
 router.post("/kb/delete", knowledgeBaseController.deleteKnowledgeBase)
+
+// Knowledge-base source connections (Google Drive sync). The OAuth callback
+// is registered here but listed in PUBLIC_ROUTES in auth.middleware.ts —
+// Google redirects the bare browser to it with no Authorization header.
+router.post("/kb/connections/:botId", knowledgeConnectionController.startConnect);
+router.get("/kb/connections/bot/:botId", knowledgeConnectionController.listConnections);
+router.get("/kb/connections/google/callback", knowledgeConnectionController.completeConnect);
+router.put("/kb/connections/:connectionId/folder", knowledgeConnectionController.setFolder);
+router.post("/kb/connections/:connectionId/sync", knowledgeConnectionController.triggerSync);
+router.get("/kb/connections/:connectionId/logs", knowledgeConnectionController.getLogs);
+router.delete("/kb/connections/:connectionId", knowledgeConnectionController.disconnect);
 
 // Endpoint to handle chat requests
 router.post("/chat", chatController.chatBot);

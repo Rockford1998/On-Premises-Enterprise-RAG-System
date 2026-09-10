@@ -10,6 +10,7 @@ import { UploadFileDropdown } from "../-UploadFileDropdown";
 import { Route } from "../agent-details.$botId";
 import { DataTable } from "@/routes/-components/example-components/DataTable";
 import { KnowledgeContentDialog } from "./KnowledgeContentDialog";
+import { Badge } from "@/shadcn/ui/badge";
 //
 
 
@@ -91,7 +92,19 @@ export const Tabknowledge = () => {
     },
     {
       accessorKey: "type",
-      header: "Type",
+      header: "File type",
+    },
+    {
+      id: "sourceType",
+      header: "Source",
+      cell: ({ row }) => {
+        const sourceType = row.original.sourceType;
+        return (
+          <Badge variant={sourceType === "google_drive" ? "secondary" : "outline"}>
+            {sourceType === "google_drive" ? "Google Drive" : "Uploaded"}
+          </Badge>
+        );
+      },
     },
     {
       header: "Content",

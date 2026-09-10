@@ -118,6 +118,69 @@ Deduplication is by **content hash**, so re-uploading an unchanged file is a no-
 Deletion (`POST /kb/delete`) removes all three copies: vectors, the Mongo document,
 and the file on disk.
 
+### 4.1 Google Drive sync (connections)
+
+A second, persistent ingestion path alongside manual upload: a bot can hold one
+or more **connections** to an external source (today: Google Drive only) that
+get re-synced on demand rather than imported once.
+
+```
+POST /kb/connections/:botId                     KnowledgeConnectionController.startConnect
+   │  creates KnowledgeConnection{status:"pending", stateToken}
+   ▼
+{ authUrl }  ──► browser ──► Google consent screen ──► redirect
+   │
+   ▼
+GET /kb/connections/google/callback  (PUBLIC — see auth.middleware.ts)
+   │  looks up the connection by stateToken (CSRF defense: no bearer token
+   │  is available on this request), exchanges the code, encrypts the
+   │  refresh token (util/crypto.ts, AES-256-GCM)
+   ▼
+KnowledgeConnection{status:"connected", accountEmail, refreshTokenEncrypted}
+
+PUT /kb/connections/:connectionId/folder  { folderId }   — Drive folder to sync
+
+POST /kb/connections/:connectionId/sync                  KnowledgeConnectionService.triggerSync
+   │  refuses if a KnowledgeSyncLog with status:"running" already exists for
+   │  this connection (that status *is* the concurrency guard — no separate
+   │  boolean)
+   │  creates the "running" log, fires runSync() WITHOUT awaiting, returns
+   │  { logId } immediately — same no-queue background-work pattern used
+   │  nowhere else in this codebase today, because there is no queue
+   ▼
+runSync(): list the Drive folder → diff against existing KnowledgeBase rows
+for this connectionId, keyed by externalId (the Drive file id):
+   • new Drive file                          → download, readFile(), ingestText()  → "created"
+   • existing row, md5Checksum changed        → delete old vectors+row, re-ingest    → "updated"
+   • existing row, md5Checksum unchanged      → nothing to do                       → "skipped"
+   • existing row, file gone from the folder  → delete vectors+row+cached file      → "deleted"
+   (each file wrapped in its own try/catch, same isolation as processZipFile)
+   ▼
+KnowledgeSyncLog{status:"completed", summary, fileResults}
+KnowledgeConnection{lastSyncAt, lastSyncStatus, lastSyncSummary}
+```
+
+Every Drive-sourced `KnowledgeBase` row carries `sourceType:"google_drive"`,
+`connectionId`, `externalId` and `externalChecksum` (Drive's `md5Checksum`) —
+manual uploads default to `sourceType:"upload"` and leave the rest unset.
+Downloaded files land under `uploads/<botId>/drive/`, kept separate from
+manual uploads so same-named files can't collide, then go through the same
+`readFile()` → `ingestText()` path as a manual upload.
+
+Credentials are per-connection (each goes through its own OAuth consent, not
+one shared service-account key), so different connections on the same
+deployment can point at different Google accounts. Disconnecting a
+connection (`DELETE /kb/connections/:connectionId`) stops future syncs and
+drops the stored credential; it does **not** cascade-delete content that
+connection already synced — that only happens via the normal delete path or
+automatically on a later sync if the source file is gone from Drive.
+
+Requires `GOOGLE_OAUTH_CLIENT_ID`/`GOOGLE_OAUTH_CLIENT_SECRET`/
+`GOOGLE_OAUTH_REDIRECT_URI` and `CREDENTIALS_ENCRYPTION_KEY` (see
+`.env.example`); unset by default so a deployment that never connects a
+Drive source isn't forced to configure it — `util/googleDrive.ts` throws a
+clear error the moment a connection endpoint is actually used without them.
+
 ---
 
 ## 5. Query pipeline (chat)

@@ -18,6 +18,7 @@ const PUBLIC_ROUTES: ReadonlyArray<{ method: string; path: string }> = [
   { method: "POST", path: "/auth/login" },
   { method: "POST", path: "/auth/refresh" },
   { method: "POST", path: "/auth/logout" },
+  { method: "GET", path: "/kb/connections/google/callback" }, // Google redirects the bare browser here
 ];
 
 const isPublic = (req: Request): boolean => {

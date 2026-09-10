@@ -74,10 +74,40 @@ export class KnowledgeBaseService {
 
     }
 
+    // Removes one previously-synced entry (vectors + Mongo row + cached local
+    // file). Used by KnowledgeConnectionService during a re-sync, both when a
+    // file's content changed (delete-then-reingest) and when it disappeared
+    // from the Drive folder entirely. Keyed by connectionId+externalId rather
+    // than fileName — unlike deleteKnowledgeBase, which is the manual-delete
+    // path and keys on fileName because that's all the UI has, two synced
+    // files can share a name.
+    deleteSyncedEntry = async ({
+        connectionId,
+        externalId,
+        vectorTable,
+    }: {
+        connectionId: string;
+        externalId: string;
+        vectorTable: string;
+    }): Promise<void> => {
+        const entry = await KnowledgeBase.findOne({ connectionId, externalId }).exec();
+        if (!entry) return;
+
+        await VectorService.deleteOutdatedKnowledgeByFileHash({ fileHash: entry.fileHash, tableName: vectorTable });
+        await KnowledgeBase.deleteOne({ _id: entry._id });
+
+        if (entry.downloadUrl) {
+            const filePath = path.join(__dirname, "..", "..", entry.downloadUrl);
+            if (fs.existsSync(filePath)) {
+                fs.unlinkSync(filePath);
+            }
+        }
+    };
+
     // Shared chunk → embed → store core. Used for both a single uploaded
     // file and each individual file extracted from a .zip, so both paths
     // get identical dedup, chunking, and rollback behaviour.
-    private ingestText = async ({
+    ingestText = async ({
         botId,
         vectorTable,
         fileName,
@@ -87,6 +117,10 @@ export class KnowledgeBaseService {
         fileSize,
         source,
         downloadUrl,
+        sourceType,
+        connectionId,
+        externalId,
+        externalChecksum,
     }: {
         botId: string;
         vectorTable: string;
@@ -97,6 +131,10 @@ export class KnowledgeBaseService {
         fileSize: number;
         source: string;
         downloadUrl: string;
+        sourceType?: "upload" | "google_drive";
+        connectionId?: string;
+        externalId?: string;
+        externalChecksum?: string;
     }): Promise<IngestOutcome> => {
         const alreadyExists = await VectorService.CheckIfkBPresentByFileHash({ fileHash, TABLE_NAME: vectorTable });
         if (alreadyExists) {
@@ -165,6 +203,10 @@ export class KnowledgeBaseService {
             source,
             downloadUrl,
             chunksTotal: embedded.length,
+            sourceType,
+            connectionId,
+            externalId,
+            externalChecksum,
         });
 
         return {

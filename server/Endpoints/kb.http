@@ -31,3 +31,43 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4YzMxZWZlN
 "fileName":"resume.pdf",
  "botId":"bot_mfsfekoi_Z96YMW"
 }
+
+
+### --- Knowledge base connections (Google Drive sync) ---
+### Requires GOOGLE_OAUTH_CLIENT_ID/SECRET/REDIRECT_URI and
+### CREDENTIALS_ENCRYPTION_KEY set — see .env.example.
+
+### 1. Start a connection — returns { connectionId, authUrl }; open authUrl in
+###    a browser and consent, Google redirects to the public callback route.
+POST http://localhost:3000/kb/connections/bot_mfsfekoi_Z96YMW
+Authorization: Bearer <token>
+
+
+### 2. List connections for a bot
+GET http://localhost:3000/kb/connections/bot/bot_mfsfekoi_Z96YMW
+Authorization: Bearer <token>
+
+
+### 3. Set the Drive folder to sync (paste the folder ID from its Drive URL)
+PUT http://localhost:3000/kb/connections/<connectionId>/folder
+Content-Type: application/json
+Authorization: Bearer <token>
+
+{
+  "folderId": "1AbCDeFGhijKLmNoPQRstuVWxyz0123"
+}
+
+
+### 4. Trigger a sync — returns { logId, status: "pending" } immediately, runs in the background
+POST http://localhost:3000/kb/connections/<connectionId>/sync
+Authorization: Bearer <token>
+
+
+### 5. View sync run history
+GET http://localhost:3000/kb/connections/<connectionId>/logs
+Authorization: Bearer <token>
+
+
+### 6. Disconnect (keeps already-synced KB entries, stops future syncs)
+DELETE http://localhost:3000/kb/connections/<connectionId>
+Authorization: Bearer <token>

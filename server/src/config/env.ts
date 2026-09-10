@@ -146,4 +146,25 @@ export const env = {
     loginMaxAttempts: seconds("LOGIN_MAX_ATTEMPTS", 10),
     loginWindowSeconds: seconds("LOGIN_WINDOW_SECONDS", 15 * 60),
   },
+
+  /**
+   * Google Drive knowledge-base sync. Left unset by default — a deployment
+   * that never connects a Drive source shouldn't be forced to register an
+   * OAuth client. `util/googleDrive.ts` throws a clear error the moment a
+   * connection endpoint is actually used without these configured, instead
+   * of failing at import time like the required() secrets above.
+   */
+  googleOAuth: {
+    clientId: optional("GOOGLE_OAUTH_CLIENT_ID", ""),
+    clientSecret: optional("GOOGLE_OAUTH_CLIENT_SECRET", ""),
+    redirectUri: optional("GOOGLE_OAUTH_REDIRECT_URI", ""),
+  },
+
+  /**
+   * Base64-encoded 32-byte key used to encrypt Drive refresh tokens at rest
+   * (AES-256-GCM, see util/crypto.ts). Same "no fallback literal" reasoning
+   * as JWT_SECRET — an empty/default key would make stored credentials
+   * trivially decryptable.
+   */
+  credentialsEncryptionKey: optional("CREDENTIALS_ENCRYPTION_KEY", ""),
 } as const;

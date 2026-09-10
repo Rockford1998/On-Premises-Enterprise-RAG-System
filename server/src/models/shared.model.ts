@@ -90,11 +90,91 @@ const knowledgeBaseSchema = new mongoose.Schema(
     type: { type: String, required: true, trim: true },
     downloadUrl: { type: String, required: true },
     chunksTotal: { type: Number, required: true },
+    // "upload" (default) covers both the manual single-file and zip paths.
+    // "google_drive" entries additionally carry connectionId/externalId/
+    // externalChecksum so a re-sync can tell which Drive file a row came
+    // from and whether its content has changed.
+    sourceType: { type: String, enum: ["upload", "google_drive"], default: "upload" },
+    connectionId: { type: String },
+    externalId: { type: String },
+    externalChecksum: { type: String },
   },
   { timestamps: true },
 );
 knowledgeBaseSchema.index({ botId: 1 });
 knowledgeBaseSchema.index({ fileName: 1 });
+knowledgeBaseSchema.index({ connectionId: 1, externalId: 1 });
+
+// A per-bot connection to an external knowledge source. Google Drive is the
+// only provider today; `provider` is a string (not hard-coded to one value)
+// so a second provider doesn't need a schema migration.
+const knowledgeConnectionSchema = new mongoose.Schema(
+  {
+    botId: { type: String, required: true },
+    provider: { type: String, enum: ["google_drive"], required: true },
+    status: {
+      type: String,
+      enum: ["pending", "connected", "error", "disconnected"],
+      default: "pending",
+    },
+    accountEmail: { type: String, trim: true }, // the connected Google account, for display
+    folderId: { type: String, trim: true }, // Drive folder to sync; set after consent
+    // select:false for the same reason user.refreshTokens is: a read of this
+    // collection must never leak a usable credential.
+    refreshTokenEncrypted: { type: String, select: false },
+    // Only populated while status="pending" — binds the OAuth callback back
+    // to the connection that started it (CSRF defense; the callback route
+    // is public and carries no bearer token).
+    stateToken: { type: String, select: false },
+    stateExpiresAt: { type: Date, select: false },
+    lastSyncAt: { type: Date },
+    lastSyncStatus: { type: String, enum: ["success", "partial", "failed", null], default: null },
+    lastSyncSummary: {
+      filesCreated: Number,
+      filesUpdated: Number,
+      filesDeleted: Number,
+      filesSkipped: Number,
+      filesFailed: Number,
+    },
+    createdBy: { type: String, trim: true }, // actor email
+  },
+  { timestamps: true },
+);
+knowledgeConnectionSchema.index({ botId: 1 });
+
+// One row per sync run. "running" status doubles as the concurrency guard —
+// triggerSync refuses to start a new run while one already has this status,
+// so there is a single source of truth instead of a separate boolean flag
+// that could drift out of sync with reality.
+const knowledgeSyncLogSchema = new mongoose.Schema(
+  {
+    connectionId: { type: String, required: true },
+    botId: { type: String, required: true },
+    status: { type: String, enum: ["running", "completed", "failed"], default: "running" },
+    startedAt: { type: Date, default: Date.now },
+    finishedAt: { type: Date },
+    triggeredBy: { type: String, trim: true }, // actor email
+    summary: {
+      filesTotal: { type: Number, default: 0 },
+      filesCreated: { type: Number, default: 0 },
+      filesUpdated: { type: Number, default: 0 },
+      filesDeleted: { type: Number, default: 0 },
+      filesSkipped: { type: Number, default: 0 },
+      filesFailed: { type: Number, default: 0 },
+    },
+    fileResults: [
+      {
+        externalId: { type: String },
+        fileName: { type: String },
+        action: { type: String, enum: ["created", "updated", "deleted", "skipped", "failed"] },
+        reason: { type: String },
+      },
+    ],
+    error: { type: String }, // top-level failure, e.g. "token revoked" — listing itself failed
+  },
+  { timestamps: true },
+);
+knowledgeSyncLogSchema.index({ connectionId: 1, createdAt: -1 });
 
 
 
@@ -208,6 +288,8 @@ loginAttemptSchema.index({ resetAt: 1 }, { expireAfterSeconds: 0 });
 export const user = mongoose.model("user", userSchema);
 export const botProfile = mongoose.model("botProfile", botProfileSchema);
 export const KnowledgeBase = mongoose.model("KnowledgeBase", knowledgeBaseSchema);
+export const KnowledgeConnection = mongoose.model("KnowledgeConnection", knowledgeConnectionSchema);
+export const KnowledgeSyncLog = mongoose.model("KnowledgeSyncLog", knowledgeSyncLogSchema);
 export const Tools = mongoose.model("Tools", ToolSchema);
 export const llmModel = mongoose.model("llmModel", LlmModelSchema);
 export const LoginAttempt = mongoose.model("LoginAttempt", loginAttemptSchema);
