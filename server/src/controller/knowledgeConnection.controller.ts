@@ -77,6 +77,22 @@ export class KnowledgeConnectionController {
     }
   };
 
+  listFolders = async (req: Request, res: Response) => {
+    try {
+      if (!req.user) {
+        sendResponse({ res, success: false, message: "Not authenticated", status: 401 });
+        return;
+      }
+      const { connectionId } = req.params;
+      const folders = await this.service.listFolders({ connectionId, actor: req.user });
+      sendResponse({ res, success: true, message: "Folders retrieved successfully", data: folders, status: 200 });
+    } catch (error) {
+      if (sendForbidden(res, error)) return;
+      console.error("Error listing Drive folders:", error);
+      sendResponse({ res, success: false, message: error instanceof Error ? error.message : "Failed to list folders", status: 500 });
+    }
+  };
+
   listConnections = async (req: Request, res: Response) => {
     try {
       if (!req.user) {
@@ -101,7 +117,7 @@ export class KnowledgeConnectionController {
       }
       const { connectionId } = req.params;
       await this.service.disconnect({ connectionId, actor: req.user });
-      sendResponse({ res, success: true, message: "Connection disconnected", status: 200 });
+      sendResponse({ res, success: true, message: "Connection and its synced files deleted", status: 200 });
     } catch (error) {
       if (sendForbidden(res, error)) return;
       console.error("Error disconnecting connection:", error);

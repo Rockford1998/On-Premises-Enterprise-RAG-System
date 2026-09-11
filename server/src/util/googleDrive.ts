@@ -9,7 +9,10 @@ import { google, drive_v3 } from "googleapis";
 import { env } from "../config/env";
 import { decryptSecret } from "./crypto";
 
-const SCOPES = ["https://www.googleapis.com/auth/drive.readonly"];
+const SCOPES = [
+  "https://www.googleapis.com/auth/drive.readonly",
+  "https://www.googleapis.com/auth/userinfo.email",
+];
 
 /** Mirrors SUPPORTED_UPLOAD_EXTENSIONS (minus zip) — kept to what readFile() can parse. */
 const SUPPORTED_MIME_TYPES = [
@@ -19,6 +22,28 @@ const SUPPORTED_MIME_TYPES = [
   "application/vnd.openxmlformats-officedocument.presentationml.presentation", // .pptx
   "text/plain",
 ];
+
+/**
+ * Native Google Workspace files (Docs, Slides) have no fixed binary form, so
+ * they can't be downloaded with files.get(alt: media) — they must be
+ * exported to one of the formats above instead. Maps each to the export
+ * mime type/extension to request. Sheets is deliberately excluded: its
+ * export formats (xlsx/csv) have no loader in readFile(), and PDF export
+ * destroys the tabular structure.
+ */
+const GOOGLE_NATIVE_EXPORT_MIME_TYPES: Record<string, { exportMimeType: string; extension: string }> = {
+  "application/vnd.google-apps.document": { exportMimeType: "application/pdf", extension: "pdf" },
+  "application/vnd.google-apps.presentation": {
+    exportMimeType: "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+    extension: "pptx",
+  },
+};
+
+/** Appends the right extension for a native Google file so readFile() picks the matching loader. */
+export const driveFileNameFor = (file: Pick<DriveFileMeta, "name" | "mimeType">): string => {
+  const native = GOOGLE_NATIVE_EXPORT_MIME_TYPES[file.mimeType];
+  return native ? `${file.name}.${native.extension}` : file.name;
+};
 
 export class GoogleOAuthNotConfiguredError extends Error {
   constructor() {
@@ -101,7 +126,8 @@ export const listFolderFiles = async (
   drive: drive_v3.Drive,
   folderId: string,
 ): Promise<DriveFileMeta[]> => {
-  const mimeFilter = SUPPORTED_MIME_TYPES.map((t) => `mimeType = '${t}'`).join(" or ");
+  const allMimeTypes = [...SUPPORTED_MIME_TYPES, ...Object.keys(GOOGLE_NATIVE_EXPORT_MIME_TYPES)];
+  const mimeFilter = allMimeTypes.map((t) => `mimeType = '${t}'`).join(" or ");
   const q = `'${folderId}' in parents and trashed = false and (${mimeFilter})`;
 
   const files: DriveFileMeta[] = [];
@@ -133,13 +159,52 @@ export const listFolderFiles = async (
   return files;
 };
 
+export type DriveFolderMeta = {
+  id: string;
+  name: string;
+  parentId?: string;
+};
+
+/** All non-trashed folders the account can see, across My Drive and shared drives. */
+export const listFolders = async (drive: drive_v3.Drive): Promise<DriveFolderMeta[]> => {
+  const q = "mimeType = 'application/vnd.google-apps.folder' and trashed = false";
+
+  const folders: DriveFolderMeta[] = [];
+  let pageToken: string | undefined;
+  do {
+    const { data } = await drive.files.list({
+      q,
+      fields: "nextPageToken, files(id, name, parents)",
+      pageSize: 200,
+      pageToken,
+      corpora: "allDrives",
+      supportsAllDrives: true,
+      includeItemsFromAllDrives: true,
+    });
+    for (const f of data.files ?? []) {
+      if (f.id && f.name) {
+        folders.push({ id: f.id, name: f.name, parentId: f.parents?.[0] ?? undefined });
+      }
+    }
+    pageToken = data.nextPageToken ?? undefined;
+  } while (pageToken);
+
+  return folders;
+};
+
 export const downloadFileBuffer = async (
   drive: drive_v3.Drive,
-  fileId: string,
+  file: Pick<DriveFileMeta, "id" | "mimeType">,
 ): Promise<Buffer> => {
-  const res = await drive.files.get(
-    { fileId, alt: "media", supportsAllDrives: true },
-    { responseType: "arraybuffer" },
-  );
+  const native = GOOGLE_NATIVE_EXPORT_MIME_TYPES[file.mimeType];
+  const res = native
+    ? await drive.files.export(
+        { fileId: file.id, mimeType: native.exportMimeType },
+        { responseType: "arraybuffer" },
+      )
+    : await drive.files.get(
+        { fileId: file.id, alt: "media", supportsAllDrives: true },
+        { responseType: "arraybuffer" },
+      );
   return Buffer.from(res.data as ArrayBuffer);
 };

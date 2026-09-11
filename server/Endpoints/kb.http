@@ -48,7 +48,12 @@ GET http://localhost:3000/kb/connections/bot/bot_mfsfekoi_Z96YMW
 Authorization: Bearer <token>
 
 
-### 3. Set the Drive folder to sync (paste the folder ID from its Drive URL)
+### 3a. List the connected account's Drive folders (id + name) to populate a picker
+GET http://localhost:3000/kb/connections/<connectionId>/folders
+Authorization: Bearer <token>
+
+
+### 3. Set the Drive folder to sync (paste the folder ID from its Drive URL, or one returned by 3a)
 PUT http://localhost:3000/kb/connections/<connectionId>/folder
 Content-Type: application/json
 Authorization: Bearer <token>
@@ -68,6 +73,7 @@ GET http://localhost:3000/kb/connections/<connectionId>/logs
 Authorization: Bearer <token>
 
 
-### 6. Disconnect (keeps already-synced KB entries, stops future syncs)
+### 6. Delete the connection — also deletes every KB entry it synced (vectors,
+###    Mongo rows, cached files) and its sync-run history. Not reversible.
 DELETE http://localhost:3000/kb/connections/<connectionId>
 Authorization: Bearer <token>

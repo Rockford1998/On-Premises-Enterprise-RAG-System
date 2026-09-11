@@ -12,7 +12,9 @@ import {
   exchangeCodeForTokens,
   driveClientFor,
   listFolderFiles,
+  listFolders as listDriveFolders,
   downloadFileBuffer,
+  driveFileNameFor,
   DriveFileMeta,
 } from "../util/googleDrive";
 import { encryptSecret } from "../util/crypto";
@@ -97,24 +99,51 @@ export class KnowledgeConnectionService {
     return connection;
   };
 
+  listFolders = async ({ connectionId, actor }: { connectionId: string; actor: Actor }) => {
+    const connection = await KnowledgeConnection.findById(connectionId)
+      .select("+refreshTokenEncrypted")
+      .exec();
+    if (!connection) throw new NotFoundError("Connection not found");
+    const bot = await this.loadBotForConnection(connection.botId);
+    assertCanManage(bot, actor);
+
+    if (connection.status !== "connected" || !connection.refreshTokenEncrypted) {
+      throw new Error("Connection is not active — reconnect before listing folders.");
+    }
+
+    const drive = driveClientFor(connection.refreshTokenEncrypted);
+    return listDriveFolders(drive);
+  };
+
   listConnections = async ({ botId, actor }: { botId: string; actor: Actor }) => {
     const bot = await this.loadBotForConnection(botId);
     assertCanView(bot, actor);
     return KnowledgeConnection.find({ botId }).exec();
   };
 
+  // Hard delete: removes the connection itself, every KnowledgeBase row (and
+  // its vectors + cached file) it ever synced, and its sync-run history.
+  // There is no soft "pause syncing but keep the content" option — deleting
+  // a connection is a deliberate request to remove what it produced too.
   disconnect = async ({ connectionId, actor }: { connectionId: string; actor: Actor }) => {
     const connection = await KnowledgeConnection.findById(connectionId).exec();
     if (!connection) throw new NotFoundError("Connection not found");
     const bot = await this.loadBotForConnection(connection.botId);
     assertCanManage(bot, actor);
+    const vectorTable = bot.vectorTable as string;
 
-    // Stops future syncs and drops the credential; deliberately does not
-    // touch already-synced KnowledgeBase rows — disconnecting a source isn't
-    // the same request as deleting the content it already produced.
-    connection.status = "disconnected";
-    connection.refreshTokenEncrypted = undefined;
-    await connection.save();
+    const syncedEntries = await KnowledgeBase.find({ connectionId }).exec();
+    for (const entry of syncedEntries) {
+      if (!entry.externalId) continue;
+      await this.knowledgeBaseService.deleteSyncedEntry({
+        connectionId,
+        externalId: entry.externalId,
+        vectorTable,
+      });
+    }
+
+    await KnowledgeSyncLog.deleteMany({ connectionId }).exec();
+    await connection.deleteOne();
     return connection;
   };
 
@@ -190,12 +219,12 @@ export class KnowledgeConnectionService {
     file: DriveFileMeta;
     drive: ReturnType<typeof driveClientFor>;
   }): Promise<{ action: "created" | "skipped" | "failed"; reason?: string }> => {
-    const safeName = path.basename(file.name);
+    const safeName = path.basename(driveFileNameFor(file));
     const botDir = path.join("uploads", path.basename(botId), "drive");
     if (!fs.existsSync(botDir)) fs.mkdirSync(botDir, { recursive: true });
 
     const filePath = path.join(botDir, safeName).split(path.sep).join("/");
-    const buffer = await downloadFileBuffer(drive, file.id);
+    const buffer = await downloadFileBuffer(drive, file);
     fs.writeFileSync(filePath, buffer);
 
     try {
@@ -219,7 +248,10 @@ export class KnowledgeConnectionService {
         sourceType: "google_drive",
         connectionId,
         externalId: file.id,
-        externalChecksum: file.md5Checksum,
+        // Native Google files (Docs, Slides) have no fixed binary form, so
+        // Drive never reports an md5Checksum for them — fall back to
+        // modifiedTime as the change-detection signal for those.
+        externalChecksum: file.md5Checksum ?? file.modifiedTime,
       });
 
       if (outcome.status === "created") return { action: "created" };
@@ -291,7 +323,8 @@ export class KnowledgeConnectionService {
     for (const file of driveFiles) {
       const existing = existingByExternalId.get(file.id);
       try {
-        if (existing && existing.externalChecksum === file.md5Checksum) {
+        const currentChecksum = file.md5Checksum ?? file.modifiedTime;
+        if (existing && existing.externalChecksum === currentChecksum) {
           summary.filesSkipped += 1;
           fileResults.push({ externalId: file.id, fileName: file.name, action: "skipped" });
           continue;

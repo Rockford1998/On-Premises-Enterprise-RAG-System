@@ -97,6 +97,7 @@ router.post("/kb/delete", knowledgeBaseController.deleteKnowledgeBase)
 router.post("/kb/connections/:botId", knowledgeConnectionController.startConnect);
 router.get("/kb/connections/bot/:botId", knowledgeConnectionController.listConnections);
 router.get("/kb/connections/google/callback", knowledgeConnectionController.completeConnect);
+router.get("/kb/connections/:connectionId/folders", knowledgeConnectionController.listFolders);
 router.put("/kb/connections/:connectionId/folder", knowledgeConnectionController.setFolder);
 router.post("/kb/connections/:connectionId/sync", knowledgeConnectionController.triggerSync);
 router.get("/kb/connections/:connectionId/logs", knowledgeConnectionController.getLogs);

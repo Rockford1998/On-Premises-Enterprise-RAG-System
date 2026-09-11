@@ -5,6 +5,13 @@ import { Button } from "@/shadcn/ui/button";
 import { Input } from "@/shadcn/ui/input";
 import { Badge } from "@/shadcn/ui/badge";
 import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/shadcn/ui/select";
+import {
   Table,
   TableHeader,
   TableBody,
@@ -34,6 +41,12 @@ type Connection = {
   };
 };
 
+type DriveFolder = {
+  id: string;
+  name: string;
+  parentId?: string;
+};
+
 const statusVariant = (status: Connection["status"]) => {
   if (status === "connected") return "secondary";
   if (status === "error" || status === "disconnected") return "destructive";
@@ -46,6 +59,8 @@ export const TabKnowledgeConnections = () => {
   const { botId } = Route.useParams();
   const [connections, setConnections] = useState<Connection[]>([]);
   const [folderDrafts, setFolderDrafts] = useState<Record<string, string>>({});
+  const [folderOptions, setFolderOptions] = useState<Record<string, DriveFolder[]>>({});
+  const [foldersLoadingIds, setFoldersLoadingIds] = useState<Set<string>>(new Set());
   const [syncingIds, setSyncingIds] = useState<Set<string>>(new Set());
   const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
@@ -58,6 +73,25 @@ export const TabKnowledgeConnections = () => {
       for (const c of data) if (!(c._id in next)) next[c._id] = c.folderId ?? "";
       return next;
     });
+    for (const c of data) {
+      if (c.status === "connected" && !(c._id in folderOptions)) loadFolders(c._id);
+    }
+  };
+
+  const loadFolders = async (connectionId: string) => {
+    setFoldersLoadingIds((prev) => new Set(prev).add(connectionId));
+    try {
+      const res = await starGate.get(`/kb/connections/${connectionId}/folders`);
+      setFolderOptions((prev) => ({ ...prev, [connectionId]: res.data.data ?? [] }));
+    } catch (error: any) {
+      toast(error?.response?.data?.message ?? "Failed to load Drive folders");
+    } finally {
+      setFoldersLoadingIds((prev) => {
+        const next = new Set(prev);
+        next.delete(connectionId);
+        return next;
+      });
+    }
   };
 
   useEffect(() => {
@@ -142,10 +176,10 @@ export const TabKnowledgeConnections = () => {
   const handleDisconnect = async (connectionId: string) => {
     try {
       await starGate.delete(`/kb/connections/${connectionId}`);
-      toast("Connection disconnected");
+      toast("Connection and its synced files deleted");
       loadConnections();
     } catch (error: any) {
-      toast(error?.response?.data?.message ?? "Failed to disconnect");
+      toast(error?.response?.data?.message ?? "Failed to delete connection");
     }
   };
 
@@ -186,13 +220,37 @@ export const TabKnowledgeConnections = () => {
               <TableCell>{c.accountEmail ?? "—"}</TableCell>
               <TableCell>
                 <div className="flex items-center gap-1.5">
+                  <Select
+                    value={
+                      (folderOptions[c._id] ?? []).some((f) => f.id === folderDrafts[c._id])
+                        ? folderDrafts[c._id]
+                        : undefined
+                    }
+                    onValueChange={(value) =>
+                      setFolderDrafts((prev) => ({ ...prev, [c._id]: value }))
+                    }
+                    disabled={c.status !== "connected" || foldersLoadingIds.has(c._id)}
+                  >
+                    <SelectTrigger className="h-7 w-40 text-xs">
+                      <SelectValue
+                        placeholder={foldersLoadingIds.has(c._id) ? "Loading..." : "Pick a folder"}
+                      />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {(folderOptions[c._id] ?? []).map((f) => (
+                        <SelectItem key={f.id} value={f.id} className="text-xs">
+                          {f.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                   <Input
                     value={folderDrafts[c._id] ?? ""}
                     onChange={(e) =>
                       setFolderDrafts((prev) => ({ ...prev, [c._id]: e.target.value }))
                     }
-                    placeholder="Drive folder ID"
-                    className="h-7 w-40 text-xs"
+                    placeholder="or paste folder ID"
+                    className="h-7 w-32 text-xs"
                     disabled={c.status !== "connected"}
                   />
                   <Button
@@ -233,7 +291,9 @@ export const TabKnowledgeConnections = () => {
                   </Button>
                   <KnowledgeSyncLogsDialog connectionId={c._id} />
                   <DeleteAlertDialogBox
-                    title="Disconnect this Google Drive connection?"
+                    title="Delete this Google Drive connection?"
+                    description="This permanently removes the connection and every knowledge base file it synced. This cannot be undone."
+                    confirmLabel="Delete"
                     onConfirm={() => handleDisconnect(c._id)}
                   />
                 </div>
