@@ -56,24 +56,24 @@ export class KnowledgeConnectionController {
     }
   };
 
-  setFolder = async (req: Request, res: Response) => {
+  setFolders = async (req: Request, res: Response) => {
     try {
       if (!req.user) {
         sendResponse({ res, success: false, message: "Not authenticated", status: 401 });
         return;
       }
       const { connectionId } = req.params;
-      const { folderId } = req.body;
-      if (!folderId || typeof folderId !== "string") {
-        sendResponse({ res, success: false, message: "folderId is required", status: 400 });
+      const { folderIds } = req.body;
+      if (!Array.isArray(folderIds) || folderIds.length === 0 || !folderIds.every((id) => typeof id === "string" && id.trim())) {
+        sendResponse({ res, success: false, message: "folderIds must be a non-empty array of strings", status: 400 });
         return;
       }
-      const connection = await this.service.setFolder({ connectionId, folderId, actor: req.user });
-      sendResponse({ res, success: true, message: "Folder updated", data: connection, status: 200 });
+      const connection = await this.service.setFolders({ connectionId, folderIds, actor: req.user });
+      sendResponse({ res, success: true, message: "Folders updated", data: connection, status: 200 });
     } catch (error) {
       if (sendForbidden(res, error)) return;
-      console.error("Error setting Drive folder:", error);
-      sendResponse({ res, success: false, message: error instanceof Error ? error.message : "Failed to update folder", status: 500 });
+      console.error("Error setting Drive folders:", error);
+      sendResponse({ res, success: false, message: error instanceof Error ? error.message : "Failed to update folders", status: 500 });
     }
   };
 

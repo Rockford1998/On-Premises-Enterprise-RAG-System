@@ -2,15 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import { starGate } from "@/utils/starGate";
 import { Button } from "@/shadcn/ui/button";
-import { Input } from "@/shadcn/ui/input";
 import { Badge } from "@/shadcn/ui/badge";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/shadcn/ui/select";
 import {
   Table,
   TableHeader,
@@ -22,6 +14,7 @@ import {
 import { RefreshCw, Plug } from "lucide-react";
 import { Route } from "../agent-details.$botId";
 import { KnowledgeSyncLogsDialog } from "./KnowledgeSyncLogsDialog";
+import { EditConnectionFoldersDialog } from "./EditConnectionFoldersDialog";
 import { DeleteAlertDialogBox } from "@/routes/-components/alert-dialog-box/DeleteAlertDialogBox";
 
 type Connection = {
@@ -29,7 +22,7 @@ type Connection = {
   provider: string;
   status: "pending" | "connected" | "error" | "disconnected";
   accountEmail?: string;
-  folderId?: string;
+  folderIds?: string[];
   lastSyncAt?: string;
   lastSyncStatus?: "success" | "partial" | "failed" | null;
   lastSyncSummary?: {
@@ -58,7 +51,6 @@ const POLL_INTERVAL_MS = 3000;
 export const TabKnowledgeConnections = () => {
   const { botId } = Route.useParams();
   const [connections, setConnections] = useState<Connection[]>([]);
-  const [folderDrafts, setFolderDrafts] = useState<Record<string, string>>({});
   const [folderOptions, setFolderOptions] = useState<Record<string, DriveFolder[]>>({});
   const [foldersLoadingIds, setFoldersLoadingIds] = useState<Set<string>>(new Set());
   const [syncingIds, setSyncingIds] = useState<Set<string>>(new Set());
@@ -68,14 +60,6 @@ export const TabKnowledgeConnections = () => {
     const res = await starGate.get(`/kb/connections/bot/${botId}`);
     const data: Connection[] = res.data.data ?? [];
     setConnections(data);
-    setFolderDrafts((prev) => {
-      const next = { ...prev };
-      for (const c of data) if (!(c._id in next)) next[c._id] = c.folderId ?? "";
-      return next;
-    });
-    for (const c of data) {
-      if (c.status === "connected" && !(c._id in folderOptions)) loadFolders(c._id);
-    }
   };
 
   const loadFolders = async (connectionId: string) => {
@@ -151,15 +135,14 @@ export const TabKnowledgeConnections = () => {
     }
   };
 
-  const handleSaveFolder = async (connectionId: string) => {
+  const handleSaveFolders = async (connectionId: string, folderIds: string[]) => {
     try {
-      await starGate.put(`/kb/connections/${connectionId}/folder`, {
-        folderId: folderDrafts[connectionId]?.trim(),
-      });
-      toast("Folder saved");
+      await starGate.put(`/kb/connections/${connectionId}/folders`, { folderIds });
+      toast("Folders saved");
       loadConnections();
     } catch (error: any) {
-      toast(error?.response?.data?.message ?? "Failed to save folder");
+      toast(error?.response?.data?.message ?? "Failed to save folders");
+      throw error;
     }
   };
 
@@ -198,9 +181,7 @@ export const TabKnowledgeConnections = () => {
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead>Provider</TableHead>
             <TableHead>Account</TableHead>
-            <TableHead>Folder ID</TableHead>
             <TableHead>Status</TableHead>
             <TableHead>Last sync</TableHead>
             <TableHead>Actions</TableHead>
@@ -209,61 +190,14 @@ export const TabKnowledgeConnections = () => {
         <TableBody>
           {connections.length === 0 && (
             <TableRow>
-              <TableCell colSpan={6} className="text-center text-xs text-muted-foreground py-6">
+              <TableCell colSpan={4} className="text-center text-xs text-muted-foreground py-6">
                 No connections yet. Connect a Google Drive account to sync files into this bot's knowledge base.
               </TableCell>
             </TableRow>
           )}
           {connections.map((c) => (
             <TableRow key={c._id}>
-              <TableCell className="capitalize">{c.provider.replace("_", " ")}</TableCell>
               <TableCell>{c.accountEmail ?? "—"}</TableCell>
-              <TableCell>
-                <div className="flex items-center gap-1.5">
-                  <Select
-                    value={
-                      (folderOptions[c._id] ?? []).some((f) => f.id === folderDrafts[c._id])
-                        ? folderDrafts[c._id]
-                        : undefined
-                    }
-                    onValueChange={(value) =>
-                      setFolderDrafts((prev) => ({ ...prev, [c._id]: value }))
-                    }
-                    disabled={c.status !== "connected" || foldersLoadingIds.has(c._id)}
-                  >
-                    <SelectTrigger className="h-7 w-40 text-xs">
-                      <SelectValue
-                        placeholder={foldersLoadingIds.has(c._id) ? "Loading..." : "Pick a folder"}
-                      />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {(folderOptions[c._id] ?? []).map((f) => (
-                        <SelectItem key={f.id} value={f.id} className="text-xs">
-                          {f.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <Input
-                    value={folderDrafts[c._id] ?? ""}
-                    onChange={(e) =>
-                      setFolderDrafts((prev) => ({ ...prev, [c._id]: e.target.value }))
-                    }
-                    placeholder="or paste folder ID"
-                    className="h-7 w-32 text-xs"
-                    disabled={c.status !== "connected"}
-                  />
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className="h-7 px-2 text-xs cursor-pointer"
-                    disabled={c.status !== "connected"}
-                    onClick={() => handleSaveFolder(c._id)}
-                  >
-                    Save
-                  </Button>
-                </div>
-              </TableCell>
               <TableCell>
                 <Badge variant={statusVariant(c.status)}>{c.status}</Badge>
               </TableCell>
@@ -279,11 +213,19 @@ export const TabKnowledgeConnections = () => {
               </TableCell>
               <TableCell>
                 <div className="flex items-center gap-1.5">
+                  <EditConnectionFoldersDialog
+                    folders={folderOptions[c._id] ?? []}
+                    foldersLoading={foldersLoadingIds.has(c._id)}
+                    selectedIds={c.folderIds ?? []}
+                    disabled={c.status !== "connected"}
+                    onRefreshFolders={() => loadFolders(c._id)}
+                    onSave={(folderIds) => handleSaveFolders(c._id, folderIds)}
+                  />
                   <Button
                     variant="outline"
                     size="sm"
                     className="h-8 cursor-pointer px-3 text-xs"
-                    disabled={c.status !== "connected" || !c.folderId || syncingIds.has(c._id)}
+                    disabled={c.status !== "connected" || !c.folderIds?.length || syncingIds.has(c._id)}
                     onClick={() => handleSync(c._id)}
                   >
                     <RefreshCw className={syncingIds.has(c._id) ? "animate-spin" : ""} />

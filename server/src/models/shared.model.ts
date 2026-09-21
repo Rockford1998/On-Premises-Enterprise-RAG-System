@@ -118,7 +118,7 @@ const knowledgeConnectionSchema = new mongoose.Schema(
       default: "pending",
     },
     accountEmail: { type: String, trim: true }, // the connected Google account, for display
-    folderId: { type: String, trim: true }, // Drive folder to sync; set after consent
+    folderIds: { type: [String], default: [] }, // Drive folders to sync; set after consent
     // select:false for the same reason user.refreshTokens is: a read of this
     // collection must never leak a usable credential.
     refreshTokenEncrypted: { type: String, select: false },

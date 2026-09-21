@@ -88,13 +88,13 @@ export class KnowledgeConnectionService {
     return connection;
   };
 
-  setFolder = async ({ connectionId, folderId, actor }: { connectionId: string; folderId: string; actor: Actor }) => {
+  setFolders = async ({ connectionId, folderIds, actor }: { connectionId: string; folderIds: string[]; actor: Actor }) => {
     const connection = await KnowledgeConnection.findById(connectionId).exec();
     if (!connection) throw new NotFoundError("Connection not found");
     const bot = await this.loadBotForConnection(connection.botId);
     assertCanManage(bot, actor);
 
-    connection.folderId = folderId;
+    connection.folderIds = folderIds;
     await connection.save();
     return connection;
   };
@@ -278,10 +278,10 @@ export class KnowledgeConnectionService {
     const connection = await KnowledgeConnection.findById(log.connectionId)
       .select("+refreshTokenEncrypted")
       .exec();
-    if (!connection || !connection.refreshTokenEncrypted || !connection.folderId) {
+    if (!connection || !connection.refreshTokenEncrypted || !connection.folderIds?.length) {
       log.status = "failed";
       log.finishedAt = new Date();
-      log.error = "Connection is missing its folder or credentials.";
+      log.error = "Connection is missing its folders or credentials.";
       await log.save();
       return;
     }
@@ -300,11 +300,17 @@ export class KnowledgeConnectionService {
     let drive: ReturnType<typeof driveClientFor>;
     try {
       drive = driveClientFor(connection.refreshTokenEncrypted);
-      driveFiles = await listFolderFiles(drive, connection.folderId);
+      const filesByFolder = await Promise.all(
+        connection.folderIds.map((folderId) => listFolderFiles(drive, folderId)),
+      );
+      // A file can live under more than one selected folder (Drive allows
+      // multiple parents) — dedupe by file id so it isn't ingested twice.
+      const filesById = new Map(filesByFolder.flat().map((file) => [file.id, file]));
+      driveFiles = Array.from(filesById.values());
     } catch (error) {
       log.status = "failed";
       log.finishedAt = new Date();
-      log.error = error instanceof Error ? error.message : "Unable to list the Drive folder.";
+      log.error = error instanceof Error ? error.message : "Unable to list the Drive folders.";
       await log.save();
 
       connection.lastSyncAt = new Date();

@@ -62,28 +62,15 @@ function AgentsDetail() {
   return (
     <AgentContext.Provider value={{ botId }}>
       <PageWrapper title={bot.botName}>
-        <div className="flex gap-2 flex-wrap mb-3">
-          {error && (
+        {error && (
+          <div className="flex gap-2 flex-wrap mb-3">
             <Card className="border-destructive">
               <CardContent className="p-2 text-sm text-red-600">
                 {error}
               </CardContent>
             </Card>
-          )}
-
-          {bot.owner && (
-            <Card className="rounded-md border shadow-sm">
-              <CardContent className="p-3 text-sm flex flex-col">
-                <span className="font-semibold">
-                  {bot.owner.firstName} {bot.owner.lastName}
-                </span>
-                <span className="text-muted-foreground text-xs">
-                  {bot.owner.email}
-                </span>
-              </CardContent>
-            </Card>
-          )}
-        </div>
+          </div>
+        )}
 
         <TabAgent botType={bot.botType} />
       </PageWrapper>

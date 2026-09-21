@@ -19,7 +19,15 @@ import { toast } from "sonner";
 import { FormInput } from "@/routes/-components/formfields/FormInput";
 import { FormTextArea } from "@/routes/-components/formfields/FormTextArea";
 import { FormSelect } from "@/routes/-components/formfields/FormSelect";
+import { Card, CardContent } from "@/shadcn/ui/card";
 import { Route } from "../agent-details.$botId";
+
+type Owner = {
+  firstName: string;
+  lastName: string;
+  userName: string;
+  email: string;
+};
 
 const botInfoSchema = z.object({
   botName: z.string().min(2, "Bot name must be at least 2 characters"),
@@ -40,6 +48,7 @@ export const TabBotForm = () => {
   const [loading, setLoading] = useState(true);
   const [expanded, setExpanded] = useState(false);
   const [botModels, setBotModels] = useState([]);
+  const [owner, setOwner] = useState<Owner | null>(null);
 
   const form = useForm<BotInfoFormValues>({
     resolver: zodResolver(botInfoSchema),
@@ -66,6 +75,7 @@ export const TabBotForm = () => {
         publicAccess: bot.publicAccess,
         isActive: bot.isActive,
       });
+      setOwner(bot.owner || null);
 
       setLoading(false);
     });
@@ -100,6 +110,20 @@ export const TabBotForm = () => {
         onSubmit={form.handleSubmit(onSubmit)}
         className="space-y-3 pb-3 text-sm"
       >
+        {/* Owner */}
+        {owner && (
+          <Card className="rounded-md border shadow-sm w-fit">
+            <CardContent className="p-3 text-sm flex flex-col">
+              <span className="font-semibold">
+                {owner.firstName} {owner.lastName}
+              </span>
+              <span className="text-muted-foreground text-xs">
+                {owner.email}
+              </span>
+            </CardContent>
+          </Card>
+        )}
+
         {/* Submit */}
         <div className="flex justify-end">
           <Button type="submit" className="h-8 px-3 text-xs cursor-pointer">

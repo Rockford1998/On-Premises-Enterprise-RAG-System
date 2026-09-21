@@ -53,13 +53,13 @@ GET http://localhost:3000/kb/connections/<connectionId>/folders
 Authorization: Bearer <token>
 
 
-### 3. Set the Drive folder to sync (paste the folder ID from its Drive URL, or one returned by 3a)
-PUT http://localhost:3000/kb/connections/<connectionId>/folder
+### 3. Set the Drive folders to sync (paste folder IDs from their Drive URLs, or ones returned by 3a)
+PUT http://localhost:3000/kb/connections/<connectionId>/folders
 Content-Type: application/json
 Authorization: Bearer <token>
 
 {
-  "folderId": "1AbCDeFGhijKLmNoPQRstuVWxyz0123"
+  "folderIds": ["1AbCDeFGhijKLmNoPQRstuVWxyz0123", "2BcDeFGhijKLmNoPQRstuVWxyz9876"]
 }
 
 

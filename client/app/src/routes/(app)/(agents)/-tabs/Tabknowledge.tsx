@@ -140,7 +140,7 @@ export const Tabknowledge = () => {
 
   return (
     <div>
-      <div className="flex justify-end mb-3 ">
+      <div className="flex justify-end mb-3">
         <UploadFileDropdown refreshData={refreshData} />
       </div>
       <DataTable columns={columns} data={knowledge} />

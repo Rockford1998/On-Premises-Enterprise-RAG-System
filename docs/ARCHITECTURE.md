@@ -138,7 +138,7 @@ GET /kb/connections/google/callback  (PUBLIC — see auth.middleware.ts)
    ▼
 KnowledgeConnection{status:"connected", accountEmail, refreshTokenEncrypted}
 
-PUT /kb/connections/:connectionId/folder  { folderId }   — Drive folder to sync
+PUT /kb/connections/:connectionId/folders  { folderIds }   — Drive folders to sync
 
 POST /kb/connections/:connectionId/sync                  KnowledgeConnectionService.triggerSync
    │  refuses if a KnowledgeSyncLog with status:"running" already exists for
@@ -148,7 +148,7 @@ POST /kb/connections/:connectionId/sync                  KnowledgeConnectionServ
    │  { logId } immediately — same no-queue background-work pattern used
    │  nowhere else in this codebase today, because there is no queue
    ▼
-runSync(): list the Drive folder → diff against existing KnowledgeBase rows
+runSync(): list the Drive folders → diff against existing KnowledgeBase rows
 for this connectionId, keyed by externalId (the Drive file id):
    • new Drive file                          → download, readFile(), ingestText()  → "created"
    • existing row, md5Checksum changed        → delete old vectors+row, re-ingest    → "updated"

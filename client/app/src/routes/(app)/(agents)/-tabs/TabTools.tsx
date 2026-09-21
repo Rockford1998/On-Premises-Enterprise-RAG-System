@@ -16,7 +16,7 @@ export const TabTools = () => {
   console.log(tools);
   return (
     <div>
-      <div className="flex justify-end mb-3 ">
+      <div className="flex justify-end mb-3">
         <CreateToolDialog refreshData={refreshData} botId={botId} />
       </div>
       <DataTable columns={columns} data={tools} />
