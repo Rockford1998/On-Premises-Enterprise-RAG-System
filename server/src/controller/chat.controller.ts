@@ -33,6 +33,18 @@ export class ChatController {
   chatBot = async (req: Request, res: Response) => {
     try {
       const { question, botId } = req.body;
+
+      // Code_Interpreter bots have their own flow and no KB vector table;
+      // running the KB path against one would fail on a missing table.
+      const target = await this.botService.readByBotId(botId);
+      if (target?.botType === "Code_Interpreter") {
+        res.status(400).json({
+          success: false,
+          message: `Code interpreter bots are chatted with at POST /code/${botId}/chat.`,
+        });
+        return;
+      }
+
       // Step 1: Check if this query requires a tool
       const tool = (await this.toolService.detectToolUse({
         botId,

@@ -3,8 +3,31 @@ import { TabBotForm } from "./TabBotForm";
 import { Tabknowledge } from "./Tabknowledge";
 import { TabKnowledgeConnections } from "./TabKnowledgeConnections";
 import { TabTools } from "./TabTools";
+import { TabCodeSources } from "./TabCodeSources";
 
 export function TabAgent({ botType }: { botType: string }) {
+  // Code bots have their own flow: no KB uploads, Drive connections or HTTP tools.
+  if (botType === "Code_Interpreter") {
+    return (
+      <Tabs defaultValue="details" className="flex flex-col flex-1 w-full h-full">
+        <TabsList className="w-fit mb-2">
+          <TabsTrigger value="details" className="px-3 py-1 text-xs">
+            Details
+          </TabsTrigger>
+          <TabsTrigger value="sources" className="px-3 py-1 text-xs">
+            Sources
+          </TabsTrigger>
+        </TabsList>
+        <TabsContent value="details" className="flex-1 overflow-y-auto p-1 rounded-md">
+          <TabBotForm />
+        </TabsContent>
+        <TabsContent value="sources" className="flex-1 overflow-y-auto p-1 rounded-md">
+          <TabCodeSources />
+        </TabsContent>
+      </Tabs>
+    );
+  }
+
   return (
     <Tabs defaultValue="details" className="flex flex-col flex-1 w-full h-full">
       {/* Header */}

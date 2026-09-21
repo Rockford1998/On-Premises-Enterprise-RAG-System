@@ -1,6 +1,7 @@
 import multer from "multer";
 import fs from "fs";
 import path from "path";
+import { env } from "../config/env";
 
 /**
  * Extensions the knowledge-base upload accepts. Everything but "zip" is
@@ -14,10 +15,8 @@ const MAX_FILE_BYTES = Number(process.env.MAX_UPLOAD_BYTES) || 25 * 1024 * 1024;
 
 /** Raised for a rejected upload so the controller can answer 400, not 500. */
 export class UnsupportedFileTypeError extends Error {
-  constructor(public extension: string) {
-    super(
-      `Unsupported file type ".${extension}". Supported: ${SUPPORTED_UPLOAD_EXTENSIONS.join(", ")}.`,
-    );
+  constructor(public extension: string, supported: readonly string[] = SUPPORTED_UPLOAD_EXTENSIONS) {
+    super(`Unsupported file type ".${extension}". Supported: ${supported.join(", ")}.`);
     this.name = "UnsupportedFileTypeError";
   }
 }
@@ -44,6 +43,44 @@ const storage = multer.diskStorage({
   filename: function (_req, file, cb) {
     // Same reasoning as above — the client controls originalname.
     cb(null, path.basename(file.originalname));
+  },
+});
+
+/**
+ * Zip upload for Code_Interpreter repositories. A separate multer instance so
+ * the 25 MB KB uploader stays as it is: source archives are much larger, and
+ * only zip is accepted. Files land in uploads/<botId>/code/ and are deleted
+ * once indexing has read them (the content is stored in Postgres).
+ */
+const codeStorage = multer.diskStorage({
+  destination: function (req, _file, cb) {
+    const botId = path.basename(req.params.botId ?? "");
+    if (!botId || botId === "." || botId === "..") {
+      cb(new Error("Invalid botId"), "");
+      return;
+    }
+    const dir = path.join("uploads", botId, "code");
+    if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+    cb(null, dir);
+  },
+  filename: function (_req, file, cb) {
+    // Timestamp prefix: two uploads of "repo.zip" must not overwrite each other mid-index.
+    cb(null, `${Date.now()}-${path.basename(file.originalname)}`);
+  },
+});
+
+export const CODE_UPLOAD_EXTENSIONS = ["zip"] as const;
+
+export const codeUpload = multer({
+  storage: codeStorage,
+  limits: { fileSize: env.codeIntel.maxUploadBytes, files: 1 },
+  fileFilter: (_req, file, cb) => {
+    const ext = extensionOf(file.originalname);
+    if (!CODE_UPLOAD_EXTENSIONS.includes(ext as never)) {
+      cb(new UnsupportedFileTypeError(ext || "unknown", CODE_UPLOAD_EXTENSIONS));
+      return;
+    }
+    cb(null, true);
   },
 });
 

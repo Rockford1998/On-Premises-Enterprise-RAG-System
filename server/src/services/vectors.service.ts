@@ -10,7 +10,7 @@ import { query, withTransaction } from "../db/pgsql";
  */
 const IDENTIFIER_PATTERN = /^[A-Za-z_][A-Za-z0-9_]*$/;
 
-const assertSafeIdentifier = (name: string, label = "table name"): string => {
+export const assertSafeIdentifier = (name: string, label = "table name"): string => {
   if (!IDENTIFIER_PATTERN.test(name)) {
     throw new Error(`Unsafe ${label}: ${JSON.stringify(name)}`);
   }

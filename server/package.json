@@ -11,7 +11,8 @@
     "migrate:hnsw-cosine": "set TZ=Asia/Kolkata&& set NODE_ENV=dev&& ts-node src/migrations/rebuild-hnsw-cosine-indexes.ts",
     "build": "tsc",
     "lint": "eslint \"src/**/*.ts\"",
-    "test": "jest"
+    "test": "jest",
+    "code:eval": "set TZ=Asia/Kolkata&& set NODE_ENV=dev&& ts-node eval/runEval.ts"
   },
   "author": "",
   "license": "ISC",
@@ -20,6 +21,7 @@
     "@langchain/community": "^0.3.58",
     "@langchain/core": "^0.3.57",
     "@langchain/ollama": "^0.2.3",
+    "@vscode/tree-sitter-wasm": "^0.3.1",
     "adm-zip": "^0.6.0",
     "axios": "^1.9.0",
     "bcryptjs": "^3.0.2",
@@ -28,6 +30,7 @@
     "dotenv": "^16.4.5",
     "express": "^5.1.0",
     "googleapis": "^178.1.1",
+    "ignore": "^5.3.2",
     "jsonwebtoken": "^9.0.2",
     "langchain": "^0.3.36",
     "mammoth": "^1.9.1",
@@ -38,6 +41,7 @@
     "pg": "^8.16.0",
     "pgvector": "^0.2.1",
     "typeorm": "^0.3.23",
+    "web-tree-sitter": "^0.27.0",
     "word-extractor": "^1.0.4"
   },
   "devDependencies": {

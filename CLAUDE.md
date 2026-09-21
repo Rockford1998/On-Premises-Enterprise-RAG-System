@@ -14,6 +14,8 @@ and a list of known gaps.
 ```
 client/app/     React 19 + Vite + TanStack Router + shadcn/ui + zustand
 server/         Express 5 + TypeScript + mongoose + pg/pgvector
+server/src/codeIntel/  code-indexing pipeline (extract/parse/adapters/transform/retrieve)
+server/test-fixtures/  sample repos for code-intel tests (outside src/ on purpose)
 server/Endpoints/  .http request examples (VS Code REST Client) — keep in sync
 docs/           architecture and long-form docs
 temp project/   unrelated scratch app — ignore, do not extend
@@ -62,10 +64,32 @@ documents matching `BASE_MODEL` / `EMBED_MODEL` to exist, or creation returns 40
 - **All Ollama calls belong in `llmServices/`.** No `axios.post(.../api/generate)`
   scattered in controllers or services. Take the model name as a parameter —
   read it from the bot profile, fall back to env, never hard-code a model.
-- **All raw SQL belongs in `VectorService`** ([services/vectors.service.ts](server/src/services/vectors.service.ts)).
-  Parameterise values (`$1`, `$2`); table names are interpolated by necessity, so
-  they must only ever come from `bot.vectorTable`, never from a request body,
-  and must pass `assertSafeIdentifier` first.
+- **All raw SQL belongs in `VectorService`** ([services/vectors.service.ts](server/src/services/vectors.service.ts))
+  for KB vectors, or **`CodeGraphService`** ([services/codeGraph.service.ts](server/src/services/codeGraph.service.ts))
+  for Code_Interpreter tables. Parameterise values (`$1`, `$2`); table names are
+  interpolated by necessity, so they must only ever come from `bot.vectorTable`
+  or `codeTables(botId)`, never from a request body, and must pass
+  `assertSafeIdentifier` first.
+- **Code_Interpreter is its own flow** ([docs/CODE_INTERPRETER_PLAN.md](docs/CODE_INTERPRETER_PLAN.md)).
+  It has per-bot `code_<botId>_*` tables, its own endpoints under `/code/:botId/*`,
+  and does not use the KB vector table, `generateEmbedding` or `/chat` (which
+  rejects that bot type). Pure pipeline code lives in `server/src/codeIntel/`
+  (no `req`/`res`, no mongoose, no SQL). Checks like `botType !== "General_Purpose"`
+  do **not** mean "KB bot" any more — check for the specific type.
+- **Adapters are the only place language or framework knowledge lives**
+  ([codeIntel/adapters/](server/src/codeIntel/adapters/)), registered in
+  `adapters/index.ts` and reached through `core/registry.ts`. Core, storage and
+  retrieval never import one directly — that is what lets a new language be added
+  without touching the pipeline. Parsing runs in **two passes** because an Express
+  mount prefix and a React client route live in a different file from the route or
+  component they describe.
+- **Syntax trees hold WASM memory** that garbage collection does not reclaim.
+  Whoever creates one disposes of it (`disposeTree`); the pipeline owns the trees
+  it hands to framework adapters.
+- **Code answers must cite `path:line`.** Excerpts reach the model with a
+  `// path:start-end` header, and `generateCodeAnswer` always sends `num_ctx` —
+  Ollama silently truncates the *start* of an over-long prompt, which would drop
+  the retrieved code and leave the model answering from memory.
 - **Database access goes through [db/pgsql.ts](server/src/db/pgsql.ts)**:
   `query()` for one-shot statements, `withClient()` when several statements
   need the same connection, `withTransaction()` for atomic work. Never call
@@ -139,8 +163,10 @@ The rules that matter when editing:
 
 ## Things to know before you touch them
 
-- **Embedding dimension 768 is hard-coded** in `bot.controller.ts`. Switching
-  embedding models means migrating every `vector_table_*`.
+- **Embedding dimension 768 is hard-coded** in `bot.controller.ts` for KB bots.
+  Switching embedding models means migrating every `vector_table_*`.
+  Code_Interpreter bots are the exception: their dimension is probed from the
+  model at creation and stored in `bot.codeConfig`.
 - **Never re-introduce hard-coded connection settings.** All of them come from
   [config/env.ts](server/src/config/env.ts), which prefers `DATABASE_URL` and
   falls back to the discrete `DB_*` vars. Config is validated at import, so a

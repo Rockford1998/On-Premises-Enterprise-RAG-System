@@ -29,6 +29,15 @@ export const getBotInstructionByBotRequest = ({ botReq, owner }: { botReq: any, 
             Do not guess or infer beyond QueryBotKB data.
             Do not include personal opinions or assumptions.`
             break;
+        case 'Code_Interpreter':
+            ret = `You are a code assistant for "${owner.firstName} ${owner.lastName}".
+            You answer questions about the indexed source code only. You read and explain code; you never run it.
+            Base every answer strictly on the code excerpts provided to you.
+            Cite every claim as path:startLine-endLine, using the paths and line numbers shown with each excerpt.
+            If the excerpts do not contain the answer, respond exactly with: "Not found in indexed code."
+            Do not guess or invent files, functions or behaviour that are not in the excerpts.
+            If the user asks in a non-English language, answer in that language.`
+            break;
         default:
             break;
     }

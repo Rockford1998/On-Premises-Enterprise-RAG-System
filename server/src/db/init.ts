@@ -1,4 +1,5 @@
 import { initPostgres } from "./pgsql";
+import { CodeGraphService } from "../services/codeGraph.service";
 
 /**
  * Bring the Postgres side up at startup.
@@ -20,5 +21,17 @@ export async function init() {
     // than leave the server serving 500s.
     console.error("Database initialisation failed:", error);
     throw error;
+  }
+
+  // Code_Interpreter needs pg_trgm. It is optional infrastructure, so a
+  // failure must not block startup for deployments that never use it — bot
+  // creation re-runs this and reports the reason to the caller.
+  try {
+    await CodeGraphService.ensureExtensions();
+  } catch (error) {
+    console.warn(
+      "[db] pg_trgm unavailable — Code_Interpreter bots cannot be created until it is:",
+      error instanceof Error ? error.message : error,
+    );
   }
 }

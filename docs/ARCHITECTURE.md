@@ -72,7 +72,7 @@ resolved against the `llmModel` collection at bot-creation time
 
 ## 3. Bot types
 
-`botType` is one of `General_Purpose` | `KB_Bot` (see `botType` in
+`botType` is one of `General_Purpose` | `KB_Bot` | `Code_Interpreter` (see `botType` in
 [shared.model.ts](../server/src/models/shared.model.ts), exposed at
 `GET /metadata/bot-type`).
 
@@ -81,6 +81,14 @@ resolved against the `llmModel` collection at bot-creation time
   nothing is retrieved the request returns "No relevant information found."
 - **`General_Purpose`** — no vector table, no retrieval. The question goes
   straight to the base model with the bot's `instruction` as the system prompt.
+- **`Code_Interpreter`** — a separate flow that indexes source repositories and
+  answers with `path:line` citations. It has its own per-bot table set
+  (`code_<botId>_repos/files/modules/units/edges/embeddings`, created and
+  dropped by `CodeGraphService`), its own embedding model and dimension
+  (probed at creation, stored in `bot.codeConfig`), and its own endpoints under
+  `/code/:botId/*`. It has no KB vector table, and `POST /chat` rejects it.
+  See [§11](#11-code-interpreter-bots) and the full design in
+  [CODE_INTERPRETER_PLAN.md](CODE_INTERPRETER_PLAN.md).
 
 ---
 
@@ -516,7 +524,8 @@ closing it would mean threading `req.user` through
 | Bots     | `GET /bots`, `GET /bots/:botId`, `GET /bots/owner/:owner`, `POST /bots`, `PUT /bots/:botId`, `DELETE /bots/:botId` |
 | LLM      | `GET /llm`, `GET /llm/:llmId`, `POST /llm`, `PUT /llm/:botId`, `DELETE /llm/:botId` |
 | KB       | `GET /kb` (CONFIG_ADMIN only — unscoped across every bot), `GET /kb/:id`, `GET /kb/bot-id/:botId`, `GET /kb/download/:id`, `POST /kb/upload/:botId`, `POST /kb/delete` |
-| Chat     | `POST /chat` |
+| Chat     | `POST /chat` (rejects Code_Interpreter bots) |
+| Code     | `POST /code/:botId/repos` (zip), `POST /code/:botId/repos/path`, `GET /code/:botId/repos`, `DELETE /code/:botId/repos/:repoId`, `GET /code/:botId/runs`, `GET /code/:botId/runs/:runId`, `POST /code/:botId/chat`, `POST /code/:botId/search`, `POST /code/:botId/tools/:tool` |
 | Tools    | `GET /tools/bot/:botId`, `GET /tools/:id`, `POST /tools`, `PUT /tools/:id`, `DELETE /tools/:id` |
 | Metadata | `GET /metadata/bot-type`, `GET /metadata/models` |
 
@@ -628,3 +637,108 @@ Things the code does not yet do; useful context before extending it (see also
   tests for `TokenService` rotation/reuse-detection and `botAccess`, plus pure
   tests for `renderTemplateByData`), ESLint (`npm run lint`), and
   `.github/workflows/ci.yml` running typecheck + lint + test on push/PR.
+
+---
+
+## 11. Code interpreter bots
+
+A separate flow from the knowledge base: source repositories are parsed into a
+graph of code units and their relationships, so an answer can cite exact files
+and line numbers and can follow a feature across the front-end/back-end
+boundary. Nothing here executes code.
+
+```
+zip upload / server path
+   │  POST /code/:botId/repos          (202 { runId }; runs in-process)
+   ▼
+EXTRACT   ZipSource | DirectorySource → walker → classify
+          skips node_modules, build output, lockfiles, binaries, and always
+          .env* / keys / credentials; honours .gitignore; every skip is
+          reported with a reason in the run document
+   ▼
+PARSE     web-tree-sitter (typescript | tsx | javascript grammars)
+          pass 1  language adapter → units + references, and record the facts
+                  that live in another file: Express mount prefixes, React
+                  client routes
+          pass 2  framework adapters (express, nestjs, react) enrich the same
+                  tree → route units, components, hooks, calls_api
+   ▼
+LINK      imports/calls resolved to unit ids; never guesses — an ambiguous
+          name is stored unresolved rather than pointing at the wrong unit
+   ▼
+LOAD      per file, in ONE transaction: file row, units upserted by uid,
+          vanished units deleted, embeddings written. Embedding happens in
+          memory first, so a failure never half-indexes a file.
+   ▼
+EDGES     second pass, once every unit exists
+   ▼
+API LINK  calls_api ↔ route matched bot-wide, across repositories
+          [optional] LLM summaries: unit → file → folder → repo
+```
+
+Re-indexing is a snapshot: unchanged files (by content hash) are skipped
+entirely — no parse, no embedding, no LLM — changed files are re-embedded, and
+files no longer present are removed with their units, edges and embeddings.
+
+### Query
+
+```
+POST /code/:botId/chat  { question, mode: "answer" | "agent" }
+   │
+   ├─ classify: symbol | flow | impact | config | conceptual
+   │
+   ├─ three searches in parallel, each top 50:
+   │     vector (pgvector, cosine, HNSW)   meaning
+   │     full text (ts_rank_cd)            the words actually used
+   │     trigram (pg_trgm)                 misspelled identifiers
+   │  fused with Reciprocal Rank Fusion, weighted by query type
+   │
+   ├─ graph expansion from the top 8 (recursive CTE over the edges table):
+   │     flow   → follow calls/calls_api/handles_route outward, 4 hops
+   │     impact → follow them backwards, 2 hops
+   │  a reachable unit gets a score bonus that decays with distance
+   │
+   ├─ context builder: repo/file summaries, then code grouped by file and
+   │  ordered by line, each excerpt headed `// path:start-end`, inside a token
+   │  budget derived from the model's context window
+   │
+   └─ generateCodeAnswer — always sends `num_ctx`, because Ollama silently
+      truncates the START of an over-long prompt, which would drop the code
+```
+
+`mode: "agent"` instead runs a tool loop (max 10 calls) over the same handlers
+the HTTP tools expose: `search_code`, `find_symbol`, `get_unit`, `read_file`,
+`get_callers`, `get_callees`, `list_routes`, `trace_feature`, `get_summary`.
+It uses Ollama's native tool calling when the model supports it, and a JSON
+prompt convention when it does not.
+
+### Layout
+
+```
+server/src/codeIntel/        pure pipeline — no req/res, no mongoose, no SQL
+  core/      types, stable ids, adapter registry
+  extract/   fileSource, walker, classify, repoContext
+  parse/     treesitter (grammar loading, tree helpers)
+  adapters/  languages/typescript · frameworks/{express,nestjs,react}
+  transform/ linker, chunker, contextHeader, searchText, apiMatch, summarizer
+  retrieve/  queryClassifier, rrf, contextBuilder
+  agent/     tool schemas
+server/src/services/         codeIndex (runs) · codeIndexer (pipeline)
+                             codeGraph (ALL SQL) · codeSearch · codeChat
+server/eval/                 questions.json + runEval.ts (recall@k, MRR)
+```
+
+### Notes
+
+- **Unit ids** are `<repo>:<path>#<qualifiedName>`, deterministic so
+  re-indexing upserts rather than duplicating, and so edges from unchanged
+  files keep pointing at the right unit.
+- **Embedding dimension** is probed from the model at bot creation:
+  ≤ 2000 dims uses `vector`, above that `halfvec` (pgvector's HNSW limits).
+  `qwen3-embedding:4b` gives 2560 → `halfvec`.
+- **Authorization** is checked on every endpoint and every tool handler, so a
+  model that invents a unit id cannot reach another bot's code.
+- **Concurrency**: one indexing run per bot, enforced by a partial unique index
+  on `CodeIndexRun`; interrupted runs are swept at startup.
+- **Adding a language** means writing an adapter and registering it in
+  `codeIntel/adapters/index.ts` — the Java and C# grammars already ship.

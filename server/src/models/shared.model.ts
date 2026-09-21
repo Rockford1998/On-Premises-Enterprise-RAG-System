@@ -45,7 +45,7 @@ const stripSecrets = (_doc: unknown, ret: Record<string, any>) => {
 userSchema.set("toJSON", { transform: stripSecrets });
 userSchema.set("toObject", { transform: stripSecrets });
 
-export const botType = ["General_Purpose", "KB_Bot"]
+export const botType = ["General_Purpose", "KB_Bot", "Code_Interpreter"]
 const botProfileSchema = new mongoose.Schema(
   {
     botId: { type: String },
@@ -58,7 +58,15 @@ const botProfileSchema = new mongoose.Schema(
     toolModel: {}, // tool model
     instruction: { type: String, trim: true }, // instruction for the bot
     kbsearchMethod: { type: String, default: "semantic", trim: true }, // knowledge base search method semantic or hybrid deffault = semantic
-    vectorTable: { type: String }, // vector table name for the bot
+    vectorTable: { type: String }, // vector table name for the bot (KB bots only)
+    // Code_Interpreter bots only. Written once at creation from the probed
+    // embedding model; every code query reads the dimension from here, and it
+    // is validated before it is ever interpolated into SQL.
+    codeConfig: {
+      embedModel: { type: String },
+      embedDim: { type: Number },
+      embedType: { type: String, enum: ["vector", "halfvec"] },
+    },
     publicAccess: { type: Boolean, default: false }, // if true then anyone can access the bot
     owner: {},
     botUsers: {
@@ -178,6 +186,32 @@ knowledgeSyncLogSchema.index({ connectionId: 1, createdAt: -1 });
 
 
 
+// One row per indexing run of a Code_Interpreter bot. Same "status is the
+// guard" idea as KnowledgeSyncLog, but enforced by a partial unique index so
+// two simultaneous requests cannot both create a "running" run (the
+// find-then-create used for Drive syncs has that race).
+const codeIndexRunSchema = new mongoose.Schema(
+  {
+    botId: { type: String, required: true },
+    repoName: { type: String },
+    mode: { type: String, enum: ["full", "incremental"], default: "full" },
+    status: { type: String, enum: ["running", "completed", "partial", "failed"], default: "running" },
+    startedAt: { type: Date, default: Date.now },
+    finishedAt: { type: Date },
+    triggeredBy: { type: String, trim: true }, // actor email
+    // files, skipped, units, edges, embedded, summarized, embedCalls, llmCalls, phaseMs
+    stats: { type: mongoose.Schema.Types.Mixed, default: {} },
+    fileErrors: [{ path: { type: String }, reason: { type: String } }],
+    error: { type: String },
+  },
+  { timestamps: true },
+);
+codeIndexRunSchema.index({ botId: 1, createdAt: -1 });
+codeIndexRunSchema.index(
+  { botId: 1 },
+  { unique: true, partialFilterExpression: { status: "running" }, name: "one_running_run_per_bot" },
+);
+
 const ToolSchema = new mongoose.Schema({
   botId: { type: String, required: true },
   name: { type: String, required: true, },
@@ -290,6 +324,7 @@ export const botProfile = mongoose.model("botProfile", botProfileSchema);
 export const KnowledgeBase = mongoose.model("KnowledgeBase", knowledgeBaseSchema);
 export const KnowledgeConnection = mongoose.model("KnowledgeConnection", knowledgeConnectionSchema);
 export const KnowledgeSyncLog = mongoose.model("KnowledgeSyncLog", knowledgeSyncLogSchema);
+export const CodeIndexRun = mongoose.model("CodeIndexRun", codeIndexRunSchema);
 export const Tools = mongoose.model("Tools", ToolSchema);
 export const llmModel = mongoose.model("llmModel", LlmModelSchema);
 export const LoginAttempt = mongoose.model("LoginAttempt", loginAttemptSchema);

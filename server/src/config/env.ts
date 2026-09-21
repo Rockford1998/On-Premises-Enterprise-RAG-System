@@ -167,4 +167,29 @@ export const env = {
    * trivially decryptable.
    */
   credentialsEncryptionKey: optional("CREDENTIALS_ENCRYPTION_KEY", ""),
+
+  /**
+   * Code_Interpreter bots. Everything is optional with a default so a
+   * deployment that never creates one starts exactly as before.
+   */
+  codeIntel: {
+    /** Allow-listed root for server-path and git sources. Empty = those sources are disabled. */
+    reposRoot: optional("CODE_REPOS_ROOT", ""),
+    maxUploadBytes: integer("CODE_MAX_UPLOAD_BYTES", 200 * 1024 * 1024),
+    maxFiles: integer("CODE_MAX_FILES", 20_000),
+    /** Zip-bomb guard: total declared uncompressed size of the files read from one archive. */
+    maxUncompressedBytes: integer("CODE_MAX_UNCOMPRESSED_BYTES", 1024 * 1024 * 1024),
+    maxFileBytes: integer("CODE_MAX_FILE_BYTES", 1024 * 1024),
+    maxConcurrency: integer("CODE_MAX_CONCURRENCY", 2),
+    maxChunkTokens: integer("CODE_MAX_CHUNK_TOKENS", 800),
+    /** Must be registered as an llmModel (modelType "embedding") and pulled in Ollama. */
+    embeddingModel: optional("CODE_EMBEDDING_MODEL", "qwen3-embedding:0.6b"),
+    /** Context window requested from Ollama when answering; Ollama's own default silently truncates. */
+    numCtx: integer("CODE_NUM_CTX", 8192),
+    summarize: optional("CODE_SUMMARIZE", "false") === "true",
+    excludeGlobs: optional("CODE_EXCLUDE_GLOBS", "")
+      .split(",")
+      .map((g) => g.trim())
+      .filter(Boolean),
+  },
 } as const;

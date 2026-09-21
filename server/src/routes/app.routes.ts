@@ -3,7 +3,9 @@ import { NextFunction, Request, Response, Router } from "express";
 import multer from "multer";
 import { KnowledgeBaseController } from "../controller/kb.controller";
 import { KnowledgeConnectionController } from "../controller/knowledgeConnection.controller";
-import { upload, UnsupportedFileTypeError } from "../middlewares/uploadMiddleware";
+import { upload, codeUpload, UnsupportedFileTypeError } from "../middlewares/uploadMiddleware";
+import { CodeRepoController } from "../controller/codeRepo.controller";
+import { CodeChatController } from "../controller/codeChat.controller";
 import { sendResponse } from "../util/sendResponse";
 import { UserController } from "../controller/user.controller";
 import { BotController } from "../controller/bot.controller";
@@ -21,6 +23,8 @@ const botController = new BotController();
 const knowledgeBaseController = new KnowledgeBaseController();
 const knowledgeConnectionController = new KnowledgeConnectionController();
 const chatController = new ChatController();
+const codeRepoController = new CodeRepoController();
+const codeChatController = new CodeChatController();
 const toolController = new ToolController();
 const authController = new AuthController();
 const llmModelController = new LlmModelController();
@@ -102,6 +106,19 @@ router.put("/kb/connections/:connectionId/folders", knowledgeConnectionControlle
 router.post("/kb/connections/:connectionId/sync", knowledgeConnectionController.triggerSync);
 router.get("/kb/connections/:connectionId/logs", knowledgeConnectionController.getLogs);
 router.delete("/kb/connections/:connectionId", knowledgeConnectionController.disconnect);
+
+// Code interpreter bots — their own flow, separate from /kb and /chat.
+// authorizeUpload runs before multer so an unauthorised caller cannot make the
+// server write a large zip to disk.
+router.post("/code/:botId/repos", codeRepoController.authorizeUpload, codeUpload.single("file"), handleUploadErrors, codeRepoController.uploadRepo);
+router.post("/code/:botId/repos/path", codeRepoController.indexPath);
+router.get("/code/:botId/repos", codeRepoController.listRepos);
+router.delete("/code/:botId/repos/:repoId", codeRepoController.deleteRepo);
+router.get("/code/:botId/runs", codeRepoController.listRuns);
+router.get("/code/:botId/runs/:runId", codeRepoController.getRun);
+router.post("/code/:botId/chat", codeChatController.chat);
+router.post("/code/:botId/search", codeChatController.search);
+router.post("/code/:botId/tools/:tool", codeChatController.runTool);
 
 // Endpoint to handle chat requests
 router.post("/chat", chatController.chatBot);

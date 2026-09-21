@@ -14,6 +14,7 @@ import { closePostgres, isPostgresReady } from "./db/pgsql";
 import { seedLlmModels } from "./db/seed";
 import router from "./routes/app.routes";
 import { authenticateJWT } from "./middlewares/auth.middleware";
+import { CodeIndexService } from "./services/codeIndex.service";
 
 const app = express();
 
@@ -58,6 +59,8 @@ const start = async () => {
   // Register the configured models so a fresh install can create a bot
   // without hand-inserting documents.
   await seedLlmModels();
+  // Runs live inside this process, so any "running" run is a leftover.
+  await CodeIndexService.sweepStaleRuns();
 
   const server = app.listen(env.port, () => {
     console.log(`Environment: [${env.nodeEnv}]`);

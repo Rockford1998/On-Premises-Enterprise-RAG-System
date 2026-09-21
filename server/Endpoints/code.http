@@ -1,0 +1,145 @@
+### Code interpreter bots. Run demo.http steps 1-2 first (sign in, get a token).
+### Prerequisite: the model in CODE_EMBEDDING_MODEL must be pulled in Ollama
+###   (e.g. `ollama pull qwen3-embedding:4b`); it is registered automatically on startup.
+@token = {{token}}
+@botId = bot_REPLACE_ME
+
+### 1. Create a code interpreter bot. Creates its own tables; the embedding dimension is
+###    measured from the model. Returns 400 naming the model if it is not pulled/registered.
+POST http://localhost:3000/bots
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+    "botName": "Shop code",
+    "botDesc": "Explains the shop codebase",
+    "botType": "Code_Interpreter",
+    "owner": "shubhambankar65@gmail.com"
+}
+
+### 2. Chatting with a code bot through the KB endpoint is rejected (400) — use /code/:botId/chat (Phase 6).
+POST http://localhost:3000/chat
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+    "botId": "{{botId}}",
+    "question": "hello"
+}
+
+### 3. Upload a zip of a repository (multipart). Returns 202 { runId, repoName } immediately;
+###    indexing runs in the background. Fields: file (required, .zip), name (optional, defaults to
+###    the file name), summarize (optional, "true" = also generate LLM summaries; slow).
+###    Uploading the same name again re-indexes it and only re-embeds what changed.
+###    409 if a run is already in progress for this bot.
+POST http://localhost:3000/code/{{botId}}/repos
+Authorization: Bearer {{token}}
+Content-Type: multipart/form-data; boundary=----code
+
+------code
+Content-Disposition: form-data; name="name"
+
+shop
+------code
+Content-Disposition: form-data; name="file"; filename="shop.zip"
+Content-Type: application/zip
+
+< ./shop.zip
+------code--
+
+### 4. Index a directory that is already on the server. Only works when CODE_REPOS_ROOT is set,
+###    and the path must be inside it (relative to it, or absolute).
+POST http://localhost:3000/code/{{botId}}/repos/path
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+    "path": "shop",
+    "name": "shop"
+}
+
+### 5. Follow progress. The latest run has stats.phase / done / total while running.
+GET http://localhost:3000/code/{{botId}}/runs?limit=5
+Authorization: Bearer {{token}}
+
+### 5b. One run (status: running | completed | partial | failed, plus fileErrors)
+GET http://localhost:3000/code/{{botId}}/runs/REPLACE_RUN_ID
+Authorization: Bearer {{token}}
+
+### 6. Repositories in this bot, with file / unit / relationship counts
+GET http://localhost:3000/code/{{botId}}/repos
+Authorization: Bearer {{token}}
+
+### 7. Delete one repository (its code, relationships and embeddings). 409 while a run is in progress.
+DELETE http://localhost:3000/code/{{botId}}/repos/1
+Authorization: Bearer {{token}}
+
+### (Phases 6-7 endpoints are documented below.)
+
+### ---------------------------------------------------------------------
+### Retrieval and chat (Phase 6-7)
+### ---------------------------------------------------------------------
+
+### 8. Retrieval only — what the model would be shown, without asking it.
+###    Useful for checking why an answer was wrong: was it the search or the model?
+POST http://localhost:3000/code/{{botId}}/search
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+    "query": "what happens when the users page loads",
+    "limit": 12
+}
+
+### 9. Ask a question. mode "answer" (default) retrieves once then answers;
+###    mode "agent" lets the model call the tools below itself (slower, better
+###    for multi-step questions). Returns { answer, citations, queryType }.
+POST http://localhost:3000/code/{{botId}}/chat
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+    "question": "where are all users loaded from the database?",
+    "mode": "answer"
+}
+
+### 10. Agent mode
+POST http://localhost:3000/code/{{botId}}/chat
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+    "question": "trace what happens when the users page loads",
+    "mode": "agent"
+}
+
+### 11. Tools, callable directly (the same handlers the agent loop uses):
+###     search_code, find_symbol, get_unit, read_file, get_callers, get_callees,
+###     list_routes, trace_feature, get_summary
+POST http://localhost:3000/code/{{botId}}/tools/list_routes
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{}
+
+### 11b. Follow a feature end to end (uid comes from find_symbol or search_code)
+POST http://localhost:3000/code/{{botId}}/tools/trace_feature
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+    "uid": "shop:src/pages/UsersPage.tsx#UsersPage"
+}
+
+### 11c. Find a symbol by name
+POST http://localhost:3000/code/{{botId}}/tools/find_symbol
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+    "name": "findAll"
+}
+
+### Evaluate retrieval quality (CLI, not HTTP):
+###   npm run code:eval -- --bot <botId>
+### Reports recall@5, recall@10 and MRR against eval/questions.json.

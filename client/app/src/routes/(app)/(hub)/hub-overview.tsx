@@ -60,7 +60,15 @@ function RouteComponent() {
                 variant="outline"
                 size="sm"
                 className="mt-1 h-6 text-[11px] px-2 gap-1 rounded cursor-pointer"
-                onClick={() => navigate({ to: `/chatbox/${bot.botId}` })}
+                onClick={() =>
+                  navigate({
+                    // Code bots have their own chat flow; /chatbox talks to the KB endpoint.
+                    to:
+                      bot.botType === "Code_Interpreter"
+                        ? `/code-chat/${bot.botId}`
+                        : `/chatbox/${bot.botId}`,
+                  })
+                }
               >
                 <MessageSquare className="h-3 w-3" />
                 Chat

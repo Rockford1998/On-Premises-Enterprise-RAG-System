@@ -85,7 +85,16 @@ export const initPostgres = async (): Promise<Pool> => {
   // half-working database never reaches request handling.
   const client = await pool.connect();
   try {
-    await client.query("CREATE EXTENSION IF NOT EXISTS vector");
+    try {
+      await client.query("CREATE EXTENSION IF NOT EXISTS vector");
+    } catch (error) {
+      // IF NOT EXISTS is not atomic: two processes starting against the same
+      // fresh database can both pass the check and one then fails on the
+      // unique index. The extension exists either way, which the next query
+      // confirms — so only a genuinely different failure is rethrown.
+      const code = (error as { code?: string }).code;
+      if (code !== "23505" && code !== "42710") throw error;
+    }
 
     const { rows } = await client.query<{ extversion: string }>(
       "SELECT extversion FROM pg_extension WHERE extname = 'vector'",

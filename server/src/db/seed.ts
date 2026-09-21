@@ -1,4 +1,5 @@
 import { llmModel } from "../models/shared.model";
+import { env } from "../config/env";
 
 /**
  * Seed the llmModel registry from configuration.
@@ -56,6 +57,8 @@ const modelsFromEnv = (): SeedModel[] => {
   // Seed both so either spelling resolves.
   addEmbedding(process.env.EMBED_MODEL);
   addEmbedding(process.env.EMBEDDING_MODEL);
+  // Code_Interpreter bots use their own embedding model (see CODE_EMBEDDING_MODEL).
+  addEmbedding(env.codeIntel.embeddingModel);
 
   return seeds;
 };

@@ -66,6 +66,16 @@ function AgentsOverview() {
       size: 300,
       cell: ({ row }) => {
         const bot = row.original;
+        if (bot.botType === "Code_Interpreter") {
+          return (
+            <Badge
+              variant="outline"
+              className="bg-indigo-600 text-white border-indigo-600 dark:bg-indigo-500 dark:text-white dark:border-indigo-500"
+            >
+              Code
+            </Badge>
+          );
+        }
         return bot.botType === "General_Purpose" ? (
           <Badge
             variant="outline"

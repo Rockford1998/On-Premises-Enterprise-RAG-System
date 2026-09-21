@@ -6,6 +6,9 @@ import { sendResponse } from "../util/sendResponse";
 import { getBotInstructionByBotRequest } from "../util/getBotInstructionByBotRequest";
 import { LlmModelService } from "../services/llmModel.service";
 import { canViewBot, ForbiddenError } from "../util/botAccess";
+import { env } from "../config/env";
+import { CodeGraphService, chooseEmbedType } from "../services/codeGraph.service";
+import { probeEmbeddingDimension } from "../llmServices/generateCodeEmbeddings";
 
 export class BotController {
     botService = new BotService();
@@ -157,6 +160,66 @@ export class BotController {
             }
             // const toolModel = await this.llmService.readByName(process.env.EMBED_MODEL || "nomic-embed-text")
             const toolModel = baseModel;
+
+            // Code_Interpreter bots embed with their own model, and the vector
+            // column is sized from what that model actually returns — so the
+            // table can never disagree with it (see CodeGraphService).
+            const isCodeBot = botReq.botType === "Code_Interpreter";
+            let codeConfig: { embedModel: string; embedDim: number; embedType: "vector" | "halfvec" } | undefined;
+            let codeEmbedModel = embedModel;
+            if (isCodeBot) {
+                const codeEmbedName = env.codeIntel.embeddingModel;
+                const registered = await this.llmService.readByName(codeEmbedName);
+                if (!registered) {
+                    sendResponse({
+                        res,
+                        success: false,
+                        message:
+                            `Code embedding model "${codeEmbedName}" is not registered. ` +
+                            `Register it via POST /llm, or set CODE_EMBEDDING_MODEL to a registered model. ` +
+                            `See GET /llm for the current list.`,
+                        status: 400,
+                    });
+                    return;
+                }
+                let embedDim: number;
+                try {
+                    embedDim = await probeEmbeddingDimension({ model: codeEmbedName });
+                    codeConfig = { embedModel: codeEmbedName, embedDim, embedType: chooseEmbedType(embedDim) };
+                } catch (probeError) {
+                    // Log the reason, not the AxiosError: it embeds the whole request/socket graph.
+                    const reason = (probeError as { response?: { status?: number; data?: { error?: string } } })?.response;
+                    console.error(
+                        `Code embedding probe failed for "${codeEmbedName}":`,
+                        reason?.data?.error ?? (probeError instanceof Error ? probeError.message : String(probeError)),
+                        reason?.status ? `(HTTP ${reason.status})` : "",
+                    );
+                    sendResponse({
+                        res,
+                        success: false,
+                        message:
+                            `Could not use embedding model "${codeEmbedName}" — is it pulled in Ollama? ` +
+                            `(ollama pull ${codeEmbedName})`,
+                        status: 400,
+                    });
+                    return;
+                }
+                // Fail before creating the bot if the database cannot host the tables.
+                try {
+                    await CodeGraphService.ensureExtensions();
+                } catch (extError) {
+                    console.error("pg_trgm unavailable:", extError);
+                    sendResponse({
+                        res,
+                        success: false,
+                        message: "The database is missing the pg_trgm extension required for code bots.",
+                        status: 400,
+                    });
+                    return;
+                }
+                codeEmbedModel = registered;
+            }
+
             const data = {
                 botId,
                 botName: botReq.botName,
@@ -164,11 +227,12 @@ export class BotController {
                 isActive: true,
                 botType: botReq.botType,
                 baseModel,
-                embedModel,
+                embedModel: codeEmbedModel,
                 toolModel,
                 instruction: getBotInstructionByBotRequest({ botReq, owner }),
                 kbsearchMethod: "semantic",
-                vectorTable: `vector_table_${botId}`,
+                vectorTable: isCodeBot ? undefined : `vector_table_${botId}`,
+                codeConfig,
                 publicAccess: false,
                 owner,
                 botUsers: {
@@ -185,7 +249,14 @@ export class BotController {
             };
 
             newBot = await this.botService.create(data);
-            if (botReq.botType != "General_Purpose") {
+            if (isCodeBot && codeConfig) {
+                // Own table set, own embedding dimension — no KB vector table.
+                await CodeGraphService.createBotTables({
+                    botId,
+                    embedDim: codeConfig.embedDim,
+                    embedType: codeConfig.embedType,
+                });
+            } else if (botReq.botType != "General_Purpose" && data.vectorTable) {
                 // create a vector table for the bot
                 const vectorTableName = data.vectorTable;
                 await VectorService.createTableWithIndex({
@@ -216,6 +287,9 @@ export class BotController {
             }
             const botId = req.params.botId;
             const botReq = req.body;
+            // Set once at creation from the probed model; a client-supplied
+            // value would end up interpolated into DDL/queries.
+            delete botReq.codeConfig;
             const oldBot = await this.botService.readByBotId(botId);
             if (!oldBot) {
                 sendResponse({
@@ -295,7 +369,9 @@ export class BotController {
             }
             const botId = req.params.botId;
             const data = await this.botService.deleteById(botId, req.user);
-            if (data && data.botType !== "General_Purpose") {
+            if (data && data.botType === "Code_Interpreter") {
+                await CodeGraphService.dropBotTables({ botId });
+            } else if (data && data.botType !== "General_Purpose") {
                 await VectorService.deleteTable(`vector_table_${botId}`);
             }
             sendResponse({ res, success: true, message: "Bot deleted successfully", status: 200 });

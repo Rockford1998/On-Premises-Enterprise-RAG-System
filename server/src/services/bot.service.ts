@@ -40,7 +40,8 @@ export class BotService {
     toolModel: {};
     instruction: string;
     kbsearchMethod: string;
-    vectorTable: string;
+    vectorTable?: string; // KB bots only
+    codeConfig?: { embedModel: string; embedDim: number; embedType: "vector" | "halfvec" }; // Code_Interpreter only
     publicAccess: boolean;
     owner?: any;
     isActive?: boolean;

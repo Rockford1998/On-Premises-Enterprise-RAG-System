@@ -106,6 +106,10 @@ export const CreateBotDialog = ({
                 value: "General_Purpose",
                 label: "Answer questions based on existing knowledge",
               },
+              {
+                value: "Code_Interpreter",
+                label: "Code_Interpreter- Explain a codebase with file and line citations",
+              },
             ]}
           />
         </form>

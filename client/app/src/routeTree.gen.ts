@@ -16,6 +16,7 @@ import { Route as authSignInRouteImport } from './routes/(auth)/sign-in'
 import { Route as appllmLlmOverviewRouteImport } from './routes/(app)/(llm)/llm-overview'
 import { Route as apphubHubOverviewRouteImport } from './routes/(app)/(hub)/hub-overview'
 import { Route as appagentsAgentOverviewRouteImport } from './routes/(app)/(agents)/agent-overview'
+import { Route as appcodeCodeChatBotIdRouteImport } from './routes/(app)/(code)/code-chat.$botId'
 import { Route as appchatChatboxBotIdRouteImport } from './routes/(app)/(chat)/chatbox.$botId'
 import { Route as appagentsAgentDetailsBotIdRouteImport } from './routes/(app)/(agents)/agent-details.$botId'
 import { Route as appagentsAgentToolsToolIdRouteImport } from './routes/(app)/(agents)/agent.tools.$toolId'
@@ -54,6 +55,11 @@ const appagentsAgentOverviewRoute = appagentsAgentOverviewRouteImport.update({
   path: '/agent-overview',
   getParentRoute: () => appRouteRoute,
 } as any)
+const appcodeCodeChatBotIdRoute = appcodeCodeChatBotIdRouteImport.update({
+  id: '/(code)/code-chat/$botId',
+  path: '/code-chat/$botId',
+  getParentRoute: () => appRouteRoute,
+} as any)
 const appchatChatboxBotIdRoute = appchatChatboxBotIdRouteImport.update({
   id: '/(chat)/chatbox/$botId',
   path: '/chatbox/$botId',
@@ -81,6 +87,7 @@ export interface FileRoutesByFullPath {
   '/llm-overview': typeof appllmLlmOverviewRoute
   '/agent-details/$botId': typeof appagentsAgentDetailsBotIdRoute
   '/chatbox/$botId': typeof appchatChatboxBotIdRoute
+  '/code-chat/$botId': typeof appcodeCodeChatBotIdRoute
   '/agent/tools/$toolId': typeof appagentsAgentToolsToolIdRoute
 }
 export interface FileRoutesByTo {
@@ -92,6 +99,7 @@ export interface FileRoutesByTo {
   '/llm-overview': typeof appllmLlmOverviewRoute
   '/agent-details/$botId': typeof appagentsAgentDetailsBotIdRoute
   '/chatbox/$botId': typeof appchatChatboxBotIdRoute
+  '/code-chat/$botId': typeof appcodeCodeChatBotIdRoute
   '/agent/tools/$toolId': typeof appagentsAgentToolsToolIdRoute
 }
 export interface FileRoutesById {
@@ -105,6 +113,7 @@ export interface FileRoutesById {
   '/(app)/(llm)/llm-overview': typeof appllmLlmOverviewRoute
   '/(app)/(agents)/agent-details/$botId': typeof appagentsAgentDetailsBotIdRoute
   '/(app)/(chat)/chatbox/$botId': typeof appchatChatboxBotIdRoute
+  '/(app)/(code)/code-chat/$botId': typeof appcodeCodeChatBotIdRoute
   '/(app)/(agents)/agent/tools/$toolId': typeof appagentsAgentToolsToolIdRoute
 }
 export interface FileRouteTypes {
@@ -118,6 +127,7 @@ export interface FileRouteTypes {
     | '/llm-overview'
     | '/agent-details/$botId'
     | '/chatbox/$botId'
+    | '/code-chat/$botId'
     | '/agent/tools/$toolId'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -129,6 +139,7 @@ export interface FileRouteTypes {
     | '/llm-overview'
     | '/agent-details/$botId'
     | '/chatbox/$botId'
+    | '/code-chat/$botId'
     | '/agent/tools/$toolId'
   id:
     | '__root__'
@@ -141,6 +152,7 @@ export interface FileRouteTypes {
     | '/(app)/(llm)/llm-overview'
     | '/(app)/(agents)/agent-details/$botId'
     | '/(app)/(chat)/chatbox/$botId'
+    | '/(app)/(code)/code-chat/$botId'
     | '/(app)/(agents)/agent/tools/$toolId'
   fileRoutesById: FileRoutesById
 }
@@ -201,6 +213,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof appagentsAgentOverviewRouteImport
       parentRoute: typeof appRouteRoute
     }
+    '/(app)/(code)/code-chat/$botId': {
+      id: '/(app)/(code)/code-chat/$botId'
+      path: '/code-chat/$botId'
+      fullPath: '/code-chat/$botId'
+      preLoaderRoute: typeof appcodeCodeChatBotIdRouteImport
+      parentRoute: typeof appRouteRoute
+    }
     '/(app)/(chat)/chatbox/$botId': {
       id: '/(app)/(chat)/chatbox/$botId'
       path: '/chatbox/$botId'
@@ -232,6 +251,7 @@ interface appRouteRouteChildren {
   appllmLlmOverviewRoute: typeof appllmLlmOverviewRoute
   appagentsAgentDetailsBotIdRoute: typeof appagentsAgentDetailsBotIdRoute
   appchatChatboxBotIdRoute: typeof appchatChatboxBotIdRoute
+  appcodeCodeChatBotIdRoute: typeof appcodeCodeChatBotIdRoute
   appagentsAgentToolsToolIdRoute: typeof appagentsAgentToolsToolIdRoute
 }
 
@@ -242,6 +262,7 @@ const appRouteRouteChildren: appRouteRouteChildren = {
   appllmLlmOverviewRoute: appllmLlmOverviewRoute,
   appagentsAgentDetailsBotIdRoute: appagentsAgentDetailsBotIdRoute,
   appchatChatboxBotIdRoute: appchatChatboxBotIdRoute,
+  appcodeCodeChatBotIdRoute: appcodeCodeChatBotIdRoute,
   appagentsAgentToolsToolIdRoute: appagentsAgentToolsToolIdRoute,
 }
 

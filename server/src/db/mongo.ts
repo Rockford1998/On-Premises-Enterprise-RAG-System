@@ -46,6 +46,32 @@ export async function mongoCnnection() {
     console.log(
         `[db] mongodb ready (pool ${env.mongo.minPoolSize}-${env.mongo.maxPoolSize})`,
     );
+
+    await ensureIndexes();
+}
+
+/**
+ * Build every model's schema indexes now that there is a connection.
+ *
+ * Mongoose normally does this itself when a model is compiled, but models are
+ * compiled at import time — before connect() — and bufferCommands is off, so
+ * that automatic attempt fails silently and the indexes were never created on
+ * a fresh database. That includes unique ones (user email) and the partial
+ * unique index that stops two code-indexing runs overlapping. createIndexes
+ * only adds what is missing; it never drops anything.
+ *
+ * A failure (say, existing duplicate emails blocking a unique index) is
+ * logged, not thrown: it must not stop the server from starting.
+ */
+export async function ensureIndexes() {
+    const entries = Object.entries(mongoose.models);
+    const results = await Promise.allSettled(entries.map(([, model]) => model.createIndexes()));
+    results.forEach((result, i) => {
+        if (result.status === "rejected") {
+            const reason = result.reason instanceof Error ? result.reason.message : String(result.reason);
+            console.warn(`[db] could not create indexes for ${entries[i][0]}: ${reason}`);
+        }
+    });
 }
 
 /** Close the connection. Safe to call when already disconnected. */
